@@ -103,7 +103,7 @@ export const BAR: AreaLayout = {
     { key: 'banquetas', x: 370, y: 540, collider: foot(370, 540, 300, 10) }
   ],
   interactables: [
-    { id: 'nando', x: 0, y: 0, radius: 130, name: 'Nando', markerY: 0, npc: 'nando' },
+    { id: 'nando', x: 0, y: 0, radius: 175, name: 'Nando', markerY: 0, npc: 'nando' },
     { id: 'ze', x: 0, y: 0, radius: 76, name: 'Seu Zé', markerY: 0, npc: 'ze' },
     { id: 'miro', x: 0, y: 0, radius: 90, name: 'Miro', markerY: 0, npc: 'miro' },
     { id: 'tv', x: 1000, y: 470, radius: 70, name: 'Televisão', markerY: 300 },

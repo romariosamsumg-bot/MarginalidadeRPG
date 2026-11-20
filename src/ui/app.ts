@@ -125,13 +125,12 @@ export class App {
         <div class="hud-top">
           <div class="who"><img id="hudPortrait" alt=""><div class="meta"><strong id="hudName"></strong>
             <div class="minibars"><div class="mb"><span>ENERGIA</span><i><b id="hudEnergy"></b></i></div><div class="mb heat"><span>PRESSÃO</span><i><b id="hudHeat"></b></i></div></div></div></div>
-          <div class="objective" id="hudObjective" role="status" aria-live="polite"><div class="eyebrow" id="hudMission"></div><p id="hudObjText"></p></div>
+          <div class="objective" id="hudObjective" role="status" aria-live="polite"><div class="obj-head"><span class="eyebrow" id="hudMission"></span><span class="clock" id="hudClock"></span></div><p id="hudObjText"></p></div>
           <div class="hud-buttons">
             <button class="iconbtn" id="btnSound" type="button" aria-label="Som"></button>
             <button class="iconbtn" id="btnMenu" type="button" aria-label="Abrir menu (M)">${ICON.menu}</button>
           </div>
         </div>
-        <div class="clock" id="hudClock"></div>
         <div class="joy-zone" id="joyZone" aria-hidden="true"><div class="joy idle hidden" id="joy"><div class="knob" id="knob"></div></div></div>
         <div class="joy-hint hidden" id="joyHint">Arraste para andar</div>
         <div class="interact hidden" id="interact"><div class="label" id="interactLabel"></div><button class="act" type="button" id="btnAct" aria-describedby="interactLabel">Interagir</button></div>
@@ -316,7 +315,7 @@ export class App {
     box.classList.toggle('future', !!obj?.future);
     $('#hudMission')!.textContent = obj ? `${obj.missionId} · ${obj.title}` : 'Livre';
     $('#hudObjText')!.textContent = obj ? obj.objective : 'Explore a Vila e evolua sua carreira.';
-    $('#hudClock')!.textContent = `${s.story.clock.label.toUpperCase()} · T${s.rpg.season} DIA ${s.rpg.day}/${MAXDAY}`;
+    $('#hudClock')!.textContent = `${s.story.clock.label} · dia ${s.rpg.day}/${MAXDAY}`;
     const sb = $('#btnSound')!;
     const on = this.settings.soundEnabled && audio.enabled && !this.settings.muted;
     sb.innerHTML = on ? ICON.sound : ICON.mute;
@@ -784,6 +783,7 @@ export class App {
       screen: () => this.screen,
       player: () => { const w = this.handle?.world(); return w?.player ? { x: w.player.x, y: w.player.y, area: w.area } : null; },
       target: () => this.target,
+      moving: () => { const w = this.handle?.world() as unknown as { auto: unknown } | null; return !!w?.auto; },
       renderer: () => this.handle?.renderer,
       audio: () => ({ state: audio.ctx?.state ?? 'none', enabled: audio.enabled, muted: this.settings.muted }),
       menu: () => this.menuTab,
@@ -791,7 +791,7 @@ export class App {
       /** Posição em px CSS de um alvo do mapa (para testes de toque). */
       screenOf: (id: string) => {
         const w = this.handle?.world(); if (!w) return null;
-        const it = (w as unknown as { interactables(): Array<{ id: string; x: number; y: number }> }).interactables().find(i => i.id === id);
+        const it = id === 'player' && w.player ? { id, x: w.player.x, y: w.player.y + 40 } : (w as unknown as { interactables(): Array<{ id: string; x: number; y: number }> }).interactables().find(i => i.id === id);
         if (!it) return null;
         const cam = w.cameras.main, ds = this.handle!.game.scale.displayScale;
         return { x: (it.x - cam.worldView.x) * cam.zoom / ds.x, y: (it.y - 40 - cam.worldView.y) * cam.zoom / ds.y };

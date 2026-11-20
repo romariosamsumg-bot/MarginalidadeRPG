@@ -142,7 +142,7 @@ export class WorldScene extends Phaser.Scene {
   cam = { x: 0, y: 0, ready: false };
   target: InteractDef | null = null;
   targetKey = '';
-  auto: { x: number; y: number; target?: TargetId; stuck: number; lx: number; ly: number; detour?: number; dir?: number; tries?: number } | null = null;
+  auto: { x: number; y: number; target?: TargetId; stuck: number; lx: number; ly: number; detour?: number; dir?: number; tries?: number; way?: Array<{ x: number; y: number }> } | null = null;
   cutscene = false;
   transitioning = false;
   timeOfDay: 'entardecer' | 'noite' = 'noite';
@@ -547,9 +547,11 @@ export class WorldScene extends Phaser.Scene {
       const mag = Math.hypot(vx, vy);
       if (mag > 0.12) { this.auto = null; if (mag > 1) { vx /= mag; vy /= mag; } }
       else if (this.auto) {
-        const dx = this.auto.x - this.player.x, dy = this.auto.y - this.player.y, d = Math.hypot(dx, dy);
+        const goal = this.auto.way?.[0] ?? this.auto;
+        const dx = goal.x - this.player.x, dy = goal.y - this.player.y, d = Math.hypot(dx, dy);
         const tgt = this.auto.target ? this.findTarget(this.auto.target) : null;
-        if (tgt && this.distTo(tgt) <= tgt.radius * 0.8) { const id = this.auto.target!; this.auto = null; this.perform(id); }
+        if (tgt && this.distTo(tgt) <= tgt.radius * 0.95) { const id = this.auto.target!; this.auto = null; this.perform(id); }
+        else if (this.auto.way?.length && d < 10) { this.auto.way.shift(); this.auto.stuck = 0; }
         else if (d < 6) { this.auto = null; }
         else if (this.auto.detour && this.auto.detour > 0) {
           // Contorna o obstáculo pelo lado livre e depois retoma a linha reta.
@@ -561,7 +563,12 @@ export class WorldScene extends Phaser.Scene {
           const moved = Math.hypot(this.player.x - this.auto.lx, this.player.y - this.auto.ly);
           this.auto.stuck = moved < SPEED * dt * 0.25 ? this.auto.stuck + dt : 0;
           this.auto.lx = this.player.x; this.auto.ly = this.player.y;
-          if (this.auto.stuck > 0.18) {
+          if (this.auto.stuck > 0.18 && !this.auto.way) {
+            // Rota alternativa pela faixa livre (rua / corredor entre as mesas).
+            const lane = this.area === 'vila' ? 736 : 640;
+            this.auto.way = [{ x: this.player.x, y: lane }, { x: this.auto.x, y: lane }];
+            this.auto.stuck = 0;
+          } else if (this.auto.stuck > 0.18) {
             this.auto.tries = (this.auto.tries ?? 0) + 1;
             if (this.auto.tries > 4) this.auto = null;
             else {
@@ -700,10 +707,20 @@ export class WorldScene extends Phaser.Scene {
     const L = this.layout.walk;
     if (hit) {
       if (this.distTo(hit) <= hit.radius) { this.perform(hit.id); return; }
-      this.auto = { x: hit.x + (this.player.x < hit.x ? -30 : 30), y: Phaser.Math.Clamp(hit.y + 22, L.top + 6, L.bottom - 4), target: hit.id, stuck: 0, lx: this.player.x, ly: this.player.y };
+      const ap = this.freePoint(hit.x + (this.player.x < hit.x ? -30 : 30), Phaser.Math.Clamp(hit.y + 22, L.top + 6, L.bottom - 4));
+      this.auto = { x: ap.x, y: ap.y, target: hit.id, stuck: 0, lx: this.player.x, ly: this.player.y };
     } else if (wy > L.top - 30) {
       this.auto = { x: Phaser.Math.Clamp(wx, L.left + 10, L.right - 10), y: Phaser.Math.Clamp(wy, L.top + 6, L.bottom - 4), stuck: 0, lx: this.player.x, ly: this.player.y };
     }
+  }
+
+  /** Ponto de chegada fora de qualquer colisor (ex.: Nando atrás do balcão → frente do balcão). */
+  private freePoint(x: number, y: number) {
+    const boxes = [...this.layout.colliders, ...this.layout.props.filter(p => p.collider && p.when !== 'patrol').map(p => p.collider!)];
+    const inside = (px: number, py: number) => boxes.some(b => px > b.x - 14 && px < b.x + b.w + 14 && py > b.y - 2 && py < b.y + b.h + 16);
+    let py = y;
+    for (let i = 0; i < 40 && inside(x, py); i++) py += 8;
+    return { x, y: Math.min(py, this.layout.walk.bottom - 4) };
   }
 
   tryInteract() {

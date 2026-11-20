@@ -57,24 +57,37 @@ export async function waitDialogue(page: Page, sceneId: string, timeout = 15_000
   await page.waitForFunction(id => (window as any).__MRPG__.state()?.story.activeDialogue?.sceneId === id, sceneId, { timeout });
 }
 
-export async function walkToAndTalk(page: Page, id: string, sceneId: string, touch = false) {
+/** Toca no alvo (ou no chão na direção dele) e espera a caminhada terminar; repete até `done()`. */
+async function approach(page: Page, id: string, touch: boolean, done: () => Promise<boolean>) {
   const vp = page.viewportSize()!;
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 30; i++) {
+    if (await done()) return true;
     const pos = await page.evaluate(t => (window as any).__MRPG__.screenOf(t), id);
-    if (pos && (pos.x < 24 || pos.x > vp.width - 24)) {
-      // Alvo fora da tela: toca no chão na direção dele e deixa o personagem andar.
-      const pl = await page.evaluate(() => { const w = (window as any).__MRPG__; const p = w.player(); return p; });
-      if (touch) { await joystick(page, pos.x < 24 ? -1 : 1, 0, 1400); continue; }
-      const y = Math.min(vp.height - 140, Math.max(200, vp.height * 0.72));
-      await page.mouse.click(pos.x < 24 ? 30 : vp.width - 30, y);
-      await page.waitForTimeout(1600);
-      void pl;
-      continue;
+    const me = await page.evaluate(() => (window as any).__MRPG__.screenOf('player'));
+    if (process.env.E2E_DEBUG) console.log('approach', id, i, JSON.stringify(pos), JSON.stringify(await player(page)));
+    let x = pos?.x ?? vp.width / 2, y = pos?.y ?? vp.height / 2;
+    if (x < 24 || x > vp.width - 24) { x = x < 24 ? 24 : vp.width - 24; y = Math.min(vp.height - 20, Math.max(80, me?.y ?? vp.height * 0.7)); }
+    if (touch) await page.touchscreen.tap(x, y); else await page.mouse.click(x, y);
+    const t0 = Date.now();
+    await page.waitForTimeout(300);
+    while (Date.now() - t0 < 20_000) {
+      if (await done()) return true;
+      if (!(await page.evaluate(() => (window as any).__MRPG__.moving()))) break;
+      await page.waitForTimeout(250);
     }
-    await tapTarget(page, id, touch);
-    try { await waitDialogue(page, sceneId, 8000); return; } catch { /* tenta de novo (câmera moveu) */ }
   }
-  throw new Error(`não chegou em ${id}`);
+  return done();
+}
+
+export async function walkToAndTalk(page: Page, id: string, sceneId: string, touch = false) {
+  const ok = await approach(page, id, touch, async () => (await st(page))?.story.activeDialogue?.sceneId === sceneId);
+  if (!ok) throw new Error(`não chegou em ${id}`);
+}
+
+/** Vai até uma porta e espera a troca de área. */
+export async function walkToDoor(page: Page, id: string, area: 'vila' | 'bar', touch = false) {
+  const ok = await approach(page, id, touch, async () => (await player(page))?.area === area);
+  if (!ok) throw new Error(`não entrou em ${area}`);
 }
 
 /** Arrasta o joystick virtual (zona inferior esquerda) por um tempo. */
@@ -88,3 +101,4 @@ export async function joystick(page: Page, dx: number, dy: number, ms: number) {
   await page.mouse.up();
   await page.waitForTimeout(150);
 }
+

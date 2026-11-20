@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { advance, boot, choose, joystick, newCareer, player, playThrough, st, SUBMUNDO_KEY, waitDialogue, walkToAndTalk } from './helpers';
+import { advance, boot, choose, joystick, newCareer, player, playThrough, st, SUBMUNDO_KEY, waitDialogue, walkToAndTalk, walkToDoor } from './helpers';
 
 const SUBMUNDO_SAVE = JSON.stringify({ schema: 1, name: 'Veterano', city: 'Recife', season: 4, day: 9, cash: 77777 });
 
@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('fluxo completo: nova carreira → exploração → conversa → escolha → missão → recarregar → reação persistente', async ({ page }, info) => {
-  test.setTimeout(300_000);
+  test.setTimeout(720_000); // ~10 FPS no Chromium headless com GL por software
   const touch = info.project.name.startsWith('mobile');
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -41,9 +41,7 @@ test('fluxo completo: nova carreira → exploração → conversa → escolha �
 
   // Missões únicas não repetem: casa agora abre o painel de descanso, não a cena.
   // A1-M02: entrar no bar (transição de área) → cobrança automática
-  for (let i = 0; i < 8 && (await player(page))?.area !== 'bar'; i++) {
-    await walkToAndTalk(page, 'bar_porta', '__none__', touch).catch(() => {});
-  }
+  await walkToDoor(page, 'bar_porta', 'bar', touch);
   await page.waitForFunction(() => (window as any).__MRPG__.player()?.area === 'bar', null, { timeout: 15_000 });
   await waitDialogue(page, 'A1-M02-cobranca', 20_000);
   const respectBefore = (await st(page)).rpg.respect;
@@ -69,8 +67,10 @@ test('fluxo completo: nova carreira → exploração → conversa → escolha �
   await page.waitForFunction(() => (window as any).__MRPG__.player()?.area === 'bar', null, { timeout: 15_000 });
   expect((await st(page)).rpg.respect).toBe(respectBefore + 3);
   await walkToAndTalk(page, 'nando', 'bark-nando', touch);
-  await advance(page);
+  // A primeira fala do Nando depende da resposta dada a Miro (memória narrativa).
+  expect((await st(page)).story.activeDialogue.nodeId).toBe('n_e');
   await expect(page.locator('.dlg .text')).toContainText('Ninguém responde o Miro assim');
+  await advance(page);
   await choose(page, /Agora não/);
 
   // Save do Submundo intacto
