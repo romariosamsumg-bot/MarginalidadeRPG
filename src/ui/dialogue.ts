@@ -6,6 +6,7 @@ import type { Store, Result } from '../core/store';
 import { getNode, getScene, nodeText, visibleChoices } from '../narrative/engine';
 import type { DialogueNode, Speaker } from '../narrative/types';
 import { esc } from './dom';
+import { CARD_ART } from '../art/assets';
 
 export const SPEAKER_NAMES: Record<string, string> = {
   magrao: 'Breno “Magrão”', lia: 'Lia', solange: 'Dona Solange', miro: 'Miro Ferrugem', nando: 'Nando', ze: 'Seu Zé'
@@ -54,7 +55,7 @@ export class DialogueView {
     this.root.classList.remove('hidden');
     clearInterval(this.typing); clearTimeout(this.phoneTimer);
     if (this.pendingSay) { this.renderLine('player', this.pendingSay, [], true); return; }
-    if (node.style === 'card') return this.renderCard(nodeText(s, node));
+    if (node.style === 'card') return this.renderCard(nodeText(s, node), node.art);
     if (node.style === 'phone') return this.renderPhone(node);
     const choices = visibleChoices(s, node);
     this.renderLine(node.speaker, nodeText(s, node), choices, false, node);
@@ -107,9 +108,12 @@ export class DialogueView {
     return true;
   }
 
-  private renderCard(text: string) {
-    this.root.innerHTML = `<div class="card" data-advance="1"><div class="ctext"></div><div class="tap">Toque ou Espaço para continuar</div></div>`;
+  private renderCard(text: string, art?: string) {
+    this.root.innerHTML = `<div class="card" data-advance="1"><div class="cart" aria-hidden="true"></div><div class="ctext"></div><div class="tap">Toque ou Espaço para continuar</div></div>`;
     (this.root.querySelector('.ctext') as HTMLElement).textContent = text;
+    const url = art ? CARD_ART[art] : undefined;
+    const bg = this.root.querySelector('.cart') as HTMLElement;
+    if (url) bg.style.backgroundImage = `url("${url}")`; else bg.remove();
     this.d.sfx('card');
   }
 

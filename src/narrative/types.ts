@@ -73,6 +73,8 @@ export interface DialogueNode {
   variants?: TextVariant[];
   /** Estilo de apresentação. */
   style?: 'line' | 'card' | 'phone';
+  /** Ilustração de fundo para style 'card' (chave em src/art/assets.ts#CARD_ART). */
+  art?: 'vila' | 'encomenda' | 'oficina_fechada';
   /** Mensagens para style 'phone'. */
   phone?: Array<{ from: 'me' | 'them' | 'system'; who?: string; time: string; text: string }>;
   effects?: Effect[];

@@ -20,6 +20,7 @@ import { introPending, interactionLabel, resolveInteraction, type TargetId } fro
 import type { PanelId, Speaker } from '../narrative/types';
 import { AREAS } from '../world/layout';
 import { NPC_LOOKS, PLAYER_LOOKS, paintPortrait } from '../art/characters';
+import { PORTRAIT_ART } from '../art/assets';
 import { renderPanel, TABS } from './panels';
 import { DialogueView } from './dialogue';
 import { $, btn, esc, trapFocus } from './dom';
@@ -106,8 +107,9 @@ export class App {
   }
 
   private makePortraits() {
-    PLAYER_LOOKS.forEach((p, i) => { this.portraits[`player${i}`] = paintPortrait(p, 160).toDataURL('image/png'); });
-    for (const [id, spec] of Object.entries(NPC_LOOKS)) if (!id.startsWith('ped')) this.portraits[id] = paintPortrait(spec, 160).toDataURL('image/png');
+    // Retrato pintado procedural como reserva; a arte gerada (Higgsfield) substitui quando disponível.
+    PLAYER_LOOKS.forEach((p, i) => { this.portraits[`player${i}`] = PORTRAIT_ART[`player${i}`] ?? paintPortrait(p, 160).toDataURL('image/png'); });
+    for (const [id, spec] of Object.entries(NPC_LOOKS)) if (!id.startsWith('ped')) this.portraits[id] = PORTRAIT_ART[id] ?? paintPortrait(spec, 160).toDataURL('image/png');
   }
 
   private portraitFor(sp: Speaker): string | null {

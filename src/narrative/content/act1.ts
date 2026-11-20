@@ -13,13 +13,13 @@ export const INTRO: Scene = {
   id: 'A1-intro', mission: null, once: true, music: 'theme', start: 'i1',
   nodes: [
     {
-      id: 'i1', speaker: 'narrator', style: 'card',
+      id: 'i1', speaker: 'narrator', style: 'card', art: 'vila',
       text: 'Vila do Dique, região metropolitana do Rio de Janeiro. Você nasceu em {cidade}, mas chegou aqui há seis anos, quando a família de Lia abriu a porta de casa para você. Desde então, a Vila também é sua.',
       variants: [{ if: { homeCity: 'Rio de Janeiro' }, text: 'Vila do Dique, região metropolitana do Rio de Janeiro. Você cresceu aqui: conhece cada degrau da escadaria, cada portão que range, cada vizinho pelo apelido.' }],
       next: 'i2'
     },
     {
-      id: 'i2', speaker: 'narrator', style: 'card',
+      id: 'i2', speaker: 'narrator', style: 'card', art: 'encomenda',
       text: 'Lia é sua prima — quase irmã. Magrão, o mecânico da Oficina 24, é seu amigo desde sempre. Os dois são o mais perto de família que você tem por aqui.',
       next: 'i3'
     },
@@ -149,7 +149,7 @@ export const A1_M01_CASA: Scene = {
       next: 'h22'
     },
     {
-      id: 'h22', speaker: 'narrator', style: 'card', text: 'Magrão não voltou.',
+      id: 'h22', speaker: 'narrator', style: 'card', art: 'oficina_fechada', text: 'Magrão não voltou.',
       effects: [
         { type: 'clock', label: 'Sábado, 23h40', timeOfDay: 'noite' },
         { type: 'setFlag', key: 'magrao_missing', value: true },

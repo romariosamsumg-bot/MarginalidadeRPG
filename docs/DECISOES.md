@@ -12,6 +12,7 @@ Decisões não críticas tomadas sem bloquear o início, conforme o prompt mestr
 - **Parallax manual** (posição calculada da janela de visão) em vez de `scrollFactor`, porque é estável com zoom variável em retrato/paisagem.
 
 ## Arte e som
+- **Atualização:** retratos, panorama do morro (entardecer e noite) e ilustrações dos cartões foram gerados com Higgsfield a pedido do usuário (`docs/ARTE_GERADA.md`). O restante abaixo continua valendo para cenário caminhável e sprites.
 - Nenhum asset foi fornecido. Toda a arte é **pintada proceduralmente em Canvas 2D** no carregamento (estilo graphic novel: contorno grosso, sombra dura, retícula, azul-petróleo/âmbar/vermelho). Tudo é original e local: nenhum hotlink, nenhuma marca real. Placas usam nomes fictícios ("Oficina 24", "Bar do Nando", "Mercearia da Solange", "Linha 314").
 - Personagens: 17 quadros por folha (ociosidade 4, caminhada 8, interação 3, celular 2), espelhados horizontalmente.
 - Som sintetizado (ruído filtrado, osciladores). Não há narração gravada nem música licenciada.

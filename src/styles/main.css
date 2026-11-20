@@ -143,8 +143,11 @@ button:disabled { opacity: .42; cursor: not-allowed; }
 .choice .req { display: block; font-size: .78em; color: #e9a38f; font-weight: 600; }
 .choice:disabled .n { background: #555; }
 .card { position: absolute; inset: 0; background: #05090bf5; display: grid; place-items: center; padding: 24px; text-align: center; cursor: pointer; }
-.card .ctext { font: 700 clamp(20px, 5.6vw, 34px)/1.35 var(--serif); max-width: 26ch; white-space: pre-line; }
-.card .tap { position: absolute; bottom: calc(26px + var(--safe-b)); left: 0; right: 0; color: var(--muted); font: 700 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.card .cart { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .5; animation: kenburns 14s ease-out both; }
+.card .cart::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #05090b99 0%, #05090b55 40%, #05090bdd 100%); }
+@keyframes kenburns { from { transform: scale(1.08); } to { transform: scale(1); } }
+.card .ctext { position: relative; text-shadow: 0 2px 12px #000; font: 700 clamp(20px, 5.6vw, 34px)/1.35 var(--serif); max-width: 26ch; white-space: pre-line; }
+.card .tap { z-index: 1; position: absolute; bottom: calc(26px + var(--safe-b)); left: 0; right: 0; color: var(--muted); font: 700 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 .phone { position: absolute; inset: 0; background: #05090bee; display: grid; place-items: center; padding: 16px; cursor: pointer; }
 .phone .device { width: min(330px, 92vw); height: min(560px, 76vh); background: #0e1417; border: 3px solid #2b3236; border-radius: 26px; padding: 18px 14px; display: flex; flex-direction: column; box-shadow: 0 20px 60px #000c; }
 .phone .ptitle { text-align: center; font-weight: 800; font-size: .92em; padding-bottom: 10px; border-bottom: 1px solid #253035; }

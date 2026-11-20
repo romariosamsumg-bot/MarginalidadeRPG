@@ -21,6 +21,7 @@ import { GROUND_Y } from '../../art/vila';
 import { FRAME_H } from '../../art/characters';
 import type { NpcId } from '../../narrative/types';
 import { findPath, obstacles } from '../../world/path';
+import { PANORAMA } from '../../art/assets';
 
 type Mode = 'play' | 'attract';
 export interface WorldData { area: 'vila' | 'bar'; mode: Mode }
@@ -130,6 +131,7 @@ export class WorldScene extends Phaser.Scene {
   layers: Layer[] = [];
   skyA?: Phaser.GameObjects.Image;
   skyB?: Phaser.GameObjects.Image;
+  panoDusk?: Phaser.GameObjects.Image;
   moon?: Phaser.GameObjects.Image;
   overlay!: Phaser.GameObjects.Image;
   glows: Array<{ img: Phaser.GameObjects.Image; base: number }> = [];
@@ -160,7 +162,7 @@ export class WorldScene extends Phaser.Scene {
     this.layout = AREAS[this.area];
     this.npcs = new Map(); this.peds = []; this.layers = []; this.glows = []; this.dyn = {};
     this.target = null; this.targetKey = ''; this.auto = null; this.cutscene = false; this.transitioning = false;
-    this.cam.ready = false; this.viatura = undefined; this.extraPed = undefined; this.colliderGroup = undefined; this.rain = undefined; this.player = undefined; this.feet = undefined;
+    this.cam.ready = false; this.viatura = undefined; this.extraPed = undefined; this.colliderGroup = undefined; this.panoDusk = undefined; this.rain = undefined; this.player = undefined; this.feet = undefined;
   }
 
   /** Escala por perspectiva: objetos mais próximos da câmera (y maior) ficam um pouco maiores. */
@@ -220,15 +222,22 @@ export class WorldScene extends Phaser.Scene {
     this.skyA = this.add.image(0, 0, 'ceu_entardecer').setOrigin(0, 0).setDepth(DEPTH.sky);
     this.skyB = this.add.image(0, 0, 'ceu_noite').setOrigin(0, 0).setDepth(DEPTH.sky + 1);
     this.moon = this.add.image(0, 0, 'lua').setDepth(DEPTH.sky + 2);
-    this.layer('morro', 0.15, -260, 70, DEPTH.far);
-    this.layer('predios', 0.42, -160, 60, DEPTH.mid);
+    const painted = this.textures.exists('panorama_noite') && this.textures.exists('panorama_entardecer');
+    if (painted) {
+      // Panorama pintado (morro + prédios ao fundo), com versão de entardecer por cima para a transição.
+      this.layer('panorama_noite', 0.15, -100, 0, DEPTH.far);
+      this.panoDusk = this.layer('panorama_entardecer', 0.15, -100, 0, DEPTH.far + 1);
+    } else {
+      this.layer('morro', 0.15, -260, 70, DEPTH.far);
+      this.layer('predios', 0.42, -160, 60, DEPTH.mid);
+    }
     this.add.image(0, GROUND_Y, 'chao').setOrigin(0, 0).setDepth(DEPTH.ground);
     this.add.image(0, 0, 'fachadas').setOrigin(0, 0).setDepth(DEPTH.facade);
     this.add.image(0, 0, 'fios').setOrigin(0, 0).setDepth(DEPTH.wires);
     // Antena com luz vermelha piscando (acompanha o morro)
-    const antenna = artMeta.farLights.find(l => l.color === 'red');
+    const antenna = painted ? { x: PANORAMA.tower.x + 160, y: PANORAMA.tower.y - 70 } : artMeta.farLights.find(l => l.color === 'red');
     if (antenna) {
-      const g = this.add.image(0, 0, 'glowRed').setBlendMode(Phaser.BlendModes.ADD).setDepth(DEPTH.far + 1).setScale(0.5);
+      const g = this.add.image(0, 0, 'glowRed').setBlendMode(Phaser.BlendModes.ADD).setDepth(DEPTH.far + 2).setScale(0.5);
       this.layers.push({ img: g, f: 0.15, ox: -260 + antenna.x, oy: 70 + antenna.y });
       g.setOrigin(0.5);
       if (!rm) this.tweens.add({ targets: g, alpha: 0.1, duration: 900, yoyo: true, repeat: -1, hold: 300 });
@@ -468,8 +477,11 @@ export class WorldScene extends Phaser.Scene {
     for (const g of this.glows) g.img.setAlpha(g.base * k);
     if (this.skyA && this.skyB) {
       const target = night ? 1 : 0;
-      if (instant || ctx().reducedMotion()) this.skyB.setAlpha(target);
-      else this.tweens.add({ targets: this.skyB, alpha: target, duration: 1600 });
+      if (instant || ctx().reducedMotion()) { this.skyB.setAlpha(target); this.panoDusk?.setAlpha(1 - target); }
+      else {
+        this.tweens.add({ targets: this.skyB, alpha: target, duration: 1600 });
+        if (this.panoDusk) this.tweens.add({ targets: this.panoDusk, alpha: 1 - target, duration: 1600 });
+      }
       this.moon?.setVisible(night);
     }
   }

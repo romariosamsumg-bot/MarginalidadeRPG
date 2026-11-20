@@ -8,6 +8,7 @@ import { paintFacades, paintFar, paintGround, paintMid, paintMoon, paintSky, pai
 import { paintBarRoom } from '../../art/bar';
 import { paintProps } from '../../art/props';
 import { ctx } from '../context';
+import { PANORAMA } from '../../art/assets';
 
 export const artMeta: {
   facadeLights: Array<{ x: number; y: number; w: number; h: number; color?: string }>;
@@ -29,6 +30,13 @@ export class BootScene extends Phaser.Scene {
     if (!tex) return;
     const fw = Math.ceil(FRAME_W * s), fh = Math.ceil(FRAME_H * s);
     for (let f = 0; f < FRAME_COUNT; f++) tex.add(f, 0, f * fw, 0, fw, fh);
+  }
+
+  preload() {
+    // Arte pintada (Higgsfield). Falha de carregamento não impede o jogo: cai na arte procedural.
+    this.load.on('loaderror', (f: { key: string }) => console.warn('[boot] arte não carregou, usando procedural:', f.key));
+    this.load.image('panorama_noite', PANORAMA.noite);
+    this.load.image('panorama_entardecer', PANORAMA.entardecer);
   }
 
   create() {

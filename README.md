@@ -70,7 +70,7 @@ docs/            auditoria, migração, decisões, validação, recursos a subst
 Nenhuma dependência por CDN; nenhuma requisição de rede depois do carregamento.
 
 ## Documentação
-- [Auditoria da v0.4](docs/AUDITORIA_V04.md) · [Mapa de migração](docs/MIGRACAO_V04.md) · [Decisões](docs/DECISOES.md)
+- [Arte gerada (Higgsfield)](docs/ARTE_GERADA.md) · [Auditoria da v0.4](docs/AUDITORIA_V04.md) · [Mapa de migração](docs/MIGRACAO_V04.md) · [Decisões](docs/DECISOES.md)
 - [Validação (comandos e resultados reais)](docs/VALIDACAO.md) · [Recursos a substituir](docs/RECURSOS_A_SUBSTITUIR.md) · [Próximos passos](docs/PROXIMOS_PASSOS.md)
 
 Universo, bairros, grupos e personagens são inventados. O jogo não descreve procedimentos de crimes reais.
