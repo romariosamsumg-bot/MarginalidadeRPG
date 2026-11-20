@@ -66,7 +66,7 @@ function resumo(g: GameState) {
   return jail(s) + `
   <div class="eyebrow">Temporada ${s.season} · Dia ${s.day} de ${MAXDAY}</div>
   <h1>${esc(s.name)}</h1>
-  <p class="lead">Natural de ${esc(s.city)} · mora na Vila do Dique (Rio de Janeiro) · atua em ${esc(R.district(s).name)} · ${R.standing(s)} · Nível ${R.level(s)}</p>
+  <p class="lead">Natural ${s.city === 'Rio de Janeiro' || s.city === 'Recife' ? 'do' : 'de'} ${esc(s.city)} · mora na Vila do Dique (Rio de Janeiro) · atua em ${esc(R.district(s).name)} · ${R.standing(s)} · Nível ${R.level(s)}</p>
   <div class="stats">
     <div class="stat"><span>Em mãos</span><strong>${format(s.cash)}</strong></div>
     <div class="stat"><span>Banco</span><strong>${format(s.bank)}</strong></div>

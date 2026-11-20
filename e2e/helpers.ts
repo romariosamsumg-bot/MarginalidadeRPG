@@ -62,6 +62,8 @@ async function approach(page: Page, id: string, touch: boolean, done: () => Prom
   const vp = page.viewportSize()!;
   for (let i = 0; i < 30; i++) {
     if (await done()) return true;
+    // Tocou em outra coisa (ex.: a TV) e abriu uma conversa curta: fecha como o jogador faria.
+    if ((await st(page))?.story.activeDialogue || await page.evaluate(() => (window as any).__MRPG__.menu())) { await page.keyboard.press('Escape'); await page.waitForTimeout(200); continue; }
     const pos = await page.evaluate(t => (window as any).__MRPG__.screenOf(t), id);
     const me = await page.evaluate(() => (window as any).__MRPG__.screenOf('player'));
     if (process.env.E2E_DEBUG) console.log('approach', id, i, JSON.stringify(pos), JSON.stringify(await player(page)));

@@ -14,9 +14,11 @@ Submundo Brasil v0.4 (missões, treino, banco, negócios, gangue, facções, tem
 - O som começa desligado (regra dos navegadores): toque em **Ativar som** no título ou no ícone de som.
 
 ### Só tenho um celular — como abrir?
-1. Baixe `marginalidade-rpg-v0.1-build.zip` e extraia (no Android, o app "Arquivos" extrai ZIP).
-2. Navegadores bloqueiam módulos JavaScript abertos direto do armazenamento (`file://`). A forma mais simples é publicar a pasta extraída num hospedeiro estático gratuito (Netlify Drop, GitHub Pages, Cloudflare Pages): arraste a pasta `dist` no site e abra o link gerado no Chrome.
-3. Alternativa sem internet: um app de servidor HTTP local para Android (qualquer "simple HTTP server") apontando para a pasta `dist`, e abra `http://localhost:PORTA` no Chrome.
+1. Baixe **`marginalidade-rpg-v0.1.html`** (arquivo único, ~1,6 MB, com tudo embutido — não precisa de internet nem de servidor).
+2. No Android, abra o app **Arquivos**, toque no arquivo e escolha **Chrome**. (Verificado abrindo por `file://` no Chromium: carrega e inicia uma carreira sem erros.)
+3. Se o seu gerenciador de arquivos não oferecer o Chrome, publique a pasta do `marginalidade-rpg-v0.1-build.zip` num hospedeiro estático gratuito (Netlify Drop, GitHub Pages, Cloudflare Pages) e abra o link.
+
+O progresso fica salvo no próprio navegador. Use **Menu › Temporada › Exportar carreira** para guardar uma cópia.
 
 ## Desenvolver
 
