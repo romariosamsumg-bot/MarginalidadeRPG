@@ -26,3 +26,14 @@ export const PORTRAIT_ART: Record<string, string> = {
 export const PANORAMA = { noite: panoramaNoite, entardecer: panoramaEntardecer, width: 2150, height: 560, tower: { x: 1429, y: 29 } };
 
 export const CARD_ART: Record<string, string> = { vila: cardVila, encomenda: cardEncomenda, oficina_fechada: cardOficina };
+
+/**
+ * Folhas de sprites pintadas (Higgsfield), já no formato do jogo: 17 quadros de 160×264 px,
+ * 2 px por unidade lógica (ver scripts/sprites/process_sheet.py). A chave é o nome do arquivo
+ * (ex.: char_player0). Personagem sem folha pintada usa o boneco procedural.
+ */
+const spriteFiles = import.meta.glob('../assets/sprites/*.webp', { eager: true, import: 'default', query: '?url' }) as Record<string, string>;
+export const SPRITE_ART: Record<string, string> = Object.fromEntries(
+  Object.entries(spriteFiles).map(([path, url]) => [path.split('/').pop()!.replace('.webp', ''), url])
+);
+export const SPRITE_FRAME = { width: 160, height: 264, scale: 2 };

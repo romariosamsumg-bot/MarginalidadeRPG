@@ -21,11 +21,41 @@ Higgsfield antes de distribuir comercialmente.
 | `card_encomenda.jpg` | Fundo do cartão sobre Lia e Magrão | 2ceb72a3-620b-446c-b42e-9b9b8fd71bf5 | 1152×645 |
 | `card_oficina.jpg` | Fundo do cartão “Magrão não voltou.” | 3e969aaf-6916-4c30-9b0a-649759766a90 | 1152×645 |
 
-**Custo:** 13 gerações, 7,5 créditos (9 retratos × 0,5; panorama 2k × 1; variante 2k × 1; 2 ilustrações × 0,5).
+**Custo (1ª rodada):** 13 gerações, 7,5 créditos (9 retratos × 0,5; panorama 2k × 1; variante 2k × 1; 2 ilustrações × 0,5).
+
+## Personagens animados (2ª rodada)
+
+Folhas de sprites pintadas, geradas com o **retrato de cada personagem como referência de identidade**
+(GPT Image 2.6, 1k, 16:9, fundo transparente). Cada folha traz 8 quadros de caminhada de perfil e 4 poses
+(parado, parado 2, interagir, celular). `scripts/sprites/process_sheet.py` detecta os quadros pela
+transparência, normaliza a altura, alinha os pés na mesma linha, centraliza pelo tronco (o corpo não
+"balança" ao andar), gera a respiração do parado a partir de uma única pose e exporta no formato do
+jogo (17 quadros de 160×264 px). Depois convertemos para WebP (q88) — 1,6 MB para os 9 personagens.
+
+| Arquivo | Personagem | Job Higgsfield | Qualidade |
+|---|---|---|---|
+| `char_player0.webp` | Protagonista — aparência 1 | a9381437-6a1f-406e-a66f-b59dd32438fb | média (0,5) |
+| `char_player1.webp` | Protagonista — aparência 2 | bb4c7dc0-09b1-4b7d-8cd9-a9f9262214d1 | baixa (0,25) |
+| `char_player2.webp` | Protagonista — aparência 3 | e50098a7-0d24-41e0-8489-cbc221affcce | baixa |
+| `char_magrao.webp` | Magrão | ec5e5169-761f-46b4-9d41-f003be48644d | baixa |
+| `char_lia.webp` | Lia | a8cb610d-844f-4686-80dc-1700521e9479 | baixa |
+| `char_solange.webp` | Dona Solange | bceb7a98-0ca8-40b2-8e54-fa8c70563fa0 | baixa |
+| `char_miro.webp` | Miro | d06a9d57-79eb-44dc-a00e-b2f630255bd5 | baixa |
+| `char_nando.webp` | Nando | 32bae1ad-921e-4e2f-821d-b53565beecea | baixa |
+| `char_ze.webp` | Seu Zé | ff4e0df6-4a08-4d3c-9f4a-c14466fca3b3 | baixa |
+
+A qualidade baixa foi testada primeiro (Magrão) e ficou praticamente igual à média neste tamanho, o que
+permitiu cobrir os 9 personagens com o saldo disponível. **Custo:** 2,5 créditos. Os moradores anônimos
+reaproveitam as duas aparências do protagonista que o jogador não escolheu, com variação de tom.
+
+Para refazer/adicionar: gere a folha com o mesmo padrão de prompt (ver os jobs acima no Higgsfield),
+rode `python3 -I scripts/sprites/process_sheet.py folha.png src/assets/sprites/char_<id>.png` e converta
+para `.webp`. A chave `char_<id>` é detectada automaticamente (`src/art/assets.ts`).
+
+**Total gasto no projeto:** 10 créditos (saldo zerado).
 
 ## O que continua procedural (e por quê)
 - **Fachadas, chão, objetos sólidos e interior do bar**: precisam coincidir pixel a pixel com portas, colisões e pontos de interação (`src/world/layout.ts`). Uma ilustração gerada não garante essas posições; trocar exigiria arte feita sobre o gabarito do layout.
-- **Sprites animados dos personagens** (17 quadros cada): modelos de imagem não produzem ciclos de caminhada consistentes quadro a quadro.
 - **Luzes, fumaça, chuva**: efeitos em tempo real.
 
 ## Reserva

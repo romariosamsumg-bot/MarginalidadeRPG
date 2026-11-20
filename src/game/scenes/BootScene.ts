@@ -8,7 +8,7 @@ import { paintFacades, paintFar, paintGround, paintMid, paintMoon, paintSky, pai
 import { paintBarRoom } from '../../art/bar';
 import { paintProps } from '../../art/props';
 import { ctx } from '../context';
-import { PANORAMA } from '../../art/assets';
+import { PANORAMA, SPRITE_ART, SPRITE_FRAME } from '../../art/assets';
 
 export const artMeta: {
   facadeLights: Array<{ x: number; y: number; w: number; h: number; color?: string }>;
@@ -18,12 +18,15 @@ export const artMeta: {
   neon: { x: number; y: number; w: number; h: number };
   barLights: Array<{ x: number; y: number }>;
   tv: { x: number; y: number; w: number; h: number };
-} = { facadeLights: [], farLights: [], midLights: [], puddles: [], neon: { x: 0, y: 0, w: 0, h: 0 }, barLights: [], tv: { x: 0, y: 0, w: 0, h: 0 } };
+  sheetScale: Record<string, number>;
+} = { facadeLights: [], farLights: [], midLights: [], puddles: [], neon: { x: 0, y: 0, w: 0, h: 0 }, barLights: [], tv: { x: 0, y: 0, w: 0, h: 0 }, sheetScale: {} };
 
 export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
   private addSheet(key: string, spec: CharSpec) {
+    // Folha pintada já carregada no preload: usa ela (escala própria) em vez do boneco procedural.
+    if (this.textures.exists(key) && SPRITE_ART[key]) { artMeta.sheetScale[key] = SPRITE_FRAME.scale; return; }
     const s = ctx().artScale;
     const canvas = paintSheet(spec, s);
     const tex = this.textures.addCanvas(key, canvas);
@@ -37,6 +40,9 @@ export class BootScene extends Phaser.Scene {
     this.load.on('loaderror', (f: { key: string }) => console.warn('[boot] arte não carregou, usando procedural:', f.key));
     this.load.image('panorama_noite', PANORAMA.noite);
     this.load.image('panorama_entardecer', PANORAMA.entardecer);
+    for (const [key, url] of Object.entries(SPRITE_ART)) {
+      this.load.spritesheet(key, url, { frameWidth: SPRITE_FRAME.width, frameHeight: SPRITE_FRAME.height });
+    }
   }
 
   create() {

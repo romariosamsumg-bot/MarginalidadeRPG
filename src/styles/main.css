@@ -97,9 +97,9 @@ button:disabled { opacity: .42; cursor: not-allowed; }
 .who img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--amber); display: block; }
 .who .meta { min-width: 0; }
 .who strong { display: block; font-size: .9em; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 30vw; }
-.minibars { display: flex; gap: 6px; margin-top: 4px; }
-.mb { width: 46px; }
-.mb span { display: block; font: 700 8.5px var(--mono); color: var(--muted); letter-spacing: .06em; }
+.minibars { display: flex; gap: 12px; margin-top: 4px; }
+.mb { min-width: 48px; }
+.mb span { display: block; font: 700 8.5px var(--mono); color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
 .mb i { display: block; height: 4px; background: #2b3a40; border-radius: 2px; overflow: hidden; }
 .mb i b { display: block; height: 100%; background: var(--green); }
 .mb.heat i b { background: var(--red); }
@@ -257,7 +257,8 @@ button:disabled { opacity: .42; cursor: not-allowed; }
 }
 @media (max-width: 400px) {
   .who strong { max-width: 24vw; }
-  .mb { width: 38px; }
+  .mb { min-width: 42px; }
+  .minibars { gap: 10px; }
   .objective p { font-size: .76em; }
   .interact button.act { width: 76px; height: 76px; }
   .mission { grid-template-columns: 1fr; }

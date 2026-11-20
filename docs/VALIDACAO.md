@@ -10,7 +10,7 @@ Data: 20/11/2026. Todos os resultados abaixo são de execuções reais nesta ses
 | `npm run typecheck` (`tsc --noEmit`, modo estrito) | 0 erros |
 | `npm test` (Vitest) | **4 arquivos, 46 testes, 46 aprovados** |
 | `npm run build` | ok — `index` ≈ 74 KB gzip, `phaser` ≈ 357 KB gzip, CSS ≈ 5 KB gzip |
-| `npm run test:e2e` (Playwright, perfis `mobile-360` e `desktop`) | **12 aprovados, 2 pulados por design, 0 falhas** (9,8 min) |
+| `npm run test:e2e` (Playwright, perfis `mobile-360` e `desktop`) | **12 aprovados, 2 pulados por design, 0 falhas** (9,8 min, após a arte gerada e os sprites pintados) |
 
 Pulados por design: o teste de teclado roda só no desktop; o teste de joystick roda só no perfil de celular.
 
@@ -51,3 +51,7 @@ Esses números **não representam celulares reais** (que renderizam na GPU) e n�
 - Áudio audível: o teste confirma que o `AudioContext` só é criado após o gesto e que o mudo persiste, mas ninguém ouviu o som neste ambiente.
 - Retorno do app em segundo plano no Android (testado só o evento `blur`/`visibilitychange` lógico).
 - Leitores de tela (há rótulos ARIA e foco visível, sem teste com TalkBack/VoiceOver).
+
+## Atualização — arte gerada (Higgsfield)
+- Retratos, panorama, ilustrações e as folhas de sprites dos 9 personagens nomeados integrados. Unitários 46/46; e2e 12/12 aplicáveis; arquivo único abre por `file://` sem erros.
+- Uma intermitência apareceu no fluxo completo em 360×780 (2 de 4 execuções): a rota do "tocar para ir" passava por cima da Lia parada na frente de casa. Corrigido (pessoas paradas agora entram como obstáculos no A\*); a suíte completa voltou a passar.

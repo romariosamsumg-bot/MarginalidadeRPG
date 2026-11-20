@@ -57,7 +57,7 @@ class Actor {
   face(dir: 1 | -1) { this.facing = dir; this.sprite.setFlipX(dir < 0); }
   place(x: number, y: number) {
     const s = this.scene.perspective(y);
-    this.sprite.setPosition(x, y).setScale(s / ctx().artScale).setDepth(y);
+    this.sprite.setPosition(x, y).setScale(s / (artMeta.sheetScale[this.key] ?? ctx().artScale)).setDepth(y);
     this.shadow.setPosition(x, y + 1).setScale(s * 0.9, s).setDepth(y - 0.5);
   }
   get x() { return this.sprite.x; }
@@ -332,13 +332,24 @@ export class WorldScene extends Phaser.Scene {
     this.layers.push({ img: fg as unknown as Phaser.GameObjects.Image, f: 1.12, ox: -200, oy: 950 });
     // Pedestres (rotinas simples, sem IA custosa)
     if (this.mode === 'play' || this.mode === 'attract') {
-      const chatA = new Pedestrian(this, 'char_ped0', 1328, 712, 712, 0, true); chatA.face(1);
-      const chatB = new Pedestrian(this, 'char_ped1', 1392, 716, 716, 0, true); chatB.face(-1);
+      // Moradores anônimos: usam as aparências pintadas que o jogador NÃO escolheu (com variação de tom);
+      // sem arte pintada, caem nos bonecos procedurais.
+      const chosen = this.state()?.profile.appearance ?? 0;
+      const painted = [0, 1, 2].filter(a => a !== chosen).map(a => `char_player${a}`).filter(k => artMeta.sheetScale[k]);
+      const TONES = [0xffffff, 0xffffff, 0xc9d3dc, 0xe2c9b0, 0xb8c6b8];
+      const ped = (i: number, x: number, y: number, lane: number, speed: number, chat = false) => {
+        const key = painted.length ? painted[i % painted.length]! : `char_ped${i % 3}`;
+        const p = new Pedestrian(this, key, x, y, lane, speed, chat);
+        if (painted.length && i >= painted.length) p.sprite.setTint(TONES[i % TONES.length]!);
+        return p;
+      };
+      const chatA = ped(0, 1328, 712, 712, 0, true); chatA.face(1);
+      const chatB = ped(1, 1392, 716, 716, 0, true); chatB.face(-1);
       chatA.balloon = this.add.image(1328, 590, 'balao').setDepth(DEPTH.ui - 1).setScale(0.8);
       this.peds.push(chatA, chatB);
-      this.peds.push(new Pedestrian(this, 'char_ped2', 200, 884, 884, 62));
-      if (q !== 'baixa') this.peds.push(new Pedestrian(this, 'char_ped0', 2500, 900, 900, -48));
-      this.extraPed = new Pedestrian(this, 'char_ped1', 2900, 860, 860, -70);
+      this.peds.push(ped(2, 200, 884, 884, 62));
+      if (q !== 'baixa') this.peds.push(ped(3, 2500, 900, 900, -48));
+      this.extraPed = ped(4, 2900, 860, 860, -70);
       this.peds.push(this.extraPed);
     }
     this.buildRain();
@@ -715,7 +726,11 @@ export class WorldScene extends Phaser.Scene {
   /** Rota A* da posição atual até (x, y), evitando colisores (inclui a viatura quando visível). */
   private route(x: number, y: number) {
     if (!this.player) return null;
-    const boxes = obstacles(this.layout, [], !!this.viatura?.img.visible);
+    // Pessoas paradas também bloqueiam a rota (o personagem contorna em vez de empurrar).
+    const people = [...this.npcs.values(), ...this.peds.filter(p => !p.hidden && p.speed === 0)]
+      .filter(a => Math.hypot(a.x - x, a.y - y) > 40)
+      .map(a => ({ x: a.x - 14, y: a.y - 10, w: 28, h: 14 }));
+    const boxes = obstacles(this.layout, people, !!this.viatura?.img.visible);
     return findPath(this.layout, { x: this.player.x, y: this.player.y }, { x, y }, boxes);
   }
 
