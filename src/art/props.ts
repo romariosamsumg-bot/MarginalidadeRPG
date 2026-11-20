@@ -24,7 +24,6 @@ export function paintProps(): Tex {
     poly(g, [64, 22, 88, 18, 86, 30, 66, 32], '#2a2f30', INK, 2.5);
     g.fillStyle = '#ffe2a0'; g.fillRect(68, 29, 16, 4);
     rect(g, 32, 368, 26, 22, '#565d5b', INK, 2.5);
-    signText(g, '', 0, 0, 1, '#000');
     t.poste = c;
   }
   { // moto

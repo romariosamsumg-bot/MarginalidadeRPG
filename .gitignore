@@ -5,3 +5,5 @@ playwright-report/
 release/
 *.log
 .DS_Store
+release/
+dist-single/
