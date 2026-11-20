@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Submundo Brasil | B��blia Narrativa 1.0</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+<style>
+:root{color-scheme:dark;--bg:#0d1821;--surface:#132631;--ink:#e9eeec;--muted:#a5b7bd;--accent:#e0a14c;--line:#324752}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;padding:0 18px 72px;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-wrap:break-word}body>header,body>main,body>nav,body>section{max-width:820px;margin-left:auto;margin-right:auto}main{max-width:820px;margin:auto}h1,h2,h3,h4{line-height:1.25;letter-spacing:-.025em}h1{font-size:clamp(1.8rem,5vw,2.45rem);margin:2.6rem 0 1rem;color:var(--accent)}h2{font-size:1.4rem;color:#e8b56f;margin-top:2rem}h3{font-size:1.16rem;color:#e5dad1}h4{font-size:1rem;color:var(--accent)}p,li{max-width:75ch}a{color:#f1be79}blockquote{margin:1.4rem 0;padding:.2rem 1.25rem;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 10px 10px 0;color:#d8e4e4}blockquote p{font-style:italic}strong{color:#f4eadc}hr{border:0;border-top:1px solid var(--line);margin:2rem 0}#toc-title{font-size:1rem;margin-top:0}nav#TOC{max-width:820px;margin:1.5rem auto 2rem;background:#182d39;border:1px solid var(--line);padding:18px;border-radius:13px}nav#TOC ul{padding-left:1.4rem;margin:.3rem 0}nav#TOC li{font-size:.88rem;margin:.25rem 0}table{width:100%;border-collapse:collapse;margin:18px 0 26px;font-size:.88rem;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}th,td{padding:9px 12px;border:1px solid var(--line);min-width:95px;vertical-align:top}th{background:#244355;text-align:left;color:#fff}tr:nth-child(even){background:#122632}pre{overflow:auto;background:#07131c;border:1px solid var(--line);padding:16px;border-radius:10px;font-size:.78rem}code{background:#233745;border-radius:3px;padding:0 .2rem}pre code{background:transparent;padding:0}ol,ul{padding-left:1.5rem}li{margin-bottom:.35rem}header#title-block-header{text-align:center;padding:35px 0 15px}header#title-block-header h1{color:#fff;font-weight:850;text-transform:uppercase;letter-spacing:.02em;margin:0}header#title-block-header .subtitle{color:var(--accent)}@media (max-width:500px){body{font-size:15.5px;padding:0 14px 50px}h1{font-size:1.8rem}h2{font-size:1.25rem}th,td{min-width:125px;padding:8px 9px}nav#TOC{padding:13px}pre{font-size:.71rem}}
+</style>
+
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Submundo Brasil | B��blia Narrativa 1.0</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#submundo-brasil" id="toc-submundo-brasil">SUBMUNDO
+BRASIL</a>
+<ul>
+<li><a href="#bíblia-narrativa-10" id="toc-bíblia-narrativa-10">BÍBLIA
+NARRATIVA 1.0</a></li>
+</ul></li>
+<li><a href="#1-visão-do-projeto" id="toc-1-visão-do-projeto">1. VISÃO
+DO PROJETO</a>
+<ul>
+<li><a href="#11-pilares-obrigatórios"
+id="toc-11-pilares-obrigatórios">1.1 Pilares obrigatórios</a></li>
+<li><a href="#12-tom-e-limites-editoriais"
+id="toc-12-tom-e-limites-editoriais">1.2 Tom e limites
+editoriais</a></li>
+</ul></li>
+<li><a href="#2-o-mundo-de-submundo-brasil"
+id="toc-2-o-mundo-de-submundo-brasil">2. O MUNDO DE SUBMUNDO BRASIL</a>
+<ul>
+<li><a href="#21-origem-vila-do-dique"
+id="toc-21-origem-vila-do-dique">2.1 Origem: Vila do Dique</a></li>
+<li><a href="#22-a-organização-central--união-da-linha"
+id="toc-22-a-organização-central--união-da-linha">2.2 A organização
+central — União da Linha</a></li>
+<li><a href="#23-outras-regiões-e-núcleos"
+id="toc-23-outras-regiões-e-núcleos">2.3 Outras regiões e
+núcleos</a></li>
+</ul></li>
+<li><a href="#3-personagem-do-jogador"
+id="toc-3-personagem-do-jogador">3. PERSONAGEM DO JOGADOR</a>
+<ul>
+<li><a href="#31-arco-interno" id="toc-31-arco-interno">3.1 Arco
+interno</a></li>
+<li><a href="#32-características-narrativas-invisíveis"
+id="toc-32-características-narrativas-invisíveis">3.2 Características
+narrativas invisíveis</a></li>
+</ul></li>
+<li><a href="#4-elenco-principal" id="toc-4-elenco-principal">4. ELENCO
+PRINCIPAL</a>
+<ul>
+<li><a href="#41-relações-persistentes"
+id="toc-41-relações-persistentes">4.1 Relações persistentes</a></li>
+</ul></li>
+<li><a href="#5-campanha-principal--cinco-atos"
+id="toc-5-campanha-principal--cinco-atos">5. CAMPANHA PRINCIPAL — CINCO
+ATOS</a>
+<ul>
+<li><a href="#ato-i--a-queda-dívida-dos-outros"
+id="toc-ato-i--a-queda-dívida-dos-outros">ATO I — A QUEDA: DÍVIDA DOS
+OUTROS</a></li>
+<li><a href="#ato-ii--a-ascensão-a-lei-da-rua"
+id="toc-ato-ii--a-ascensão-a-lei-da-rua">ATO II — A ASCENSÃO: A LEI DA
+RUA</a></li>
+<li><a href="#ato-iii--a-expansão-o-brasil-é-pequeno"
+id="toc-ato-iii--a-expansão-o-brasil-é-pequeno">ATO III — A EXPANSÃO: O
+BRASIL É PEQUENO</a></li>
+<li><a href="#ato-iv--o-sistema-os-donos-da-caneta"
+id="toc-ato-iv--o-sistema-os-donos-da-caneta">ATO IV — O SISTEMA: OS
+DONOS DA CANETA</a></li>
+<li><a href="#ato-v--o-comando-o-trono-de-concreto"
+id="toc-ato-v--o-comando-o-trono-de-concreto">ATO V — O COMANDO: O TRONO
+DE CONCRETO</a></li>
+</ul></li>
+<li><a href="#6-escolhas-que-importam"
+id="toc-6-escolhas-que-importam">6. ESCOLHAS QUE IMPORTAM</a></li>
+<li><a href="#7-finais-e-pós-campanha"
+id="toc-7-finais-e-pós-campanha">7. FINAIS E PÓS-CAMPANHA</a>
+<ul>
+<li><a href="#final-a--o-dono-de-tudo"
+id="toc-final-a--o-dono-de-tudo">Final A — O Dono de Tudo</a></li>
+<li><a href="#final-b--o-pacto" id="toc-final-b--o-pacto">Final B — O
+Pacto</a></li>
+<li><a href="#final-c--o-trono-vazio"
+id="toc-final-c--o-trono-vazio">Final C — O Trono Vazio</a></li>
+<li><a href="#final-d--a-última-saída"
+id="toc-final-d--a-última-saída">Final D — A Última Saída</a></li>
+</ul></li>
+<li><a href="#8-roteiro-jogável--capítulo-piloto"
+id="toc-8-roteiro-jogável--capítulo-piloto">8. ROTEIRO JOGÁVEL —
+CAPÍTULO PILOTO</a>
+<ul>
+<li><a href="#a1-m01--o-último-favor"
+id="toc-a1-m01--o-último-favor">A1-M01 — O Último Favor</a></li>
+<li><a href="#a1-m02--a-cobrança-cena-detalhada"
+id="toc-a1-m02--a-cobrança-cena-detalhada">A1-M02 — A Cobrança (cena
+detalhada)</a></li>
+<li><a href="#a1-m03--portas-fechadas"
+id="toc-a1-m03--portas-fechadas">A1-M03 — Portas Fechadas</a></li>
+<li><a href="#a1-m04--o-primeiro-serviço"
+id="toc-a1-m04--o-primeiro-serviço">A1-M04 — O Primeiro Serviço</a></li>
+<li><a href="#a1-m05--sangue-e-dívida"
+id="toc-a1-m05--sangue-e-dívida">A1-M05 — Sangue e Dívida</a></li>
+</ul></li>
+<li><a href="#9-experiência-mobile-first"
+id="toc-9-experiência-mobile-first">9. EXPERIÊNCIA MOBILE-FIRST</a></li>
+<li><a href="#10-arquitetura-narrativa--proposta-técnica"
+id="toc-10-arquitetura-narrativa--proposta-técnica">10. ARQUITETURA
+NARRATIVA — PROPOSTA TÉCNICA</a>
+<ul>
+<li><a href="#101-componentes-necessários"
+id="toc-101-componentes-necessários">10.1 Componentes
+necessários</a></li>
+<li><a href="#102-exemplo-de-dados-de-uma-escolha"
+id="toc-102-exemplo-de-dados-de-uma-escolha">10.2 Exemplo de dados de
+uma escolha</a></li>
+<li><a href="#103-persistência-proposta"
+id="toc-103-persistência-proposta">10.3 Persistência proposta</a></li>
+</ul></li>
+<li><a href="#11-balanceamento-e-progressão"
+id="toc-11-balanceamento-e-progressão">11. BALANCEAMENTO E
+PROGRESSÃO</a></li>
+<li><a href="#12-plano-de-implementação-em-fatias"
+id="toc-12-plano-de-implementação-em-fatias">12. PLANO DE IMPLEMENTAÇÃO
+EM FATIAS</a></li>
+<li><a href="#13-testes-de-aceitação"
+id="toc-13-testes-de-aceitação">13. TESTES DE ACEITAÇÃO</a></li>
+<li><a href="#14-decisões-que-ainda-precisam-de-validação"
+id="toc-14-decisões-que-ainda-precisam-de-validação">14. DECISÕES QUE
+AINDA PRECISAM DE VALIDAÇÃO</a></li>
+<li><a href="#anexo-a--resumo-executivo-para-a-equipe"
+id="toc-anexo-a--resumo-executivo-para-a-equipe">ANEXO A — RESUMO
+EXECUTIVO PARA A EQUIPE</a></li>
+</ul>
+</nav>
+<h1 id="submundo-brasil">SUBMUNDO BRASIL</h1>
+<h2 id="bíblia-narrativa-10">BÍBLIA NARRATIVA 1.0</h2>
+<h3 id="o-preço-do-poder">O PREÇO DO PODER</h3>
+<p><strong>Documento de concepção narrativa e integração com RPG de
+navegador</strong><br />
+<strong>Versão:</strong> 1.0 — proposta para validação<br />
+<strong>Data:</strong> 19 de novembro de 2026<br />
+<strong>Status:</strong> projeto editorial e técnico; <strong>nenhuma
+alteração aplicada ao código do jogo</strong></p>
+<blockquote>
+<p><strong>Frase-guia:</strong> “Todo império começa com uma escolha.
+Alguns começam com uma escolha que nunca deveria ter existido.”</p>
+</blockquote>
+<hr />
+<h1 id="1-visão-do-projeto">1. VISÃO DO PROJETO</h1>
+<p><strong>Submundo Brasil</strong> é um RPG de navegador brasileiro com
+progressão persistente, atividades recorrentes, atributos, facções,
+disputas e escolhas. A campanha <strong>O Preço do Poder</strong> deve
+dar sentido dramático a essa progressão sem transformar o jogo em uma
+aventura linear nem exigir gráficos 3D.</p>
+<p><strong>Logline.</strong> Um morador anônimo da Vila do Dique é
+responsabilizado por uma dívida fabricada após o desaparecimento de um
+amigo. Para proteger quem ama, entra numa organização criminosa. Anos
+depois, ao disputar o comando de uma facção de alcance nacional,
+descobre que a ameaça que iniciou sua trajetória foi uma mentira — e que
+agora ocupa o mesmo lugar dos homens que arruinaram sua vida.</p>
+<p><strong>Promessa ao jogador.</strong> Começar sem influência; criar
+vínculos, inimigos e uma reputação; descobrir um segredo que atravessa
+os cinco atos; chegar ao comando por diferentes trajetórias; conviver
+com o preço das próprias decisões.</p>
+<p><strong>Pergunta dramática central:</strong> quando a sobrevivência
+deixa de ser justificativa e o poder vira uma escolha?</p>
+<h2 id="11-pilares-obrigatórios">1.1 Pilares obrigatórios</h2>
+<ol type="1">
+<li><strong>Brasil reconhecível, universo fictício.</strong> Linguagem,
+conflitos sociais e instituições inspirados no país, mas bairros,
+facções e personagens inventados; nada de facções reais jogáveis ou
+figuras públicas reais.</li>
+<li><strong>Ascensão gradual.</strong> Passagem verossímil de
+pressionado a subordinado, liderança local, articulador regional e chefe
+de facção; saltos temporais explícitos entre atos.</li>
+<li><strong>Escolhas com memória.</strong> Uma decisão precisa
+reaparecer depois como diálogo, relação, oportunidade ou consequência,
+não só como número na interface.</li>
+<li><strong>Mundo maior que o protagonista.</strong> Personagens e
+regiões evoluem por eventos, mesmo quando o jogador se dedica às
+atividades tradicionais do RPG.</li>
+<li><strong>O custo humano é visível.</strong> Moradores, familiares,
+amigos, trabalhadores e instituições têm agência; o sofrimento não é
+enfeite ou prêmio.</li>
+<li><strong>Compatibilidade com o navegador.</strong> Telas curtas, arte
+2D, JSON/JavaScript, salvamento robusto, carregamento rápido e uso
+confortável no celular.</li>
+</ol>
+<h2 id="12-tom-e-limites-editoriais">1.2 Tom e limites editoriais</h2>
+<p>Thriller criminal brasileiro, adulto, tenso, humano, com diálogos
+naturais e humor pontual. A violência pode existir como consequência
+dramática, mas não precisa ser gráfica; evitar glamourização constante,
+estereótipos sobre moradores de periferia e explicações operacionais de
+crimes. O jogo não deve reproduzir regras reais de organizações
+criminosas, rotas, métodos de ocultação ou táticas de violência. Seu
+foco é personagem, conflitos e sistemas abstratos de RPG.</p>
+<p><strong>Estrutura dramática:</strong> origem → pressão → adesão →
+ascensão → revelação → comando → consequência.</p>
+<h1 id="2-o-mundo-de-submundo-brasil">2. O MUNDO DE SUBMUNDO BRASIL</h1>
+<h2 id="21-origem-vila-do-dique">2.1 Origem: Vila do Dique</h2>
+<p>Bairro fictício da região metropolitana do Rio de Janeiro. Possui
+comércio, trabalho informal e formal, uma quadra, escola, bar, oficina,
+mercearia, famílias e associações de moradores. Não é “território de
+criminosos”: é uma comunidade plural onde a influência armada prejudica
+vidas comuns.</p>
+<p><strong>Locais narrativos:</strong> Bar do Nando (primeira cobrança),
+Oficina 24 (memórias de Magrão), Mercearia da Dona Solange (perspectiva
+dos moradores), Casa de Lia (núcleo familiar), Praça da Passarela
+(encontros e rumores) e Mirante do Dique (imagem recorrente para medir a
+transformação do protagonista).</p>
+<h2 id="22-a-organização-central--união-da-linha">2.2 A organização
+central — União da Linha</h2>
+<p><strong>Nome de trabalho:</strong> União da Linha. Facção
+<strong>inteiramente fictícia</strong>, com liderança dividida, células
+regionais e contradições internas. A narrativa aborda hierarquia,
+alianças, medo, pertencimento, disputas e influência social de forma
+dramática, <strong>não operacional</strong>.</p>
+<p>A organização nunca é completamente controlada por uma única pessoa.
+Quanto mais o protagonista cresce, mais descobre que o poder depende de
+relações, legitimidade interna e circunstâncias fora de seu alcance.</p>
+<h2 id="23-outras-regiões-e-núcleos">2.3 Outras regiões e núcleos</h2>
+<p>Os capítulos podem explorar cidades previstas para o universo
+narrativo, mediante confirmação da estrutura real do projeto. Nenhuma
+inclusão abaixo é alegação de que a cidade já esteja implementada no
+código.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Cidade</th>
+<th>Tema narrativo</th>
+<th>Núcleos fictícios / conflito</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rio de Janeiro</td>
+<td>Origem, território, família</td>
+<td>União da Linha; Vila do Dique; antigos aliados</td>
+</tr>
+<tr class="even">
+<td>São Paulo</td>
+<td>Ambição e interesses econômicos</td>
+<td>Irmandade da Ladeira, Consórcio dos Galpões e Rede Garoa</td>
+</tr>
+<tr class="odd">
+<td>Belo Horizonte</td>
+<td>Confiança e suspeita</td>
+<td>Uma aliança aparentemente estável se desfaz</td>
+</tr>
+<tr class="even">
+<td>Salvador</td>
+<td>Autonomia regional</td>
+<td>Lideranças locais resistem à interferência externa</td>
+</tr>
+<tr class="odd">
+<td>Recife</td>
+<td>Lealdade e mudança de lado</td>
+<td>Um aliado antigo enfrenta uma escolha difícil</td>
+</tr>
+<tr class="even">
+<td>Porto Alegre</td>
+<td>Pactos e velhas rivalidades</td>
+<td>Velhos do Mercado, Turma do Guaíba e Rede Minuano</td>
+</tr>
+</tbody>
+</table>
+<p>As facções de São Paulo e Porto Alegre acima preservam nomes
+fictícios já trabalhados na direção criativa da conversa. Antes de
+integrar ao jogo, validar nomes, direitos de uso das artes e existência
+de equivalentes no projeto.</p>
+<h1 id="3-personagem-do-jogador">3. PERSONAGEM DO JOGADOR</h1>
+<p>O jogador define nome, retrato e informações básicas. Não há origem
+fixa que contradiga sua personalização. O passado mínimo compartilhado
+é: mora ou morou na Vila do Dique, conhece Magrão há anos e mantém um
+vínculo familiar ou afetivo relevante.</p>
+<h2 id="31-arco-interno">3.1 Arco interno</h2>
+<ul>
+<li><strong>Ato I — “Eu preciso sair dessa.”</strong> O personagem se vê
+como vítima de uma situação maior.</li>
+<li><strong>Ato II — “Não vou obedecer para sempre.”</strong> Descobre
+que consegue influenciar pessoas.</li>
+<li><strong>Ato III — “Posso ser maior do que eles.”</strong> A ambição
+se mistura à autodefesa.</li>
+<li><strong>Ato IV — “Tudo começou com uma mentira.”</strong> Percebe o
+custo de sua trajetória.</li>
+<li><strong>Ato V — “O que farei com o poder?”</strong> A escolha final
+é sobre o tipo de líder que se tornou.</li>
+</ul>
+<h2 id="32-características-narrativas-invisíveis">3.2 Características
+narrativas invisíveis</h2>
+<p><strong>Lealdade</strong> — cumprir compromissos, proteger aliados,
+admitir erros.<br />
+<strong>Ambição</strong> — priorizar influência e posição, mesmo sob
+custo pessoal.<br />
+<strong>Humanidade</strong> — reconhecer consequências sobre quem não
+participa do conflito.</p>
+<p>Essas características <strong>não</strong> substituem atributos de
+combate ou economia. Devem ser registradas como variáveis narrativas
+internas, preferencialmente sem barras públicas ou “nota de moral”.
+Valores exatos e nomenclatura devem ser revisados na auditoria do
+jogo.</p>
+<h1 id="4-elenco-principal">4. ELENCO PRINCIPAL</h1>
+<table>
+<thead>
+<tr class="header">
+<th>Personagem</th>
+<th>Função dramática</th>
+<th>Desejo</th>
+<th>Contradição / evolução</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Miro Ferrugem</strong></td>
+<td>Primeiro antagonista; chefia local</td>
+<td>Manter sua posição</td>
+<td>Usa medo para esconder fragilidade; o responsável pela falsa
+cobrança</td>
+</tr>
+<tr class="even">
+<td><strong>Breno “Magrão”</strong></td>
+<td>Amigo desaparecido e mistério central</td>
+<td>Sobreviver e recuperar a própria vida</td>
+<td>Seus segredos o tornam menos inocente do que parecia</td>
+</tr>
+<tr class="odd">
+<td><strong>Vânia Cinza</strong></td>
+<td>Mentora, aliada condicional, possível rival</td>
+<td>Provar que é a liderança mais competente</td>
+<td>Ensina a negociar, mas não abdica da própria ambição</td>
+</tr>
+<tr class="even">
+<td><strong>Lia</strong></td>
+<td>Vínculo familiar do protagonista</td>
+<td>Preservar autonomia e segurança</td>
+<td>Não existe apenas para ser resgatada; pode impor limites e se
+afastar</td>
+</tr>
+<tr class="odd">
+<td><strong>Jonas Tranca</strong></td>
+<td>Representante da velha liderança</td>
+<td>Preservar prestígio e influência</td>
+<td>Trata pessoas como peças, mas também teme ser esquecido</td>
+</tr>
+<tr class="even">
+<td><strong>Otávio Valença</strong></td>
+<td>Empresário influente e oportunista</td>
+<td>Proteger interesses e reputação</td>
+<td>Prefere acordos a conflitos; abandona aliados quando lhe convém</td>
+</tr>
+<tr class="odd">
+<td><strong>Dona Solange</strong></td>
+<td>Comerciária; perspectiva da comunidade</td>
+<td>Manter o bairro habitável</td>
+<td>Pode reconhecer boas ações sem legitimar a violência</td>
+</tr>
+<tr class="even">
+<td><strong>Helena Paiva</strong></td>
+<td>Investigadora persistente</td>
+<td>Esclarecer uma série de crimes</td>
+<td>Não é invencível nem corrupta por padrão; enfrenta limites
+institucionais</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regra de escrita:</strong> cada personagem recorrente deve
+ter voz própria, objetivo independente do protagonista, uma informação
+que oculta e uma mudança perceptível até o fim da campanha. Evitar
+transformar personagens femininas em recompensas ou meros instrumentos
+de sofrimento.</p>
+<h2 id="41-relações-persistentes">4.1 Relações persistentes</h2>
+<p>Os vínculos principais podem assumir estados narrativos como
+<strong>confiança</strong>, <strong>distância</strong>,
+<strong>conflito</strong> ou <strong>rompimento</strong>; não é
+necessário expor números ao jogador. Uma variável pode alterar uma fala
+de 2 linhas hoje e o resultado de uma missão 30 sessões depois.</p>
+<h1 id="5-campanha-principal--cinco-atos">5. CAMPANHA PRINCIPAL — CINCO
+ATOS</h1>
+<p>A proposta-base contém <strong>25 missões centrais</strong>, cinco
+por ato. Essa quantidade é uma meta editorial inicial, não uma obrigação
+de implementação integral. O RPG deve funcionar entre as missões; a
+história não substitui a rotina de evolução.</p>
+<h2 id="ato-i--a-queda-dívida-dos-outros">ATO I — A QUEDA: DÍVIDA DOS
+OUTROS</h2>
+<p><strong>Tema:</strong> sobrevivência, injustiça, primeiro
+compromisso.<br />
+<strong>Escala:</strong> quarteirão e bairro.<br />
+<strong>Revelação:</strong> o personagem foi escolhido para assumir o
+problema de outra pessoa.<br />
+<strong>Estado final:</strong> entra formalmente na órbita da União da
+Linha.</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Missão</th>
+<th>Função narrativa</th>
+<th>Saída prevista</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A1-M01</td>
+<td>O Último Favor</td>
+<td>Magrão deixa uma encomenda e desaparece</td>
+<td>Primeiro mistério e vínculo pessoal</td>
+</tr>
+<tr class="even">
+<td>A1-M02</td>
+<td>A Cobrança</td>
+<td>Miro atribui uma dívida ao protagonista</td>
+<td>Primeira decisão com memória</td>
+</tr>
+<tr class="odd">
+<td>A1-M03</td>
+<td>Portas Fechadas</td>
+<td>O protagonista procura ajuda; encontra medo e limites</td>
+<td>Apresenta Lia e Solange</td>
+</tr>
+<tr class="even">
+<td>A1-M04</td>
+<td>O Primeiro Serviço</td>
+<td>Tarefa ambígua e pressão; consequências pessoais</td>
+<td>Primeiro contato com a organização</td>
+</tr>
+<tr class="odd">
+<td>A1-M05</td>
+<td>Sangue e Dívida</td>
+<td>Crise local e acusação injusta</td>
+<td>Decisão de permanecer, com motivações distintas</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Clímax:</strong> Miro oferece uma posição após uma crise que
+ele mesmo ajudou a provocar. A escolha do jogador não é “entrar ou não
+entrar no jogo”: é <strong>como o personagem interpreta e atravessa sua
+entrada</strong>, com efeitos reais sobre os vínculos e o rumo da
+história.</p>
+<h2 id="ato-ii--a-ascensão-a-lei-da-rua">ATO II — A ASCENSÃO: A LEI DA
+RUA</h2>
+<p><strong>Tema:</strong> pertencimento, autoridade, primeiros abusos de
+poder.<br />
+<strong>Escala:</strong> bairro e áreas vizinhas.<br />
+<strong>Estado final:</strong> liderança local reconhecida, mas
+contestada.</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Missão</th>
+<th>Função narrativa</th>
+<th>Saída prevista</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A2-M01</td>
+<td>Nome na Rua</td>
+<td>Um gesto antigo vira reputação pública</td>
+<td>Introduz reputação narrativa</td>
+</tr>
+<tr class="even">
+<td>A2-M02</td>
+<td>A Voz de Vânia</td>
+<td>Vânia propõe uma solução diferente da de Miro</td>
+<td>Mentor e tensão interna</td>
+</tr>
+<tr class="odd">
+<td>A2-M03</td>
+<td>A Pessoa Errada</td>
+<td>Ordem de Miro afeta alguém que ajudou o jogador</td>
+<td>Escolha moral importante</td>
+</tr>
+<tr class="even">
+<td>A2-M04</td>
+<td>Conselho Fechado</td>
+<td>Divergências entre lideranças vêm à tona</td>
+<td>Relações reagem ao histórico</td>
+</tr>
+<tr class="odd">
+<td>A2-M05</td>
+<td>A Queda de Miro</td>
+<td>Crise de liderança e disputa de legitimidade</td>
+<td>Protagonista assume a área</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Clímax:</strong> o protagonista ganha aquilo que desejava no
+começo — deixar de receber ordens de Miro —, mas começa a responder por
+decisões que afetam outras pessoas.</p>
+<h2 id="ato-iii--a-expansão-o-brasil-é-pequeno">ATO III — A EXPANSÃO: O
+BRASIL É PEQUENO</h2>
+<p><strong>Tema:</strong> ambição, diferença regional, acordos
+frágeis.<br />
+<strong>Escala:</strong> várias cidades.<br />
+<strong>Estado final:</strong> influência supraregional e descoberta de
+que Magrão está vivo.</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Missão</th>
+<th>Função narrativa</th>
+<th>Saída prevista</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A3-M01</td>
+<td>Fora de Casa</td>
+<td>Primeiro contato com lideranças externas</td>
+<td>Novo patamar de relações</td>
+</tr>
+<tr class="even">
+<td>A3-M02</td>
+<td>A Palavra Dada</td>
+<td>Um acordo antigo retorna como cobrança</td>
+<td>Testa memória de escolhas</td>
+</tr>
+<tr class="odd">
+<td>A3-M03</td>
+<td>Amigos de Ocasião</td>
+<td>Rivalidade entre núcleos regionais</td>
+<td>Oportunidades e perdas variáveis</td>
+</tr>
+<tr class="even">
+<td>A3-M04</td>
+<td>O Encontro</td>
+<td>Reunião entre interesses incompatíveis</td>
+<td>Ruptura regional</td>
+</tr>
+<tr class="odd">
+<td>A3-M05</td>
+<td>Um Homem Vivo</td>
+<td>Indício confiável sobre Magrão</td>
+<td>Grande virada do mistério</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nota de design:</strong> permitir ordem variável de histórias
+regionais, mas manter marcos de continuidade: “fora de casa” antes de “o
+encontro”; “o encontro” antes de “um homem vivo”.</p>
+<h2 id="ato-iv--o-sistema-os-donos-da-caneta">ATO IV — O SISTEMA: OS
+DONOS DA CANETA</h2>
+<p><strong>Tema:</strong> aparência e realidade, corrupção, mentiras
+fundadoras.<br />
+<strong>Escala:</strong> relações entre poder econômico, institucional e
+facções.<br />
+<strong>Estado final:</strong> a cadeira de comando fica em disputa.</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Missão</th>
+<th>Função narrativa</th>
+<th>Saída prevista</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A4-M01</td>
+<td>A Mesa Limpa</td>
+<td>Otávio oferece uma aliança politicamente conveniente</td>
+<td>Mostra interesses fora da rua</td>
+</tr>
+<tr class="even">
+<td>A4-M02</td>
+<td>Voz de Dentro</td>
+<td>Jonas entra no conflito de sucessão</td>
+<td>Velha liderança se manifesta</td>
+</tr>
+<tr class="odd">
+<td>A4-M03</td>
+<td>Cara a Cara</td>
+<td>Reencontro com Magrão</td>
+<td>Revela a falsa dívida</td>
+</tr>
+<tr class="even">
+<td>A4-M04</td>
+<td>A Primeira Mentira</td>
+<td>Provas sobre a manipulação de Miro</td>
+<td>Muda o sentido do prólogo</td>
+</tr>
+<tr class="odd">
+<td>A4-M05</td>
+<td>A Cadeira Vazia</td>
+<td>Colapso das alianças existentes</td>
+<td>Disputa do comando nacional</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Revelação central:</strong> a dívida do primeiro ato foi
+fabricada por Miro para esconder uma crise interna. Magrão tinha
+informação comprometedora, mas também tomou decisões pelas quais precisa
+responder. A origem do personagem é recontextualizada; nada apaga as
+decisões tomadas depois.</p>
+<h2 id="ato-v--o-comando-o-trono-de-concreto">ATO V — O COMANDO: O TRONO
+DE CONCRETO</h2>
+<p><strong>Tema:</strong> legitimidade, solidão, herança e
+responsabilidade.<br />
+<strong>Escala:</strong> organização nacional.<br />
+<strong>Estado final:</strong> o protagonista chega ao comando e
+enfrenta o dia seguinte.</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Missão</th>
+<th>Função narrativa</th>
+<th>Saída prevista</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A5-M01</td>
+<td>Os Que Ficaram</td>
+<td>Aliados antigos decidem se permanecem</td>
+<td>Converte relações em consequências</td>
+</tr>
+<tr class="even">
+<td>A5-M02</td>
+<td>Vozes da União</td>
+<td>Lideranças contestam a sucessão</td>
+<td>Crise de legitimidade</td>
+</tr>
+<tr class="odd">
+<td>A5-M03</td>
+<td>O Acerto de Contas</td>
+<td>Confronto emocional com a origem da trajetória</td>
+<td>Resolucão de Miro/Magrão/Lia</td>
+</tr>
+<tr class="even">
+<td>A5-M04</td>
+<td>A Última Reunião</td>
+<td>Escolha do modelo de comando</td>
+<td>Define condição do final</td>
+</tr>
+<tr class="odd">
+<td>A5-M05</td>
+<td>O Dia Seguinte</td>
+<td>Epílogo jogável com nova crise</td>
+<td>Final e início do pós-campanha</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Última imagem:</strong> do alto, o protagonista observa o
+bairro onde vivia. O telefone toca: um rapaz sem influência foi
+envolvido num problema que não compreende. Pedem uma decisão ao novo
+chefe. A câmera corta antes da resposta. O começo retorna, agora
+invertido.</p>
+<h1 id="6-escolhas-que-importam">6. ESCOLHAS QUE IMPORTAM</h1>
+<p>Não escrever três campanhas inteiras. Usar <strong>ramificações
+controladas</strong>: a cena principal avança, mas reações, vínculos,
+recursos, informações e consequências variam.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Decisão</th>
+<th>Efeito imediato</th>
+<th>Retorno futuro previsto</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Negociar, enfrentar ou aceitar a cobrança de Miro</td>
+<td>Muda o tratamento de Miro</td>
+<td>Vânia comenta sua postura no Ato II</td>
+</tr>
+<tr class="even">
+<td>Procurar Lia ou ocultar o problema</td>
+<td>Altera confiança familiar</td>
+<td>Lia comparece ou se afasta em crise do Ato IV</td>
+</tr>
+<tr class="odd">
+<td>Defender a pessoa apontada por Miro</td>
+<td>Gera risco e tensão interna</td>
+<td>Testemunho ou auxílio narrativo no Ato V</td>
+</tr>
+<tr class="even">
+<td>Apoiar Vânia ou insistir em autonomia</td>
+<td>Aliança ganha/ perde força</td>
+<td>Vânia sustenta ou contesta o comando</td>
+</tr>
+<tr class="odd">
+<td>Honrar ou romper um pacto regional</td>
+<td>Relação muda</td>
+<td>Apoio político-narrativo na sucessão</td>
+</tr>
+<tr class="even">
+<td>Acreditar ou desconfiar de Magrão</td>
+<td>Informação é recebida de modo diferente</td>
+<td>Muda o reencontro e o epílogo</td>
+</tr>
+<tr class="odd">
+<td>Aceitar ou rejeitar oferta de Otávio</td>
+<td>Diferentes pressões e dependências</td>
+<td>Modifica a estabilidade do comando</td>
+</tr>
+<tr class="even">
+<td>Reagir à revelação com vingança, prudência ou exposição</td>
+<td>Define atitudes do protagonista</td>
+<td>Restringe ou abre certos desfechos</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Garantia de justiça:</strong> a campanha nunca deve exigir
+que o jogador tenha escolhido “a opção certa” 30 sessões antes. Caso uma
+relação esteja rompida, oferecer outra rota crível, com custo narrativo
+distinto.</p>
+<h1 id="7-finais-e-pós-campanha">7. FINAIS E PÓS-CAMPANHA</h1>
+<p>O personagem <strong>alcança o comando</strong> nos desfechos
+principais; a variação é o preço, a natureza e a estabilidade desse
+comando.</p>
+<h2 id="final-a--o-dono-de-tudo">Final A — O Dono de Tudo</h2>
+<p>Comanda pelo medo. Tem influência e recursos, mas poucos vínculos
+genuínos. Seu êxito é instável e solitário. <strong>Tema:</strong> poder
+sem confiança.</p>
+<h2 id="final-b--o-pacto">Final B — O Pacto</h2>
+<p>Lidera por acordos e relações, sem controlar completamente as
+ambições regionais. <strong>Tema:</strong> poder compartilhado é forte,
+mas vulnerável.</p>
+<h2 id="final-c--o-trono-vazio">Final C — O Trono Vazio</h2>
+<p>Conquista a liderança durante uma ruptura grave; pouco depois, perde
+a liberdade. A organização continua sem ele. <strong>Tema:</strong>
+ninguém é indispensável.</p>
+<h2 id="final-d--a-última-saída">Final D — A Última Saída</h2>
+<p>Depois de alcançar o topo, escolhe sair e colaborar com o
+esclarecimento de parte dos acontecimentos. Não recebe absolvição
+automática: enfrenta processos, perdas e limites permanentes.
+<strong>Tema:</strong> consequência não é redenção fácil.</p>
+<p><strong>Pós-campanha:</strong> no caso de finais que permitem
+continuar no comando, abrir a fase <strong>O Comando</strong>. Nos
+outros, oferecer um epílogo jogável apropriado ou continuar no modo
+livre com regras narrativas explícitas; nunca inventar uma continuidade
+que contradiga a conclusão da história.</p>
+<h1 id="8-roteiro-jogável--capítulo-piloto">8. ROTEIRO JOGÁVEL —
+CAPÍTULO PILOTO</h1>
+<h2 id="a1-m01--o-último-favor">A1-M01 — O Último Favor</h2>
+<p><strong>Local:</strong> Oficina 24, fim de tarde. <strong>Duração
+pretendida:</strong> 2–4 minutos.<br />
+<strong>Objetivo:</strong> estabelecer o vínculo com Magrão e introduzir
+a encomenda sem dar ao jogador uma tarefa criminal realista ou
+operacional.</p>
+<p><strong>Abertura.</strong> Uma moto passa. A oficina está fechando.
+Magrão se aproxima nervoso, tentando disfarçar.</p>
+<p><strong>Magrão:</strong> “Preciso te pedir uma parada. Só hoje.
+Amanhã eu volto e resolvo.”<br />
+<strong>Protagonista:</strong> “Desde quando tu fala desse jeito
+comigo?”<br />
+<strong>Magrão:</strong> “Desde que eu fiquei sem muita escolha.”</p>
+<p><strong>Decisões:</strong></p>
+<ol type="1">
+<li><strong>Perguntar o que aconteceu.</strong> Magrão desvia do
+assunto. Registro: <code>asked_magrao_truth = true</code>.</li>
+<li><strong>Aceitar ajudar por amizade.</strong> Magrão reconhece o
+gesto. Registro: <code>magrao_initial_trust = true</code>.</li>
+<li><strong>Recusar participar.</strong> Magrão deixa o local; o
+protagonista ainda é citado falsamente no conflito. Registro:
+<code>refused_package = true</code>.</li>
+</ol>
+<p><strong>Regra:</strong> a história não deve punir o jogador por
+recusar. A falsa cobrança de Miro sustenta o acontecimento seguinte de
+maneira coerente, mas os diálogos reconhecem a recusa.</p>
+<p><strong>Fecho.</strong> A tela mostra uma mensagem sem resposta.
+“Magrão não voltou.”</p>
+<h2 id="a1-m02--a-cobrança-cena-detalhada">A1-M02 — A Cobrança (cena
+detalhada)</h2>
+<p><strong>Local:</strong> Bar do Nando, 23h40.
+<strong>Personagens:</strong> protagonista e Miro.
+<strong>Objetivo:</strong> primeiro conflito de escolhas e memória de
+longo prazo.</p>
+<p><strong>ABERTURA</strong></p>
+<p><em>O bar está quase vazio. O ventilador range. Nando evita olhar
+para a porta. Miro puxa uma cadeira sem pedir licença.</em></p>
+<p><strong>MIRO:</strong> “Teu amigo sumiu. E deixou problema.”<br />
+<strong>PROTAGONISTA:</strong> “Não sei onde ele tá.”<br />
+<strong>MIRO:</strong> “Não foi isso que eu perguntei.”<br />
+<strong>PROTAGONISTA:</strong> “Então pergunta direito.”<br />
+<strong>MIRO:</strong> “Quero saber se tu vai resolver ou se vai fingir
+que nada aconteceu.”</p>
+<p><strong>ESCOLHA 1 — Tentar negociar</strong><br />
+<strong>PROTAGONISTA:</strong> “Me dá tempo. Eu descubro o que
+aconteceu.”<br />
+<strong>MIRO:</strong> “Tempo é a única coisa que ninguém aqui tem de
+sobra.”<br />
+Registro: <code>miro_first_response = 'negociar'</code>; Miro passa a
+considerar a pessoa calculista. Nenhuma dívida monetária é debitada
+nessa cena.</p>
+<p><strong>ESCOLHA 2 — Enfrentar Miro verbalmente</strong><br />
+<strong>PROTAGONISTA:</strong> “Você tá me cobrando por uma coisa que
+nem explica.”<br />
+<strong>MIRO:</strong> “Olha só. Tem coragem. Vamos ver se tem juízo
+também.”<br />
+Registro: <code>miro_first_response = 'enfrentar'</code>; relação com
+Miro se deteriora. <strong>Não</strong> criar vantagem garantida de
+força por apertar uma opção.</p>
+<p><strong>ESCOLHA 3 — Aceitar conversar depois</strong><br />
+<strong>PROTAGONISTA:</strong> “Eu volto amanhã. A gente conversa sem
+plateia.”<br />
+<strong>MIRO:</strong> “Amanhã, então. Eu não gosto de repetir
+recado.”<br />
+Registro: <code>miro_first_response = 'adiar'</code>; Miro interpreta
+como submissão provisória.</p>
+<p><strong>FECHO COMUM</strong></p>
+<p><em>Nando baixa o volume da televisão. Miro se levanta.</em><br />
+<strong>MIRO:</strong> “Uma hora a verdade aparece. Até lá, é bom tu não
+sumir também.”</p>
+<p><strong>RETORNO FUTURO (A2-M02):</strong> Vânia adapta a primeira
+conversa conforme a resposta. Exemplos:</p>
+<ul>
+<li>Negociar: “Miro disse que tu pediu tempo. Gente que pensa antes de
+falar às vezes vive mais.”</li>
+<li>Enfrentar: “Miro não esqueceu da resposta atravessada. Aqui, memória
+é uma coisa perigosa.”</li>
+<li>Adiar: “Tu deixou ele acreditar que mandava em tudo. Isso também
+pode ser uma escolha.”</li>
+</ul>
+<h2 id="a1-m03--portas-fechadas">A1-M03 — Portas Fechadas</h2>
+<p><strong>Local:</strong> Casa de Lia e Mercearia de Solange.<br />
+<strong>Objetivo:</strong> mostrar que as relações pessoais estão
+mudando. O jogador escolhe <strong>contar a verdade
+parcialmente</strong> a Lia ou <strong>esconder o conflito</strong>.
+Solange oferece informação humana, não uma solução milagrosa.<br />
+<strong>Saída:</strong> <code>lia_informed</code> ou
+<code>lia_kept_out</code>; <code>solange_met</code>.</p>
+<h2 id="a1-m04--o-primeiro-serviço">A1-M04 — O Primeiro Serviço</h2>
+<p><strong>Local:</strong> encontro em ambiente urbano, sem descrição
+tática.<br />
+<strong>Objetivo:</strong> cumprir ou contestar uma demanda de Miro por
+meio de um evento narrativo abstrato do RPG, com risco e consequência;
+não ensinar procedimentos reais.<br />
+<strong>Saída:</strong> primeiro vínculo oficial com o núcleo local;
+relação com Vânia começa a ser possível.</p>
+<h2 id="a1-m05--sangue-e-dívida">A1-M05 — Sangue e Dívida</h2>
+<p><strong>Local:</strong> Vila do Dique, durante crise local
+desencadeada por acusações e uma investigação.<br />
+<strong>Objetivo:</strong> fechar o prólogo e mostrar que o protagonista
+não controla os acontecimentos.<br />
+<strong>Clímax:</strong> Miro oferece um lugar na organização,
+apresentando a adesão como “única saída”.<br />
+<strong>Escolha de atitude:</strong> aceitar com ressentimento; aceitar
+para tentar proteger pessoas próximas; aceitar com ambição.<br />
+<strong>Saída:</strong> desbloquear Ato II, sem bloquear a jogabilidade
+livre.</p>
+<h1 id="9-experiência-mobile-first">9. EXPERIÊNCIA MOBILE-FIRST</h1>
+<p><strong>Referência de interface:</strong> RPG de navegador, 360 px de
+largura como caso crítico de validação, cards claros e transições
+rápidas.</p>
+<p><strong>Tela “História”:</strong> mostrar ato atual, título da
+missão, resumo de 2 linhas, botão <strong>Continuar história</strong> e
+histórico resumido de decisões importantes. Evitar contadores
+promocionais e excesso de barras.</p>
+<p><strong>Tela de cena:</strong> imagem horizontal (arte 2D), nome do
+local, nome de quem fala, texto em blocos curtos, até 3 opções por
+decisão. Nenhuma imagem deve conter textos obrigatórios para
+acessibilidade.</p>
+<p><strong>Arte já alinhada ao universo:</strong> graphic novel
+brasileira; azul-petróleo, âmbar e vermelho; traço grosso; sombras
+duras; concreto gasto. Cenas em torno de 1200 × 600; retratos e avatares
+quadrados de 512 × 512 quando apropriado. Esses tamanhos são
+<strong>referências de produção</strong>, sujeitos a otimização web.</p>
+<p><strong>Acessibilidade:</strong> bom contraste; opção de reduzir
+animações; botões com áreas confortáveis; leitura sem limite de tempo;
+funcionamento com teclado e leitores de tela, quando suportado pela
+aplicação.</p>
+<h1 id="10-arquitetura-narrativa--proposta-técnica">10. ARQUITETURA
+NARRATIVA — PROPOSTA TÉCNICA</h1>
+<p><strong>Atenção:</strong> sem acesso ao repositório, nomes de
+atributos, funções, rotas e formato real do save permanecem <strong>não
+verificados</strong>. Não editar o projeto original sem auditoria.</p>
+<h2 id="101-componentes-necessários">10.1 Componentes necessários</h2>
+<ol type="1">
+<li><strong>Catálogo de conteúdo:</strong> capítulos e cenas
+versionados, em JSON ou formato equivalente.</li>
+<li><strong>Avaliador de condições:</strong> verifica progresso,
+escolhas anteriores e requisitos; apenas lê valores permitidos do
+jogo.</li>
+<li><strong>Executor de efeitos:</strong> aplica alterações autorizadas
+(flags, relações e recompensas via APIs existentes); ações
+idempotentes.</li>
+<li><strong>Persistência:</strong> salva missão atual, escolhas, versões
+e histórico mínimo; permite migração de saves.</li>
+<li><strong>Interface narrativa:</strong> uma seção e um componente de
+cena; não duplicar cabeçalho, navegação nem tela de personagem.</li>
+<li><strong>Validador automático:</strong> detecta IDs repetidos,
+caminhos sem saída, destinos inexistentes e recompensas indevidas.</li>
+</ol>
+<h2 id="102-exemplo-de-dados-de-uma-escolha">10.2 Exemplo de dados de
+uma escolha</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sceneId&quot;</span><span class="fu">:</span> <span class="st">&quot;A1-M02-bar-cobranca&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;textKey&quot;</span><span class="fu">:</span> <span class="st">&quot;a1_m02_miro_pergunta&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;choices&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;negociar&quot;</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Tentar negociar&quot;</span><span class="fu">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;effects&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fu">{</span> <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;setFlag&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;miro_first_response&quot;</span><span class="fu">,</span> <span class="dt">&quot;value&quot;</span><span class="fu">:</span> <span class="st">&quot;negociar&quot;</span> <span class="fu">}</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;nextSceneId&quot;</span><span class="fu">:</span> <span class="st">&quot;A1-M02-fecho&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;enfrentar&quot;</span><span class="fu">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Enfrentar verbalmente&quot;</span><span class="fu">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;effects&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fu">{</span> <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;setFlag&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;miro_first_response&quot;</span><span class="fu">,</span> <span class="dt">&quot;value&quot;</span><span class="fu">:</span> <span class="st">&quot;enfrentar&quot;</span> <span class="fu">}</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;nextSceneId&quot;</span><span class="fu">:</span> <span class="st">&quot;A1-M02-fecho&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;adiar&quot;</span><span class="fu">,</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Aceitar conversar depois&quot;</span><span class="fu">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;effects&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fu">{</span> <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;setFlag&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;miro_first_response&quot;</span><span class="fu">,</span> <span class="dt">&quot;value&quot;</span><span class="fu">:</span> <span class="st">&quot;adiar&quot;</span> <span class="fu">}</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;nextSceneId&quot;</span><span class="fu">:</span> <span class="st">&quot;A1-M02-fecho&quot;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Contrato de segurança do motor:</strong> o conteúdo narrativo
+não executa JavaScript arbitrário; tipos de efeito pertencem a uma lista
+permitida; todo efeito de recurso financeiro passa pelo mecanismo
+oficial de economia do jogo; uma escolha confirmada não pode receber
+recompensa novamente após recarregamento.</p>
+<h2 id="103-persistência-proposta">10.3 Persistência proposta</h2>
+<p>Campos ilustrativos: <code>storyVersion</code>,
+<code>currentAct</code>, <code>currentMissionId</code>,
+<code>completedMissionIds</code>, <code>storyFlags</code>,
+<code>relationships</code>, <code>appliedEffectIds</code> e
+<code>storyEventHistory</code> limitado. Nunca sobrescrever dados
+existentes do jogo por conveniência.</p>
+<p><strong>Save existente:</strong> entrar no mundo livre sem obrigar o
+usuário a refazer o início. Definir em auditoria uma estratégia segura
+de ingresso na campanha, sem falsificar decisões passadas. Fazer cópia
+do save antes de migrações.</p>
+<h1 id="11-balanceamento-e-progressão">11. BALANCEAMENTO E
+PROGRESSÃO</h1>
+<p>A campanha não é um segundo sistema econômico. Deve respeitar as
+escalas existentes de poder, energia, saúde, recuperação, vício,
+recompensa e evolução.</p>
+<p><strong>Regras iniciais:</strong></p>
+<ul>
+<li>Evitar grind narrativo: requisitos de missão devem ser compatíveis
+com uma progressão comum, não com extremos de atributos.</li>
+<li>Recompensas em dinheiro/XP seguem a economia do jogo e só são
+definidas após simulação; nesta bíblia, <strong>não há números
+prometidos</strong>.</li>
+<li>Opções de diálogo não geram atributos de combate por si sós.</li>
+<li>Falhas levam a consequências ou alternativas; nunca a um bloqueio
+permanente sem saída.</li>
+<li>Eventos em segundo plano devem ser discretos, previsíveis e não
+causar punições arbitrárias pela simples ausência do jogador.</li>
+<li>Vício e saúde recebem tratamento cuidadoso, sem obrigar consumo ou
+penalizar pessoas por condições pessoais.</li>
+<li>Dificuldade cresce por complexidade de relações e escolhas, não
+apenas por multiplicação de inimigos.</li>
+</ul>
+<h1 id="12-plano-de-implementação-em-fatias">12. PLANO DE IMPLEMENTAÇÃO
+EM FATIAS</h1>
+<table>
+<thead>
+<tr class="header">
+<th>Fase</th>
+<th>Entrega</th>
+<th>Critério de conclusão</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0. Auditoria</td>
+<td>Mapear código, saves, atividades, economia, navegação e assets</td>
+<td>Relatório do que existe e dos pontos seguros de integração</td>
+</tr>
+<tr class="even">
+<td>1. Motor isolado</td>
+<td>Cena, opções, flags, condições e gravação</td>
+<td>Teste automático de persistência e repetição</td>
+</tr>
+<tr class="odd">
+<td>2. Piloto A1-M01/A1-M02</td>
+<td>Duas cenas integradas ao jogo, com uma consequência tardia
+demonstrável</td>
+<td>Fluxo completo e retomada após fechar navegador</td>
+</tr>
+<tr class="even">
+<td>3. Prólogo inteiro</td>
+<td>Cinco missões com artes, falas e estados</td>
+<td>Ato I concluível por rotas distintas, sem softlock</td>
+</tr>
+<tr class="odd">
+<td>4. Expansão</td>
+<td>Atos II a V em incrementos testados</td>
+<td>Continuidade coerente, finais validados e economia preservada</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Estratégia:</strong> usar branch/cópia experimental; não
+reconstruir mecânicas existentes; confirmar versão publicada antes de
+qualquer merge. O documento não afirma que as fases foram
+implementadas.</p>
+<h1 id="13-testes-de-aceitação">13. TESTES DE ACEITAÇÃO</h1>
+<ul>
+<li>As cinco missões do prólogo têm início, conclusão e retorno ao RPG
+livre.</li>
+<li>Sair/reabrir o navegador preserva cada escolha confirmada.</li>
+<li>Recarregar a página não duplica recompensas nem dispara um evento
+pela segunda vez.</li>
+<li>Recusar a encomenda na missão 1 é reconhecido nas missões 2 e
+3.</li>
+<li>A primeira resposta a Miro altera pelo menos uma fala de Vânia no
+Ato II.</li>
+<li>Toda condição de desbloqueio possui uma forma alcançável de
+satisfazê-la.</li>
+<li>Nenhum final depende de uma escolha secreta impossível de
+conhecer.</li>
+<li>Saves anteriores continuam acessíveis depois da atualização.</li>
+<li>Em tela de 360 px, texto e botões não são cortados e a rolagem é
+confortável.</li>
+<li>Baixa conectividade não faz uma decisão ser aplicada duas
+vezes.</li>
+<li>A experiência não apresenta organizações reais como facções jogáveis
+nem instruções práticas de crime.</li>
+</ul>
+<h1 id="14-decisões-que-ainda-precisam-de-validação">14. DECISÕES QUE
+AINDA PRECISAM DE VALIDAÇÃO</h1>
+<ol type="1">
+<li><strong>Nome da facção central:</strong> “União da Linha” é
+provisório; verificar conflitos com facções já existentes no jogo.</li>
+<li><strong>Cidades realmente implementadas:</strong> cruzar a lista
+narrativa com o código e escolher o menor conjunto viável para a
+primeira versão.</li>
+<li><strong>Tipo de save:</strong> local, servidor ou híbrido; isso muda
+a arquitetura de sincronização.</li>
+<li><strong>Personagem inicial:</strong> validar liberdade de nome,
+retrato e histórico básico, evitando impor características que não
+existem no cadastro atual.</li>
+<li><strong>Canonicidade dos finais:</strong> decidir como o modo livre
+continuará em cada desfecho sem negar os fatos da campanha.</li>
+<li><strong>Classificação indicativa e políticas de conteúdo:</strong>
+avaliar conforme a apresentação final do jogo.</li>
+</ol>
+<hr />
+<h1 id="anexo-a--resumo-executivo-para-a-equipe">ANEXO A — RESUMO
+EXECUTIVO PARA A EQUIPE</h1>
+<p><strong>O que criar:</strong> uma campanha de thriller criminal
+brasileiro em cinco atos, com personagens recorrentes, decisões
+persistentes, revelação central, quatro finais e pós-campanha.</p>
+<p><strong>O que não criar agora:</strong> reconstrução do RPG, mundo
+3D, simulador detalhado de organizações reais, economia paralela, 25
+missões codificadas de uma vez.</p>
+<p><strong>Primeiro produto verificável:</strong> protótipo isolado das
+missões “O Último Favor” e “A Cobrança”, capaz de lembrar uma escolha e
+demonstrar seu retorno em uma cena posterior.</p>
+<p><strong>Condição para avançar:</strong> auditoria do jogo existente,
+compatibilidade de saves, manutenção do balanceamento e teste real em
+celular.</p>
+<p><strong>Linha emocional:</strong> “Eu preciso sair dessa” → “Ninguém
+mais vai mandar em mim” → “Posso ser maior do que eles” → “Tudo começou
+com uma mentira” → “Como eu me tornei isso?”</p>
+<p><strong>Fecho:</strong> conquistar o topo é o objetivo do personagem.
+Descobrir o que ele se tornou é a experiência do jogador.</p>
+</body>
+</html>
