@@ -33,3 +33,8 @@ Decisões não críticas tomadas sem bloquear o início, conforme o prompt mestr
 - Durante uma cena única, ações de carreira ficam bloqueadas (evita estados cruzados).
 - Clique duplo: escolhas exigem o ID do nó atual; botões de painel ignoram repetição em 350 ms.
 - Sem PWA na v0.1: não anunciamos instalação nem cache offline garantido. Depois de carregado, o jogo não faz nenhuma requisição de rede.
+
+## Tocar para ir
+- O "tocar numa pessoa/lugar" usa **A\* em grade de 16 px** sobre a área caminhável, com colisores inflados pela pegada do personagem e suavização por linha de visada (`src/world/path.ts`, testado em `tests/path.test.ts`). As primeiras versões (linha reta, depois desvios heurísticos) travavam em mesas e na moto — achado dos testes e2e.
+- Toque curto (< 260 ms, < 12 px) na zona do joystick vale como toque no mapa; arrastar continua sendo joystick. Sem isso, pessoas e lugares no canto inferior esquerdo da tela ficavam inacessíveis por toque.
+- O Nando atende do outro lado do balcão (raio de interação maior).
