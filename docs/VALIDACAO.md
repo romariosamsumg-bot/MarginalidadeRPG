@@ -60,3 +60,10 @@ Esses números **não representam celulares reais** (que renderizam na GPU) e n�
 - Sintoma (relatado no celular): parado ao lado da Lia, o personagem não andava em nenhuma direção.
 - Causa: a separação entre jogador e NPCs usava `body.reset()`, que zera a velocidade; com arredondamento, a separação disparava a cada quadro e prendia o jogador.
 - Correção: empurra só a posição e remove apenas o componente do movimento em direção ao NPC. Reproduzido antes (0 px em 4 direções) e depois (116–157 px). Teste e2e de regressão adicionado; suíte: 14 aprovados, 0 falhas.
+
+## Ato I completo (A1-M03 a A1-M05)
+- Unitários: **53 aprovados** (+7 do Ato I): rota completa com memória; esconder de Lia (ela sai e volta, Solange comenta); opção do carro prata só para quem ouviu Solange; "agora não" com Miro não conclui a cena; serviço bloqueado sem energia; teste de risco determinístico por semente, com os dois desfechos aparecendo em 12 sementes e chance sempre entre 15 e 90%; pagamento não duplica com recarga; recarregar no meio da crise retoma o mesmo nó.
+- Saves de teste do Ato I (`e2e/fixtures/a1-*.json`) são gerados pelo próprio motor (`GEN_FIXTURES=1 npx vitest run tests/fixtures.gen.test.ts`), nunca editados à mão.
+- e2e novos (360×780 por toque e 1366×768 por mouse): domingo em casa → interior → conversa com Lia → volta para a rua; crise no bar → investigadora (opção do carro prata visível) → Miro → cartão "Fim do Ato I".
+- Achado do e2e no celular: ao entrar em casa, o sofá ocupa a borda esquerda da tela estreita e o toque ali abria "Descansar" em vez de andar até Lia. Correção: **tocar na seta laranja do objetivo leva o personagem até ele**.
+- Capturas conferidas: interior da casa com Lia na cozinha, Miro no Mural da Passarela, viatura em frente ao bar durante a crise, fim do ato. Nenhum erro de página.

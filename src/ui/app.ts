@@ -794,7 +794,10 @@ export class App {
       /** Posição em px CSS de um alvo do mapa (para testes de toque). */
       screenOf: (id: string) => {
         const w = this.handle?.world(); if (!w) return null;
-        const it = id === 'player' && w.player ? { id, x: w.player.x, y: w.player.y + 40 } : (w as unknown as { interactables(): Array<{ id: string; x: number; y: number }> }).interactables().find(i => i.id === id);
+        const ww = w as unknown as { interactables(): Array<{ id: string; x: number; y: number }>; arrow?: { visible: boolean; x: number; y: number } };
+        const it = id === 'player' && w.player ? { id, x: w.player.x, y: w.player.y + 40 }
+          : id === 'arrow' ? (ww.arrow?.visible ? { id, x: ww.arrow.x, y: ww.arrow.y + 40 } : undefined)
+          : ww.interactables().find(i => i.id === id);
         if (!it) return null;
         const cam = w.cameras.main, ds = this.handle!.game.scale.displayScale;
         return { x: (it.x - cam.worldView.x) * cam.zoom / ds.x, y: (it.y - 40 - cam.worldView.y) * cam.zoom / ds.y };

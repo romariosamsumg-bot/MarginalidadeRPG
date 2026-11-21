@@ -68,7 +68,13 @@ async function approach(page: Page, id: string, touch: boolean, done: () => Prom
     const me = await page.evaluate(() => (window as any).__MRPG__.screenOf('player'));
     if (process.env.E2E_DEBUG) console.log('approach', id, i, JSON.stringify(pos), JSON.stringify(await player(page)));
     let x = pos?.x ?? vp.width / 2, y = pos?.y ?? vp.height / 2;
-    if (x < 24 || x > vp.width - 24) { x = x < 24 ? 24 : vp.width - 24; y = Math.min(vp.height - 20, Math.max(80, me?.y ?? vp.height * 0.7)); }
+    if (x < 24 || x > vp.width - 24) {
+      // Alvo fora da tela: toca na seta do objetivo, se ela apontar para lá; senão, no chão na direção dele.
+      const arrow = await page.evaluate(() => (window as any).__MRPG__.screenOf('arrow'));
+      const sameSide = arrow && (x < 24) === (arrow.x < vp.width / 2);
+      if (sameSide && i % 2 === 0) { x = arrow.x; y = arrow.y; }
+      else { x = x < 24 ? 24 : vp.width - 24; y = Math.min(vp.height - 20, Math.max(80, me?.y ?? vp.height * 0.7)); }
+    }
     if (touch) await page.touchscreen.tap(x, y); else await page.mouse.click(x, y);
     const t0 = Date.now();
     await page.waitForTimeout(300);

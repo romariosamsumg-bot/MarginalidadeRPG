@@ -138,6 +138,8 @@ export class WorldScene extends Phaser.Scene {
   ring!: Phaser.GameObjects.Image;
   marker!: Phaser.GameObjects.Image;
   arrow!: Phaser.GameObjects.Image;
+  /** Alvo para onde a seta de objetivo aponta (tocar na seta leva até ele). */
+  arrowTarget: TargetId | null = null;
   dyn: Record<string, Phaser.GameObjects.GameObject & { setVisible(v: boolean): unknown }> = {};
   viatura?: { img: Phaser.GameObjects.Image; zone: Phaser.GameObjects.Zone; lights: Phaser.GameObjects.Image[]; baseX: number };
   rain?: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -716,6 +718,7 @@ export class WorldScene extends Phaser.Scene {
     let id: TargetId | null = obj?.target as TargetId | null ?? null;
     if (obj && obj.area && obj.area !== this.area) id = (EXIT_TO[this.area]?.[obj.area] ?? null) as TargetId | null;
     const t = id ? this.findTarget(id) : null;
+    this.arrowTarget = null;
     if (!t || s.story.activeDialogue) { this.marker.setVisible(false); this.arrow.setVisible(false); return; }
     const v = this.view, inset = 30;
     const onScreen = t.x > v.x && t.x < v.x + v.w && t.markerY > v.y && t.markerY < v.y + v.h;
@@ -729,6 +732,7 @@ export class WorldScene extends Phaser.Scene {
       const ang = Math.atan2(t.y - 80 - cy, t.x - cx);
       const ax = Phaser.Math.Clamp(t.x, v.x + inset, v.x + v.w - inset), ay = Phaser.Math.Clamp(t.y - 80, v.y + inset + 60, v.y + v.h - inset - 80);
       this.arrow.setVisible(true).setPosition(ax, ay).setRotation(ang).setScale(1 / Math.max(0.6, this.cameras.main.zoom) * 0.9);
+      this.arrowTarget = id;
     }
   }
 
@@ -744,7 +748,10 @@ export class WorldScene extends Phaser.Scene {
   tapWorld(wx: number, wy: number) {
     if (this.mode !== 'play' || !this.player || input.blocked || this.cutscene || this.transitioning || this.state()?.story.activeDialogue) return;
     let hit: InteractDef | null = null, bd = Infinity;
-    for (const it of this.interactables()) {
+    // Tocar na seta do objetivo (alvo fora da tela) leva até ele — no celular a tela é estreita.
+    const reach = 46 / Math.max(0.6, this.cameras.main.zoom);
+    if (this.arrow.visible && this.arrowTarget && Math.hypot(wx - this.arrow.x, wy - this.arrow.y) < reach) hit = this.findTarget(this.arrowTarget);
+    if (!hit) for (const it of this.interactables()) {
       const inBox = it.npc ? (Math.abs(wx - it.x) < 34 && wy < it.y + 8 && wy > it.y - 140) : Math.hypot(wx - it.x, wy - (it.y - 50)) < 80;
       if (inBox) { const d = Math.hypot(wx - it.x, wy - it.y); if (d < bd) { bd = d; hit = it; } }
     }
