@@ -220,3 +220,20 @@ test('modo de compatibilidade Canvas e modo painéis sem gráficos', async ({ pa
   await page.goto('/?e2e=1&renderer=none');
   await expect(page.locator('.notice.error', { hasText: 'Mapa indisponível' })).toBeVisible();
 });
+
+test('não trava encostado em um NPC (regressão: personagem parado colado na Lia)', async ({ page }, info) => {
+  const touch = info.project.name.startsWith('mobile');
+  await boot(page);
+  await page.locator('#importFile').setInputFiles(new URL('./fixtures/colado-na-lia.json', import.meta.url).pathname);
+  await page.getByRole('button', { name: 'Importar', exact: true }).click();
+  await page.waitForFunction(() => (window as any).__MRPG__.player() !== null);
+  await page.waitForTimeout(800);
+  const dirs: Array<[number, number, string]> = [[1, 0, 'KeyD'], [-1, 0, 'KeyA'], [0, 1, 'KeyS']];
+  for (const [dx, dy, key] of dirs) {
+    const a = await player(page);
+    if (touch) await joystick(page, dx, dy, 700);
+    else { await page.keyboard.down(key); await page.waitForTimeout(700); await page.keyboard.up(key); }
+    const b = await player(page);
+    expect(Math.hypot(b.x - a.x, b.y - a.y), `andar ${key}`).toBeGreaterThan(30);
+  }
+});

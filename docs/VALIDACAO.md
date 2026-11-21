@@ -55,3 +55,8 @@ Esses números **não representam celulares reais** (que renderizam na GPU) e n�
 ## Atualização — arte gerada (Higgsfield)
 - Retratos, panorama, ilustrações e as folhas de sprites dos 9 personagens nomeados integrados. Unitários 46/46; e2e 12/12 aplicáveis; arquivo único abre por `file://` sem erros.
 - Uma intermitência apareceu no fluxo completo em 360×780 (2 de 4 execuções): a rota do "tocar para ir" passava por cima da Lia parada na frente de casa. Corrigido (pessoas paradas agora entram como obstáculos no A\*); a suíte completa voltou a passar.
+
+## Correção — personagem travado encostado em NPC
+- Sintoma (relatado no celular): parado ao lado da Lia, o personagem não andava em nenhuma direção.
+- Causa: a separação entre jogador e NPCs usava `body.reset()`, que zera a velocidade; com arredondamento, a separação disparava a cada quadro e prendia o jogador.
+- Correção: empurra só a posição e remove apenas o componente do movimento em direção ao NPC. Reproduzido antes (0 px em 4 direções) e depois (116–157 px). Teste e2e de regressão adicionado; suíte: 14 aprovados, 0 falhas.

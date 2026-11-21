@@ -623,15 +623,20 @@ export class WorldScene extends Phaser.Scene {
   /** Separação simples entre o protagonista e personagens (sem física completa). */
   private separate() {
     if (!this.player || !this.feet) return;
+    const body = this.feet.body as Phaser.Physics.Arcade.Body;
     const others: Actor[] = [...this.npcs.values(), ...this.peds.filter(p => !p.hidden)];
     for (const o of others) {
       const dx = this.feet.x - o.x, dy = (this.feet.y + 7 - o.y) * 1.8, d = Math.hypot(dx, dy), min = 24;
-      if (d > 0.01 && d < min) {
-        const push = (min - d) / d;
-        const body = this.feet.body as Phaser.Physics.Arcade.Body;
-        const nx = this.feet.x + dx * push, ny = this.feet.y + (dy / 1.8) * push;
-        body.reset(nx, ny);
-      }
+      if (d >= min) continue;
+      // Direção para fora (se estiverem exatamente sobrepostos, sai para o lado em que está virado).
+      const nx = d > 0.01 ? dx / d : this.player.facing, ny = d > 0.01 ? dy / d : 0;
+      // Empurra só a POSIÇÃO (não usa body.reset, que zerava a velocidade e prendia o jogador).
+      this.feet.x += nx * (min - d);
+      this.feet.y += (ny * (min - d)) / 1.8;
+      // Remove apenas a parte do movimento que vai na direção do NPC; para os lados e para longe segue livre.
+      const vx = body.velocity.x, vy = body.velocity.y * 1.8;
+      const dot = vx * nx + vy * ny;
+      if (dot < 0) body.velocity.set(vx - dot * nx, (vy - dot * ny) / 1.8);
     }
   }
 
