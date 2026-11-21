@@ -9,7 +9,8 @@ import { esc } from './dom';
 import { CARD_ART } from '../art/assets';
 
 export const SPEAKER_NAMES: Record<string, string> = {
-  magrao: 'Breno “Magrão”', lia: 'Lia', solange: 'Dona Solange', miro: 'Miro Ferrugem', nando: 'Nando', ze: 'Seu Zé'
+  magrao: 'Breno “Magrão”', lia: 'Lia', solange: 'Dona Solange', miro: 'Miro Ferrugem', nando: 'Nando', ze: 'Seu Zé',
+  helena: 'Helena Paiva', vania: 'Vânia Cinza'
 };
 
 export interface DialogueDeps {

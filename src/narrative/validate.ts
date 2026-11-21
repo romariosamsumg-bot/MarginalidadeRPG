@@ -27,6 +27,10 @@ export function validateScenes(scenes: Scene[]): string[] {
         if (!(EFFECT_TYPES as readonly string[]).includes(e.type)) errors.push(`${where}: efeito não permitido ${(e as { type: string }).type}`);
         if (e.type === 'respect' && !scene.once) errors.push(`${where}: recompensa em cena repetível`);
         if (e.type === 'respect' && (e.amount <= 0 || e.amount > 10)) errors.push(`${where}: recompensa fora da escala`);
+        if (e.type === 'cash' && !scene.once) errors.push(`${where}: dinheiro em cena repetível`);
+        if (e.type === 'cash' && (e.amount <= 0 || e.amount > 1000)) errors.push(`${where}: pagamento fora da escala da economia`);
+        if (e.type === 'energy' && e.delta > 0) errors.push(`${where}: diálogo não pode dar energia`);
+        if (e.type === 'check' && !scene.once) errors.push(`${where}: teste de risco em cena repetível`);
         if ((e.type === 'mission') && !missionIds.has(e.id)) errors.push(`${where}: missão desconhecida ${e.id}`);
         if ((e.type === 'stage') && !missionIds.has(e.mission)) errors.push(`${where}: missão desconhecida ${e.mission}`);
         if (e.type === 'stage' || (e.type === 'mission' && e.stage)) {
@@ -52,6 +56,7 @@ export function validateScenes(scenes: Scene[]): string[] {
       if (n.choices) {
         const ids = new Set<string>();
         for (const c of n.choices) {
+          if (c.defer && c.next !== 'END') errors.push(`${where}/${c.id}: adiar exige next END`);
           if (ids.has(c.id)) errors.push(`${where}: opção duplicada ${c.id}`);
           ids.add(c.id);
           checkEffects(c.effects, `${where}/${c.id}`);

@@ -11,7 +11,8 @@ export const GAME_ID = 'marginalidade_rpg';
 export const SCHEMA_VERSION = 1;
 export const STORY_VERSION = 1;
 
-export type AreaId = 'vila' | 'bar';
+export type AreaId = 'vila' | 'bar' | 'casa';
+export const AREA_IDS: AreaId[] = ['vila', 'bar', 'casa'];
 export type Appearance = 0 | 1 | 2;
 
 export interface Relationship { trust: number; state: RelationState }
@@ -126,7 +127,7 @@ export function validateGameState(obj: unknown): ValidationResult {
   if (obj.schema > SCHEMA_VERSION) return { ok: false, reason: 'Este save foi criado por uma versão mais nova do jogo.' };
   if (!validateRpg(obj.rpg)) return { ok: false, reason: 'Dados de carreira inválidos.' };
   if (!(HOME_CITIES as readonly string[]).includes(obj.rpg.city)) return { ok: false, reason: 'Cidade de origem desconhecida.' };
-  if (!isObj(obj.world) || !['vila', 'bar'].includes(obj.world.area) || !Number.isFinite(obj.world.x) || !Number.isFinite(obj.world.y))
+  if (!isObj(obj.world) || !AREA_IDS.includes(obj.world.area) || !Number.isFinite(obj.world.x) || !Number.isFinite(obj.world.y))
     return { ok: false, reason: 'Posição no mapa inválida.' };
   if (!isObj(obj.profile) || ![0, 1, 2].includes(obj.profile.appearance)) return { ok: false, reason: 'Perfil inválido.' };
   const st = obj.story;

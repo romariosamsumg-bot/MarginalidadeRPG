@@ -10,9 +10,9 @@ export interface BridgeEvents {
   /** Pedido de interação (tecla E/Espaço, botão ou toque). */
   interact: void;
   /** Uma cena terminou de carregar. */
-  areaReady: { area: 'vila' | 'bar' | 'attract' };
+  areaReady: { area: 'vila' | 'bar' | 'casa' | 'attract' };
   /** Transição de área começou. */
-  transition: { to: 'vila' | 'bar' };
+  transition: { to: 'vila' | 'bar' | 'casa' };
   /** Passo do protagonista (para o som). */
   step: { surface: 'rua' | 'piso' };
   /** Medição de FPS (somente leitura). */

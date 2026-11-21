@@ -6,6 +6,7 @@ import Phaser from 'phaser';
 import { FRAME_COUNT, FRAME_H, FRAME_W, NPC_LOOKS, PLAYER_LOOKS, paintSheet, type CharSpec } from '../../art/characters';
 import { paintFacades, paintFar, paintGround, paintMid, paintMoon, paintSky, paintWires } from '../../art/vila';
 import { paintBarRoom } from '../../art/bar';
+import { paintCasaProps, paintCasaRoom } from '../../art/casa';
 import { paintProps } from '../../art/props';
 import { ctx } from '../context';
 import { PANORAMA, SPRITE_ART, SPRITE_FRAME } from '../../art/assets';
@@ -19,7 +20,8 @@ export const artMeta: {
   barLights: Array<{ x: number; y: number }>;
   tv: { x: number; y: number; w: number; h: number };
   sheetScale: Record<string, number>;
-} = { facadeLights: [], farLights: [], midLights: [], puddles: [], neon: { x: 0, y: 0, w: 0, h: 0 }, barLights: [], tv: { x: 0, y: 0, w: 0, h: 0 }, sheetScale: {} };
+  casaWindow: { x: number; y: number; w: number; h: number };
+} = { facadeLights: [], farLights: [], midLights: [], puddles: [], neon: { x: 0, y: 0, w: 0, h: 0 }, barLights: [], tv: { x: 0, y: 0, w: 0, h: 0 }, sheetScale: {}, casaWindow: { x: 0, y: 0, w: 0, h: 0 } };
 
 export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
@@ -59,6 +61,7 @@ export class BootScene extends Phaser.Scene {
       ['Esticando os fios', () => { this.textures.addCanvas('fios', paintWires()); }],
       ['Arrumando o bar', () => { const b = paintBarRoom(); this.textures.addCanvas('bar_sala', b.canvas); artMeta.barLights = b.lights; artMeta.tv = b.tv; }],
       ['Espalhando objetos', () => { for (const [k, c] of Object.entries(paintProps())) this.textures.addCanvas(k, c); }],
+      ['Arrumando a casa', () => { const r = paintCasaRoom(); this.textures.addCanvas('casa_sala', r.canvas); artMeta.casaWindow = r.window; for (const [k, c] of Object.entries(paintCasaProps())) this.textures.addCanvas(k, c); }],
       ...PLAYER_LOOKS.map((p, i) => [`Vestindo protagonista ${i + 1}`, () => this.addSheet(`char_player${i}`, p)] as [string, () => void]),
       ...Object.entries(NPC_LOOKS).map(([id, spec]) => [`Chamando ${id}`, () => this.addSheet(`char_${id}`, spec)] as [string, () => void])
     ];

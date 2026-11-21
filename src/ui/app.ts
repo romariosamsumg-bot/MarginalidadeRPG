@@ -16,7 +16,7 @@ import { artScaleFor, createGame, hasCanvasSupport, type GameHandle } from '../g
 import { audio } from '../audio/audio';
 import { currentObjective, missionById } from '../narrative/content/campaign';
 import { getScene } from '../narrative/engine';
-import { introPending, interactionLabel, resolveInteraction, type TargetId } from '../narrative/triggers';
+import { barAutoScene, introPending, interactionLabel, resolveInteraction, type TargetId } from '../narrative/triggers';
 import type { PanelId, Speaker } from '../narrative/types';
 import { AREAS } from '../world/layout';
 import { NPC_LOOKS, PLAYER_LOOKS, paintPortrait } from '../art/characters';
@@ -743,17 +743,18 @@ export class App {
     if (!box) { box = document.createElement('div'); box.id = 'places'; box.className = 'places'; $('#hud')!.appendChild(box); }
     const area = AREAS[s.world.area];
     const items = area.interactables.filter(it => !it.npc || (s.story.npcs[it.npc].present && area.spots[s.story.npcs[it.npc].spot]));
-    box.innerHTML = `<div class="eyebrow">Modo painéis · ${s.world.area === 'vila' ? 'Vila do Dique' : 'Bar do Nando'}</div><div class="grid">${items.map(it => btn(esc(interactionLabel(s, it.id, it.name)), 'place', `data-id="${it.id}"`, !!s.story.activeDialogue, 'small block')).join('')}</div>`;
+    box.innerHTML = `<div class="eyebrow">Modo painéis · ${s.world.area === 'vila' ? 'Vila do Dique' : s.world.area === 'bar' ? 'Bar do Nando' : 'Sua casa'}</div><div class="grid">${items.map(it => btn(esc(interactionLabel(s, it.id, it.name)), 'place', `data-id="${it.id}"`, !!s.story.activeDialogue, 'small block')).join('')}</div>`;
   }
 
   private fallbackInteract(id: TargetId) {
     const s = this.store.get(); if (!s) return;
     const o = resolveInteraction(s, id);
     if (o.kind === 'door') {
-      const sp = o.to === 'bar' ? AREAS.bar.spawns.door! : AREAS.vila.spawns.bar_porta!;
+      const sp = AREAS[o.to].spawns[o.spawn] ?? Object.values(AREAS[o.to].spawns)[0]!;
       this.store.dispatch({ type: 'world/move', area: o.to, x: sp.x, y: sp.y, facing: sp.facing });
-      const auto = o.to === 'bar' && (s.story.missions['A1-M02']?.stage === 'go_bar' || s.story.missions['A1-M02']?.stage === 'confront') && s.story.missions['A1-M02']?.status === 'active';
-      if (auto) this.store.dispatch({ type: 'story/start', sceneId: 'A1-M02-cobranca' });
+      const after = this.store.get();
+      const auto = o.to === 'bar' && after ? barAutoScene(after) : null;
+      if (auto) this.store.dispatch({ type: 'story/start', sceneId: auto });
       this.renderAll();
     } else if (o.kind === 'scene') this.bridge.emit('scene', o.sceneId);
     else if (o.kind === 'panel') this.openMenu(o.tab);

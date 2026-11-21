@@ -11,7 +11,7 @@ export interface PropDef { key: string; x: number; y: number; collider?: Box; fl
 export interface InteractDef { id: TargetId; x: number; y: number; radius: number; name: string; markerY: number; npc?: NpcId }
 export interface NpcSpot { x: number; y: number; wander?: [number, number]; behavior: 'idle' | 'pace' | 'phone' | 'work' | 'watch'; facing?: 1 | -1 }
 export interface AreaLayout {
-  id: 'vila' | 'bar';
+  id: 'vila' | 'bar' | 'casa';
   width: number; height: number;
   walk: { left: number; right: number; top: number; bottom: number };
   colliders: Box[];
@@ -70,11 +70,13 @@ export const VILA: AreaLayout = {
     casa: { x: 492, y: 614, behavior: 'idle', facing: -1 },
     casa_noite: { x: 486, y: 612, behavior: 'phone', facing: -1 },
     mercearia: { x: 2500, y: 618, wander: [2450, 2580], behavior: 'work', facing: -1 },
-    esquina: { x: 2066, y: 664, behavior: 'watch', facing: -1 }
+    esquina: { x: 2066, y: 664, behavior: 'watch', facing: -1 },
+    passarela: { x: 1236, y: 662, behavior: 'phone', facing: 1 }
   },
   spawns: {
     start: { x: 470, y: 660, facing: 1 },
-    bar_porta: { x: 1768, y: 640, facing: 1 }
+    bar_porta: { x: 1768, y: 640, facing: 1 },
+    casa_porta: { x: 400, y: 646, facing: 1 }
   },
   lamps: [
     { x: 300, y: 690, headY: 318 }, { x: 1010, y: 690, headY: 318 }, { x: 1560, y: 690, headY: 318 },
@@ -122,4 +124,50 @@ export const BAR: AreaLayout = {
   scaleRange: [1.0, 1.12]
 };
 
-export const AREAS = { vila: VILA, bar: BAR } as const;
+/** Interior da casa de Lia (onde o protagonista mora). */
+export const CASA: AreaLayout = {
+  id: 'casa',
+  width: 1000, height: 680,
+  walk: { left: 60, right: 940, top: 438, bottom: 650 },
+  colliders: [
+    { x: 0, y: 0, w: 1000, h: 438 },
+    { x: 0, y: 0, w: 60, h: 680 },
+    { x: 940, y: 0, w: 60, h: 680 }
+  ],
+  props: [
+    { key: 'geladeira', x: 160, y: 460, collider: foot(160, 460, 90, 20) },
+    { key: 'mesa_cozinha', x: 420, y: 556, collider: foot(420, 556, 190, 22) },
+    { key: 'sofa', x: 770, y: 498, collider: foot(770, 498, 220, 26) }
+  ],
+  interactables: [
+    { id: 'lia', x: 0, y: 0, radius: 90, name: 'Lia', markerY: 0, npc: 'lia' },
+    { id: 'sofa', x: 770, y: 520, radius: 110, name: 'Sofá', markerY: 360 },
+    { id: 'saida_casa', x: 905, y: 452, radius: 80, name: 'Porta', markerY: 250 }
+  ],
+  spots: {
+    casa_mesa: { x: 300, y: 560, behavior: 'phone', facing: 1 }
+  },
+  spawns: {
+    porta: { x: 870, y: 500, facing: -1 }
+  },
+  lamps: [{ x: 440, y: 438, headY: 96 }],
+  depthRange: [438, 650],
+  scaleRange: [1.0, 1.1]
+};
+
+export const AREAS = { vila: VILA, bar: BAR, casa: CASA } as const;
+
+/** Portas: alvo de interação → área de destino e ponto de chegada. */
+export const DOORS: Record<string, { to: 'vila' | 'bar' | 'casa'; spawn: string }> = {
+  bar_porta: { to: 'bar', spawn: 'door' },
+  bar_saida: { to: 'vila', spawn: 'bar_porta' },
+  casa: { to: 'casa', spawn: 'porta' },
+  saida_casa: { to: 'vila', spawn: 'casa_porta' }
+};
+
+/** Para onde a seta de objetivo aponta quando o alvo está em outra área. */
+export const EXIT_TO: Record<string, Record<string, string>> = {
+  vila: { bar: 'bar_porta', casa: 'casa' },
+  bar: { vila: 'bar_saida', casa: 'bar_saida' },
+  casa: { vila: 'saida_casa', bar: 'saida_casa' }
+};

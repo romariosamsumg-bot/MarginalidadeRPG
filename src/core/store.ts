@@ -7,7 +7,7 @@
 import * as L from './legacy/actions';
 import type { Rng } from './legacy/util';
 import { cryptoRng } from './legacy/util';
-import { newGame, type Appearance, type AreaId, type GameState } from './state';
+import { AREA_IDS, newGame, type Appearance, type AreaId, type GameState } from './state';
 import * as N from '../narrative/engine';
 import type { PanelId } from '../narrative/types';
 
@@ -139,12 +139,12 @@ export class Store {
         if (next) s.rpg = next; // campanha, relações e mundo continuam: a história não reinicia com a temporada.
         return result;
       }
-      case 'story/start': return this.story(N.startScene(s, a.sceneId));
-      case 'story/advance': return this.story(N.advance(s, a.nodeId));
-      case 'story/choose': return this.story(N.choose(s, a.nodeId, a.choiceId));
+      case 'story/start': return this.story(N.startScene(s, a.sceneId, rng));
+      case 'story/advance': return this.story(N.advance(s, a.nodeId, rng));
+      case 'story/choose': return this.story(N.choose(s, a.nodeId, a.choiceId, rng));
       case 'story/dismiss': return this.story(N.dismiss(s));
       case 'world/move': {
-        if (!Number.isFinite(a.x) || !Number.isFinite(a.y) || (a.area !== 'vila' && a.area !== 'bar')) return { ok: false, msg: 'Posição inválida.' };
+        if (!Number.isFinite(a.x) || !Number.isFinite(a.y) || !AREA_IDS.includes(a.area)) return { ok: false, msg: 'Posição inválida.' };
         s.world.area = a.area; s.world.x = Math.round(a.x); s.world.y = Math.round(a.y); s.world.facing = a.facing === -1 ? -1 : 1;
         return { ok: true, msg: '' };
       }

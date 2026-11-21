@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { advance, boot, choose, joystick, newCareer, player, playThrough, st, SUBMUNDO_KEY, waitDialogue, walkToAndTalk, walkToDoor } from './helpers';
+import { advance, boot, choose, importFixture, joystick, newCareer, player, playThrough, st, SUBMUNDO_KEY, waitDialogue, walkToAndTalk, walkToDoor } from './helpers';
 
 const SUBMUNDO_SAVE = JSON.stringify({ schema: 1, name: 'Veterano', city: 'Recife', season: 4, day: 9, cash: 77777 });
 
@@ -236,4 +236,50 @@ test('não trava encostado em um NPC (regressão: personagem parado colado na Li
     const b = await player(page);
     expect(Math.hypot(b.x - a.x, b.y - a.y), `andar ${key}`).toBeGreaterThan(30);
   }
+});
+
+test('Ato I: domingo em casa, conversa com Lia no interior e volta para a rua', async ({ page }, info) => {
+  test.setTimeout(480_000);
+  const touch = info.project.name.startsWith('mobile');
+  await boot(page);
+  await importFixture(page, 'a1-m03-voltar-casa');
+  await walkToAndTalk(page, 'casa', 'A1-M03-domingo', touch);
+  await playThrough(page, []);
+  expect((await st(page)).story.clock.label).toBe('Domingo, 17h40');
+  await walkToDoor(page, 'casa', 'casa', touch);
+  await walkToAndTalk(page, 'lia', 'A1-M03-lia', touch);
+  await playThrough(page, [/Contar tudo/]);
+  const s = await st(page);
+  expect(s.story.flags.lia_informed).toBe(true);
+  expect(s.story.missions['A1-M03'].stage).toBe('talk_solange');
+  await walkToDoor(page, 'saida_casa', 'vila', touch);
+  const p = await player(page);
+  expect(Math.abs(p.x - 400)).toBeLessThan(80); // sai pela porta de casa
+});
+
+test('Ato I: crise no bar, investigadora e o fim do ato com Miro', async ({ page }, info) => {
+  test.setTimeout(480_000);
+  const touch = info.project.name.startsWith('mobile');
+  await boot(page);
+  await importFixture(page, 'a1-m05-crise');
+  await walkToDoor(page, 'bar_porta', 'bar', touch);
+  await waitDialogue(page, 'A1-M05-crise', 20_000);
+  // Sabe do carro prata (Solange contou em A1-M03): a opção aparece.
+  await advance(page);
+  await expect(page.locator('.choice', { hasText: 'carro prata' })).toBeVisible();
+  await playThrough(page, [/Falar a verdade/]);
+  expect((await st(page)).story.flags.helena_stance).toBe('colaborou');
+  await walkToDoor(page, 'bar_saida', 'vila', touch);
+  await walkToAndTalk(page, 'miro', 'A1-M05-oferta', touch);
+  await advance(page);
+  await choose(page, /proteger os seus/);
+  for (let i = 0; i < 30; i++) {
+    if (await page.locator('.card .ctext', { hasText: 'Fim do Ato I' }).count()) break;
+    await advance(page, 1).catch(() => {});
+  }
+  await expect(page.locator('.card .ctext')).toContainText('Fim do Ato I');
+  await playThrough(page, []);
+  const s = await st(page);
+  expect(s.story.flags.act1_done).toBe(true);
+  await expect(page.locator('body')).toContainText('Fim do Ato I. O Ato II chega');
 });

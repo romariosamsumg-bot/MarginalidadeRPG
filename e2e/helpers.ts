@@ -87,7 +87,7 @@ export async function walkToAndTalk(page: Page, id: string, sceneId: string, tou
 }
 
 /** Vai até uma porta e espera a troca de área. */
-export async function walkToDoor(page: Page, id: string, area: 'vila' | 'bar', touch = false) {
+export async function walkToDoor(page: Page, id: string, area: 'vila' | 'bar' | 'casa', touch = false) {
   const ok = await approach(page, id, touch, async () => (await player(page))?.area === area);
   if (!ok) throw new Error(`não entrou em ${area}`);
 }
@@ -104,3 +104,11 @@ export async function joystick(page: Page, dx: number, dy: number, ms: number) {
   await page.waitForTimeout(150);
 }
 
+
+/** Importa um save de e2e/fixtures pelo fluxo real da tela de título. */
+export async function importFixture(page: Page, name: string) {
+  await page.locator('#importFile').setInputFiles(new URL(`./fixtures/${name}.json`, import.meta.url).pathname);
+  await page.getByRole('button', { name: 'Importar', exact: true }).click();
+  await page.waitForFunction(() => (window as any).__MRPG__.player() !== null, null, { timeout: 30_000 });
+  await page.waitForTimeout(800);
+}

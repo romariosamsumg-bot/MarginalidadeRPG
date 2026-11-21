@@ -10,7 +10,7 @@
  */
 import type { GameState } from '../core/state';
 import { grantRespect, log } from '../core/legacy/actions';
-import { clamp } from '../core/legacy/util';
+import { clamp, cryptoRng, type Rng } from '../core/legacy/util';
 import type { Choice, Condition, DialogueNode, Effect, PanelId, Scene } from './types';
 import { SCENES } from './content';
 
@@ -42,6 +42,7 @@ export function evalCond(s: GameState, c: Condition | undefined): boolean {
   if ('item' in c) return s.story.items[c.item] === true;
   if ('homeCity' in c) return s.rpg.city === c.homeCity;
   if ('timeOfDay' in c) return s.story.clock.timeOfDay === c.timeOfDay;
+  if ('energy' in c) return s.rpg.energy >= c.energy;
   return false;
 }
 
@@ -58,7 +59,7 @@ export function visibleChoices(s: GameState, node: DialogueNode): Array<{ choice
   return (node.choices || []).filter(c => evalCond(s, c.showIf)).map(choice => ({ choice, enabled: evalCond(s, choice.requires) }));
 }
 
-function applyEffect(s: GameState, e: Effect, scene: Scene): void {
+function applyEffect(s: GameState, e: Effect, scene: Scene, rng: Rng): void {
   const st = s.story;
   switch (e.type) {
     case 'setFlag': st.flags[e.key] = e.value; break;
@@ -94,11 +95,23 @@ function applyEffect(s: GameState, e: Effect, scene: Scene): void {
     case 'item': st.items[e.id] = e.has; break;
     case 'log': log(s.rpg, e.msg); break;
     case 'trigger': if (!st.completedTriggers.includes(e.id)) st.completedTriggers.push(e.id); break;
+    case 'energy': s.rpg.energy = clamp(s.rpg.energy + Math.min(0, e.delta), 0, 100); break;
+    case 'heat': s.rpg.heat = clamp(s.rpg.heat + e.delta, 0, 100); break;
+    case 'cash':
+      if (scene.once && Number.isSafeInteger(e.amount) && e.amount > 0 && e.amount <= 1000) { s.rpg.cash += e.amount; log(s.rpg, `${e.reason} (+R$ ${e.amount})`); }
+      break;
+    case 'check': {
+      const bonus = e.bonusFlag && (st.flags[e.bonusFlag] !== undefined && st.flags[e.bonusFlag] !== false) ? (e.bonus ?? 0) : 0;
+      const chance = clamp(Math.round(e.base + s.rpg.stats[e.stat] * e.weight - s.rpg.heat * 0.4 + bonus), 15, 90);
+      st.flags[e.key] = rng(1, 100) <= chance ? 'sucesso' : 'falha';
+      st.flags[`${e.key}_chance`] = chance;
+      break;
+    }
   }
 }
 
 /** Aplica efeitos com IDs estáveis. Em cenas únicas, um ID já aplicado é ignorado. */
-export function applyEffects(s: GameState, scene: Scene, effects: Effect[] | undefined, baseId: string): number {
+export function applyEffects(s: GameState, scene: Scene, effects: Effect[] | undefined, baseId: string, rng: Rng = cryptoRng): number {
   if (!effects?.length) return 0;
   let applied = 0;
   effects.forEach((e, i) => {
@@ -107,7 +120,7 @@ export function applyEffects(s: GameState, scene: Scene, effects: Effect[] | und
       if (s.story.appliedEffectIds.includes(id)) return;
       s.story.appliedEffectIds.push(id);
     }
-    applyEffect(s, e, scene);
+    applyEffect(s, e, scene, rng);
     applied++;
   });
   return applied;
@@ -115,12 +128,12 @@ export function applyEffects(s: GameState, scene: Scene, effects: Effect[] | und
 
 export interface StoryResult { ok: boolean; msg?: string; ended?: boolean; openPanel?: PanelId }
 
-function enterNode(s: GameState, scene: Scene, nodeId: string): StoryResult {
+function enterNode(s: GameState, scene: Scene, nodeId: string, rng: Rng): StoryResult {
   let id = nodeId;
   for (let guard = 0; guard < 30; guard++) {
     const node = scene.nodes.find(n => n.id === id);
     if (!node) return { ok: false, msg: `Nó inexistente: ${scene.id}/${id}` };
-    applyEffects(s, scene, node.effects, `${scene.id}/${node.id}`);
+    applyEffects(s, scene, node.effects, `${scene.id}/${node.id}`, rng);
     if (node.branch) {
       const hit = node.branch.find(b => evalCond(s, b.if));
       if (hit) { id = hit.next; continue; }
@@ -132,13 +145,13 @@ function enterNode(s: GameState, scene: Scene, nodeId: string): StoryResult {
   return { ok: false, msg: 'Ramificação circular.' };
 }
 
-function finishScene(s: GameState, scene: Scene): StoryResult {
+function finishScene(s: GameState, scene: Scene, complete = true): StoryResult {
   s.story.activeDialogue = null;
-  if (scene.once && !s.story.completedScenes.includes(scene.id)) s.story.completedScenes.push(scene.id);
+  if (complete && scene.once && !s.story.completedScenes.includes(scene.id)) s.story.completedScenes.push(scene.id);
   return { ok: true, ended: true };
 }
 
-export function startScene(s: GameState, sceneId: string): StoryResult {
+export function startScene(s: GameState, sceneId: string, rng: Rng = cryptoRng): StoryResult {
   const scene = getScene(sceneId);
   if (!scene) return { ok: false, msg: 'Cena inexistente.' };
   const active = s.story.activeDialogue;
@@ -147,10 +160,10 @@ export function startScene(s: GameState, sceneId: string): StoryResult {
     return { ok: false, msg: 'Há uma conversa em andamento.' };
   }
   if (scene.once && s.story.completedScenes.includes(sceneId)) return { ok: false, msg: 'Essa cena já aconteceu.' };
-  return enterNode(s, scene, scene.start);
+  return enterNode(s, scene, scene.start, rng);
 }
 
-export function advance(s: GameState, expectedNodeId: string): StoryResult {
+export function advance(s: GameState, expectedNodeId: string, rng: Rng = cryptoRng): StoryResult {
   const a = s.story.activeDialogue;
   if (!a || a.nodeId !== expectedNodeId) return { ok: false, msg: 'Diálogo desatualizado.' };
   const scene = getScene(a.sceneId)!;
@@ -158,10 +171,10 @@ export function advance(s: GameState, expectedNodeId: string): StoryResult {
   if (!node) return { ok: false, msg: 'Nó inexistente.' };
   if (node.choices?.length && visibleChoices(s, node).length) return { ok: false, msg: 'Escolha uma opção.' };
   if (node.end || !node.next) return finishScene(s, scene);
-  return enterNode(s, scene, node.next);
+  return enterNode(s, scene, node.next, rng);
 }
 
-export function choose(s: GameState, expectedNodeId: string, choiceId: string): StoryResult {
+export function choose(s: GameState, expectedNodeId: string, choiceId: string, rng: Rng = cryptoRng): StoryResult {
   const a = s.story.activeDialogue;
   if (!a || a.nodeId !== expectedNodeId) return { ok: false, msg: 'Diálogo desatualizado.' };
   const scene = getScene(a.sceneId)!;
@@ -171,16 +184,16 @@ export function choose(s: GameState, expectedNodeId: string, choiceId: string): 
   if (!entry.enabled) return { ok: false, msg: entry.choice.requiresLabel || 'Requisito não atendido.' };
   const c = entry.choice;
   const base = `${scene.id}/${node.id}/${c.id}`;
-  applyEffects(s, scene, c.effects, base);
+  applyEffects(s, scene, c.effects, base, rng);
   if (c.memory && !(scene.once && s.story.choices.some(r => r.sceneId === scene.id && r.choiceId === c.id && r.nodeId === node.id))) {
     s.story.choices.push({ sceneId: scene.id, nodeId: node.id, choiceId: c.id, memory: c.memory, seasonDay: s.rpg.day, storyLabel: s.story.clock.label });
     s.story.choices = s.story.choices.slice(-300);
   }
   if (c.next === 'END') {
-    const r = finishScene(s, scene);
+    const r = finishScene(s, scene, !c.defer);
     return { ...r, openPanel: c.openPanel };
   }
-  const r = enterNode(s, scene, c.next);
+  const r = enterNode(s, scene, c.next, rng);
   return { ...r, openPanel: c.openPanel };
 }
 

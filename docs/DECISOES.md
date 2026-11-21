@@ -26,7 +26,16 @@ Decisões não críticas tomadas sem bloquear o início, conforme o prompt mestr
 - Missão única concede **+3 de respeito uma vez** (via `grantRespect`, mecanismo oficial do núcleo). Nenhuma recompensa em dinheiro por diálogo; nenhuma dívida monetária é debitada (Bíblia).
 - Opção com requisito (**Lábia 6**) aparece desabilitada com explicação; sempre há alternativa sem requisito (validador garante).
 - Relógio da história ("Sexta-feira, 18h10" → "Sábado, 23h40") é separado da temporada de 30 dias. Encerrar a temporada **não** reinicia a campanha.
-- Missões A1-M03 a A5-M05 aparecem na aba História como **"Em produção"**.
+- Missões A2-M01 a A5-M05 aparecem na aba História como **"Em produção"**.
+
+## Ato I completo (A1-M03 a A1-M05)
+- **A1-M03 "Portas Fechadas"**: domingo à tarde, a casa vira um interior explorável (cozinha, sofá, porta). Lia pergunta o que está acontecendo — contar tudo (`lia_informed=true`), só uma parte (`'parcial'`) ou esconder (`lia_kept_out`, ela vai passar uns dias na tia e some do mapa até o fim do ato). Dona Solange conta do **carro prata** (`knows_silver_car`) e, com Lábia 6, promete avisar (`solange_ally`). A fala de Lia reconhece a resposta dada na noite da caixa e se o protagonista recusou a encomenda.
+- **A1-M04 "O Primeiro Serviço"**: o serviço é um **evento abstrato** (buscar uma mochila fechada num galpão fictício do "Cais do Norte"), sem nenhum procedimento real. Fazer/negociar gastam 25 de energia e rolam um teste com a fórmula `base 50 + Astúcia×3,5 − Pressão×0,4 (+8 se negociou)`, limitada a 15–90%; o resultado fica em `m04_result` e a chance em `m04_result_chance`. Recusar também é caminho válido (mais pressão, Miro em conflito, pichação "DEVE" na casa). Pagamento de R$ 300 (escala da economia legada) só em cena única, uma vez — teste garante que recarregar não duplica.
+- **"Agora não"** (`defer`) encerra a conversa sem concluir a cena; a missão pode ser retomada.
+- **A1-M05 "Sangue e Dívida"**: Nando é agredido **fora de cena** e vai para o hospital (sem descrição de violência). Viatura em frente ao bar; a investigadora fictícia **Helena Paiva** pergunta — colaborar reduz pressão, silêncio aumenta, e **só quem ouviu Solange** pode perguntar do carro prata (memória entre missões, testada). Miro oferece proteção e o protagonista entra com uma de três atitudes (`m05_attitude`: ressentimento / proteger / ambição). Cartão "Fim do Ato I — A Queda", +5 de respeito uma vez, `act1_done`.
+- Depois do ato, Lia, Nando, Dona Solange, Seu Zé e Miro têm falas novas conforme as escolhas. A carreira continua livre; o Ato II aparece como "Em produção".
+- Relógio da história: Domingo 17h40 (entardecer) → Segunda 20h50 → Terça 22h10 (noite).
+- "União da Linha", "Cais do Norte", Helena Paiva e Vânia Cinza são nomes fictícios da Bíblia; nenhum grupo, lugar ou pessoa real.
 
 ## Segurança e robustez
 - Chaves exclusivas (`marginalidade_rpg_v01`, `_backup`, `_corrompido`, `_settings_v01`); `assertOwn()` impede tocar qualquer outra chave.

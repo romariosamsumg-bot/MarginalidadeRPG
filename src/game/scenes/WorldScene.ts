@@ -10,13 +10,13 @@
  * Estado: a cena NUNCA guarda atributos de carreira; lê o store e despacha ações.
  */
 import Phaser from 'phaser';
-import { AREAS, type AreaLayout, type InteractDef, type NpcSpot } from '../../world/layout';
+import { AREAS, EXIT_TO, type AreaLayout, type InteractDef, type NpcSpot } from '../../world/layout';
 import { ctx } from '../context';
 import { input } from '../input';
 import { artMeta } from './BootScene';
-import { barAutoScene, interactionLabel, resolveInteraction, type TargetId } from '../../narrative/triggers';
+import { barAutoScene, interactionLabel, resolveInteraction, stageIs, type TargetId } from '../../narrative/triggers';
 import { currentObjective } from '../../narrative/content/campaign';
-import { defaultStory, type GameState, type StoryState } from '../../core/state';
+import { defaultStory, type AreaId, type GameState, type StoryState } from '../../core/state';
 import { GROUND_Y } from '../../art/vila';
 import { FRAME_H } from '../../art/characters';
 import type { NpcId } from '../../narrative/types';
@@ -24,7 +24,7 @@ import { findPath, obstacles } from '../../world/path';
 import { PANORAMA } from '../../art/assets';
 
 type Mode = 'play' | 'attract';
-export interface WorldData { area: 'vila' | 'bar'; mode: Mode }
+export interface WorldData { area: AreaId; mode: Mode }
 
 const FEET_ORIGIN_Y = 128 / FRAME_H;
 const SPEED = 175;
@@ -120,7 +120,7 @@ class Pedestrian extends Actor {
 }
 
 export class WorldScene extends Phaser.Scene {
-  area!: 'vila' | 'bar';
+  area!: AreaId;
   mode: Mode = 'play';
   layout!: AreaLayout;
   feet?: Phaser.GameObjects.Zone;
@@ -139,7 +139,7 @@ export class WorldScene extends Phaser.Scene {
   marker!: Phaser.GameObjects.Image;
   arrow!: Phaser.GameObjects.Image;
   dyn: Record<string, Phaser.GameObjects.GameObject & { setVisible(v: boolean): unknown }> = {};
-  viatura?: { img: Phaser.GameObjects.Image; zone: Phaser.GameObjects.Zone; lights: Phaser.GameObjects.Image[] };
+  viatura?: { img: Phaser.GameObjects.Image; zone: Phaser.GameObjects.Zone; lights: Phaser.GameObjects.Image[]; baseX: number };
   rain?: Phaser.GameObjects.Particles.ParticleEmitter;
   view = { x: 0, y: 0, w: 800, h: 600 };
   cam = { x: 0, y: 0, ready: false };
@@ -180,7 +180,7 @@ export class WorldScene extends Phaser.Scene {
     const { bridge } = ctx();
     this.cameras.main.setBackgroundColor('#05090b');
     this.timeOfDay = this.mode === 'attract' ? 'noite' : this.story().clock.timeOfDay;
-    if (this.area === 'vila') this.buildVila(); else this.buildBar();
+    if (this.area === 'vila') this.buildVila(); else if (this.area === 'bar') this.buildBar(); else this.buildCasa();
     this.buildColliders();
     this.overlay = this.add.image(0, 0, 'pixel').setOrigin(0, 0).setDepth(DEPTH.overlay).setBlendMode(Phaser.BlendModes.MULTIPLY);
     this.ring = this.add.image(0, 0, 'anel').setDepth(DEPTH.glow - 1).setVisible(false).setAlpha(0.9);
@@ -283,6 +283,8 @@ export class WorldScene extends Phaser.Scene {
     }
     // Porta de aço da oficina (fechada após A1-M01)
     this.dyn['shutter'] = this.add.image(712, 430, 'oficina_fechada').setOrigin(0, 0).setDepth(DEPTH.facadeFx).setVisible(false);
+    // Pichação no portão de casa (consequência de recusar o serviço de Miro em A1-M04)
+    this.dyn['pichacao'] = this.add.image(400, 520, 'pichacao_deve').setDepth(DEPTH.facadeFx).setVisible(false);
     // Placa do ponto comercial quando o jogador possui um negócio
     this.dyn['placa'] = this.add.image(2160, 492, 'placa_bar').setDepth(DEPTH.facadeFx).setVisible(false);
     this.dyn['placaLuz'] = this.addGlow('glowWarm', 2160, 520, 1.8, 1, 0.45).setVisible(false);
@@ -318,7 +320,7 @@ export class WorldScene extends Phaser.Scene {
         const blue = this.addGlow('glowBlue', p.x + 14, p.y - 92, 1.2, 1.2, 0.8).setVisible(false);
         if (!rm) this.tweens.add({ targets: [red], alpha: 0, duration: 260, yoyo: true, repeat: -1 });
         if (!rm) this.tweens.add({ targets: [blue], alpha: 0, duration: 260, yoyo: true, repeat: -1, delay: 260 });
-        this.viatura = { img, zone, lights: [red, blue] };
+        this.viatura = { img, zone, lights: [red, blue], baseX: p.x };
         continue;
       }
       this.add.image(p.x, p.y, p.key).setOrigin(0.5, 1).setDepth(p.y).setFlipX(!!p.flip);
@@ -353,6 +355,21 @@ export class WorldScene extends Phaser.Scene {
       this.peds.push(this.extraPed);
     }
     this.buildRain();
+  }
+
+  private buildCasa() {
+    this.add.image(0, 0, 'casa_sala').setOrigin(0, 0).setDepth(DEPTH.ground);
+    for (const l of this.layout.lamps) {
+      this.addGlow('glowWarm', l.x, l.headY + 4, 1.6, 1.2, 0.8);
+      this.addGlow('cone', l.x, l.headY + 2, 1.4, 1.1, 0.25).setOrigin(0.5, 0);
+      this.addGlow('pool', l.x, 560, 2.2, 2.6, 0.32);
+    }
+    const w = artMeta.casaWindow;
+    if (w.w) this.addGlow('glowWarm', w.x + w.w / 2, w.y + w.h / 2, 2.2, 1.8, 0.25);
+    for (const p of this.layout.props) {
+      this.add.image(p.x, p.y, p.key).setOrigin(0.5, 1).setDepth(p.y).setFlipX(!!p.flip);
+      if (p.collider) this.colliderBox(p.collider.x, p.collider.y, p.collider.w, p.collider.h);
+    }
   }
 
   private buildBar() {
@@ -404,7 +421,8 @@ export class WorldScene extends Phaser.Scene {
   private spawnPlayer() {
     const s = this.state();
     const w = s?.world;
-    const spawn = w && w.area === this.area ? { x: w.x, y: w.y, facing: w.facing } : (this.area === 'bar' ? this.layout.spawns.door! : this.layout.spawns.start!);
+    const fallback = this.area === 'bar' ? this.layout.spawns.door! : this.area === 'casa' ? this.layout.spawns.porta! : this.layout.spawns.start!;
+    const spawn = w && w.area === this.area ? { x: w.x, y: w.y, facing: w.facing } : fallback;
     const L = this.layout.walk;
     const x = Phaser.Math.Clamp(spawn.x, L.left + 20, L.right - 20), y = Phaser.Math.Clamp(spawn.y, L.top + 8, L.bottom - 4);
     this.player = new Actor(this, `char_player${s?.profile.appearance ?? 0}`, x, y);
@@ -417,7 +435,7 @@ export class WorldScene extends Phaser.Scene {
     if (this.colliderGroup) this.physics.add.collider(this.feet, this.colliderGroup);
     this.player.sprite.on('animationupdate', (_a: unknown, frame: Phaser.Animations.AnimationFrame) => {
       const f = Number(frame.textureFrame);
-      if (f === 5 || f === 9) ctx().bridge.emit('step', { surface: this.area === 'bar' ? 'piso' : 'rua' });
+      if (f === 5 || f === 9) ctx().bridge.emit('step', { surface: this.area === 'vila' ? 'rua' : 'piso' });
     });
     this.lastSave = { x, y, t: 0 };
   }
@@ -448,7 +466,7 @@ export class WorldScene extends Phaser.Scene {
       } else if (!want && has && !has.leaving) {
         if (initial) { has.destroy(); this.npcs.delete(id); continue; }
         has.leaving = true;
-        const exit = this.area === 'bar' ? { x: 1140, y: 470 } : { x: id === 'magrao' ? 1180 : 2950, y: has.y + 30 };
+        const exit = this.area === 'bar' ? { x: 1140, y: 470 } : this.area === 'casa' ? { x: 905, y: 470 } : { x: id === 'magrao' ? 1180 : 2950, y: has.y + 30 };
         has.walkTo = { ...exit, then: () => { has.destroy(); this.npcs.delete(id); } };
       } else if (want && has && has.spot !== spot) {
         has.spot = spot!;
@@ -471,8 +489,19 @@ export class WorldScene extends Phaser.Scene {
         this.extraPed.hidden = !busy;
         this.extraPed.sprite.setVisible(busy); this.extraPed.shadow.setVisible(busy);
       }
-      const patrol = !!s && (s.rpg.heat >= 60 || ev === 1);
+      const crisis = !!s && (stageIs(s, 'A1-M05', 'go_bar') || stageIs(s, 'A1-M05', 'meet_miro'));
+      const patrol = !!s && (s.rpg.heat >= 60 || ev === 1 || crisis);
+      this.dyn['pichacao']?.setVisible(st.flags['m04_result'] === 'recusou');
       if (this.viatura) {
+        // Na crise de A1-M05 a viatura para em frente ao Bar do Nando.
+        const vx = crisis ? 1990 : this.viatura.baseX;
+        if (this.viatura.img.x !== vx) {
+          const dx = vx - this.viatura.img.x;
+          this.viatura.img.x = vx;
+          for (const l of this.viatura.lights) l.x += dx;
+          this.viatura.zone.x += dx;
+          (this.viatura.zone.body as Phaser.Physics.Arcade.StaticBody).updateFromGameObject();
+        }
         this.viatura.img.setVisible(patrol);
         for (const l of this.viatura.lights) l.setVisible(patrol);
         (this.viatura.zone.body as Phaser.Physics.Arcade.StaticBody).enable = patrol;
@@ -482,9 +511,9 @@ export class WorldScene extends Phaser.Scene {
 
   private applyLighting(instant: boolean) {
     const night = this.timeOfDay === 'noite';
-    const color = this.area === 'bar' ? OVERLAY.bar : night ? OVERLAY.noite : OVERLAY.entardecer;
+    const color = this.area !== 'vila' ? OVERLAY.bar : night ? OVERLAY.noite : OVERLAY.entardecer;
     this.overlay.setTint(color);
-    const k = this.area === 'bar' ? 1 : night ? 1 : 0.55;
+    const k = this.area !== 'vila' ? 1 : night ? 1 : 0.55;
     for (const g of this.glows) g.img.setAlpha(g.base * k);
     if (this.skyA && this.skyB) {
       const target = night ? 1 : 0;
@@ -504,7 +533,7 @@ export class WorldScene extends Phaser.Scene {
     const W = this.scale.gameSize.width, H = this.scale.gameSize.height;
     cam.setSize(W, H);
     const portrait = W < H;
-    const targetH = this.area === 'bar' ? (portrait ? 700 : 620) : (portrait ? 900 : 800);
+    const targetH = this.area !== 'vila' ? (portrait ? 680 : 620) : (portrait ? 900 : 800);
     let zoom = H / targetH;
     zoom = Math.max(zoom, W / this.layout.width, H / this.layout.height);
     cam.setZoom(zoom);
@@ -685,7 +714,7 @@ export class WorldScene extends Phaser.Scene {
     if (!s) return;
     const obj = currentObjective(s.story);
     let id: TargetId | null = obj?.target as TargetId | null ?? null;
-    if (obj && obj.area && obj.area !== this.area) id = this.area === 'bar' ? 'bar_saida' : 'bar_porta';
+    if (obj && obj.area && obj.area !== this.area) id = (EXIT_TO[this.area]?.[obj.area] ?? null) as TargetId | null;
     const t = id ? this.findTarget(id) : null;
     if (!t || s.story.activeDialogue) { this.marker.setVisible(false); this.arrow.setVisible(false); return; }
     const v = this.view, inset = 30;
@@ -735,7 +764,10 @@ export class WorldScene extends Phaser.Scene {
     const people = [...this.npcs.values(), ...this.peds.filter(p => !p.hidden && p.speed === 0)]
       .filter(a => Math.hypot(a.x - x, a.y - y) > 40)
       .map(a => ({ x: a.x - 14, y: a.y - 10, w: 28, h: 14 }));
-    const boxes = obstacles(this.layout, people, !!this.viatura?.img.visible);
+    // A viatura entra como obstáculo na posição em que está desenhada (ela se move na crise de A1-M05).
+    const v = this.viatura?.img.visible ? this.viatura : undefined;
+    if (v) { const z = v.zone; people.push({ x: z.x - z.width / 2, y: z.y - z.height / 2, w: z.width, h: z.height }); }
+    const boxes = obstacles(this.layout, people, false);
     return findPath(this.layout, { x: this.player.x, y: this.player.y }, { x, y }, boxes);
   }
 
@@ -760,7 +792,7 @@ export class WorldScene extends Phaser.Scene {
     const t = this.findTarget(id);
     if (t) this.player.face(t.x >= this.player.x ? 1 : -1);
     const o = resolveInteraction(s, id);
-    if (o.kind === 'door') { bridge.emit('sfx', 'door'); this.goTo(o.to); return; }
+    if (o.kind === 'door') { bridge.emit('sfx', 'door'); this.goTo(o.to, o.spawn); return; }
     this.player.play('interact');
     this.time.delayedCall(450, () => { if (this.player?.anim.endsWith('_interact')) this.player.play('idle'); });
     if (o.kind === 'panel') { bridge.emit('openPanel', o.tab); return; }
@@ -773,12 +805,13 @@ export class WorldScene extends Phaser.Scene {
     bridge.emit('toast', { msg: o.msg });
   }
 
-  goTo(to: 'vila' | 'bar') {
+  goTo(to: AreaId, spawnKey: string) {
     if (this.transitioning || !this.player) return;
     this.transitioning = true;
     this.auto = null;
     const { store, bridge } = ctx();
-    const spawn = to === 'bar' ? AREAS.bar.spawns.door! : AREAS.vila.spawns.bar_porta!;
+    const target = AREAS[to];
+    const spawn = target.spawns[spawnKey] ?? Object.values(target.spawns)[0]!;
     store.dispatch({ type: 'world/move', area: to, x: spawn.x, y: spawn.y, facing: spawn.facing });
     bridge.emit('transition', { to });
     const ms = ctx().reducedMotion() ? 0 : 300;
@@ -795,7 +828,11 @@ export class WorldScene extends Phaser.Scene {
     if (!sceneId) return;
     if (s.story.activeDialogue) return; // diálogo será retomado pela interface
     const miro = this.npcs.get('miro');
-    if (!miro || !this.player) { ctx().bridge.emit('scene', sceneId); return; }
+    if (sceneId !== 'A1-M02-cobranca' || !miro || !this.player) {
+      this.cutscene = true;
+      this.time.delayedCall(ctx().reducedMotion() ? 0 : 900, () => { this.cutscene = false; ctx().bridge.emit('scene', sceneId); });
+      return;
+    }
     this.cutscene = true;
     const tx = this.player.x - 90, ty = Phaser.Math.Clamp(this.player.y + 6, this.layout.walk.top + 6, this.layout.walk.bottom - 6);
     const go = () => { miro.face(1); this.player?.face(-1); this.cutscene = false; ctx().bridge.emit('scene', sceneId); };

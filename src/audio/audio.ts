@@ -6,7 +6,7 @@
 import type { Settings } from '../persistence/settings';
 
 type MusicMode = 'none' | 'theme' | 'radio';
-type AmbienceMode = 'none' | 'vila' | 'bar';
+type AmbienceMode = 'none' | 'vila' | 'bar' | 'casa';
 
 const NOTE = (n: number) => 440 * Math.pow(2, (n - 69) / 12);
 
@@ -172,8 +172,8 @@ export class AudioEngine {
       if (rain) loop('highpass', 1800, 0.5, 0.12, 0.3, 0.02);
       this.ambTimer = window.setInterval(() => this.distantEvent(), 4200);
     } else {
-      loop('lowpass', 260, 0.7, 0.18);                 // tom da sala
-      loop('bandpass', 180, 3, 0.05, 3.2, 0.02);       // ventilador de teto
+      loop('lowpass', 260, 0.7, mode === 'bar' ? 0.18 : 0.1);   // tom da sala
+      if (mode === 'bar') loop('bandpass', 180, 3, 0.05, 3.2, 0.02); // ventilador de teto
     }
   }
 

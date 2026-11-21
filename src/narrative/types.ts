@@ -4,7 +4,7 @@
  */
 
 export type NpcId = 'magrao' | 'lia' | 'solange' | 'miro' | 'nando' | 'ze';
-export type Speaker = NpcId | 'player' | 'narrator';
+export type Speaker = NpcId | 'player' | 'narrator' | 'helena' | 'vania';
 export type TraitId = 'lealdade' | 'ambicao' | 'humanidade';
 export type RelationState = 'neutro' | 'confianca' | 'distancia' | 'conflito' | 'rompimento';
 export type StatId = 'astucia' | 'forca' | 'labia' | 'influencia';
@@ -20,6 +20,7 @@ export type Condition =
   | { relation: NpcId; gte?: number; lte?: number }
   | { item: string }
   | { homeCity: string }
+  | { energy: number }
   | { timeOfDay: TimeOfDay }
   | { all: Condition[] }
   | { any: Condition[] }
@@ -36,9 +37,20 @@ export type Effect =
   | { type: 'clock'; label: string; timeOfDay: TimeOfDay }
   | { type: 'item'; id: string; has: boolean }
   | { type: 'log'; msg: string }
-  | { type: 'trigger'; id: string };
+  | { type: 'trigger'; id: string }
+  /** Gasta energia (núcleo do RPG). Só valores negativos. */
+  | { type: 'energy'; delta: number }
+  /** Altera a pressão policial (núcleo do RPG), limitada a 0–100. */
+  | { type: 'heat'; delta: number }
+  /** Pagamento em dinheiro (somente em cena única; escala da economia legada). */
+  | { type: 'cash'; amount: number; reason: string }
+  /**
+   * Teste de risco abstrato: chance = base + atributo×peso − pressão×0,4 (+ bônus se a flag existir),
+   * limitada a 15–90%. Resultado gravado em flags[key] = 'sucesso' | 'falha' e a chance em flags[key + '_chance'].
+   */
+  | { type: 'check'; key: string; stat: StatId; base: number; weight: number; bonusFlag?: string; bonus?: number };
 
-export const EFFECT_TYPES = ['setFlag', 'relation', 'trait', 'respect', 'mission', 'stage', 'npc', 'clock', 'item', 'log', 'trigger'] as const;
+export const EFFECT_TYPES = ['setFlag', 'relation', 'trait', 'respect', 'mission', 'stage', 'npc', 'clock', 'item', 'log', 'trigger', 'energy', 'heat', 'cash', 'check'] as const;
 
 export type MissionStatus = 'locked' | 'active' | 'completed' | 'future';
 export type TimeOfDay = 'entardecer' | 'noite';
@@ -58,6 +70,8 @@ export interface Choice {
   effects?: Effect[];
   /** Registrada no histórico de escolhas importantes (tela História). */
   memory?: string;
+  /** Encerra a cena SEM concluí-la (pode ser retomada depois) — ex.: "agora não". Só com next 'END'. */
+  defer?: boolean;
   /** Abre um painel de RPG ao concluir (ponte NPC → sistemas). */
   openPanel?: PanelId;
   /** ID do próximo nó, ou 'END' para encerrar a cena. */
@@ -100,7 +114,7 @@ export interface Scene {
   nodes: DialogueNode[];
 }
 
-export interface MissionStage { objective: string; target: string | null; area: 'vila' | 'bar' | null }
+export interface MissionStage { objective: string; target: string | null; area: 'vila' | 'bar' | 'casa' | null }
 export interface MissionDefN {
   id: string; act: number; title: string; summary: string;
   implemented: boolean;

@@ -258,7 +258,7 @@ export const A1_M02_COBRANCA: Scene = {
         { type: 'respect', amount: 3, reason: 'A Cobrança: seu nome começou a circular na Vila' },
         { type: 'setFlag', key: 'miro_met', value: true },
         { type: 'npc', id: 'miro', present: true, spot: 'esquina' },
-        { type: 'mission', id: 'A1-M03', status: 'future' }
+        { type: 'mission', id: 'A1-M03', status: 'active', stage: 'go_home' }
       ],
       end: true
     }

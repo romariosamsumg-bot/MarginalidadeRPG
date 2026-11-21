@@ -26,9 +26,30 @@ export const CAMPAIGN: ActDef[] = [
           confront: { objective: 'Converse com o homem da mesa do fundo.', target: 'miro', area: 'bar' }
         }
       },
-      { id: 'A1-M03', act: 1, title: 'Portas Fechadas', implemented: false, summary: 'Você procura ajuda e encontra medo e limites. Lia e Dona Solange ganham voz.', stages: {} },
-      { id: 'A1-M04', act: 1, title: 'O Primeiro Serviço', implemented: false, summary: 'Uma tarefa ambígua e o primeiro contato com a organização.', stages: {} },
-      { id: 'A1-M05', act: 1, title: 'Sangue e Dívida', implemented: false, summary: 'Uma crise local e uma acusação injusta fecham o prólogo.', stages: {} }
+      {
+        id: 'A1-M03', act: 1, title: 'Portas Fechadas', implemented: true,
+        summary: 'Você procura ajuda e encontra medo e limites. Lia exige respostas; Dona Solange conta o que viu.',
+        stages: {
+          go_home: { objective: 'Volte para casa. Amanhã é outro dia.', target: 'casa', area: 'vila' },
+          talk_lia: { objective: 'Lia está esperando na cozinha. Converse com ela.', target: 'lia', area: 'casa' },
+          talk_solange: { objective: 'Procure Dona Solange na mercearia. Ela sabe de tudo o que acontece na Vila.', target: 'solange', area: 'vila' }
+        }
+      },
+      {
+        id: 'A1-M04', act: 1, title: 'O Primeiro Serviço', implemented: true,
+        summary: 'Miro cobra a conta com um serviço. Cumprir, negociar ou recusar — cada caminho tem um preço.',
+        stages: {
+          meet: { objective: 'Encontre Miro no Mural da Passarela.', target: 'miro', area: 'vila' }
+        }
+      },
+      {
+        id: 'A1-M05', act: 1, title: 'Sangue e Dívida', implemented: true,
+        summary: 'Nando é atacado, seu nome vira acusação e uma investigadora começa a fazer perguntas. Miro oferece a única saída.',
+        stages: {
+          go_bar: { objective: 'Corra para o Bar do Nando. Aconteceu alguma coisa.', target: 'bar_porta', area: 'vila' },
+          meet_miro: { objective: 'Miro está esperando na esquina do bar.', target: 'miro', area: 'vila' }
+        }
+      }
     ]
   },
   {
@@ -82,7 +103,10 @@ export function currentObjective(story: { currentMissionId: string | null; missi
   if (!m) return null;
   const st = story.missions[m.id];
   if (!m.implemented || st?.status === 'future') {
-    return { missionId: m.id, title: m.title, objective: 'Fim do capítulo piloto. Este capítulo chega na v0.2 — enquanto isso, evolua sua carreira na Vila.', target: null, area: null, future: true };
+    const text = m.act >= 2
+      ? 'Fim do Ato I. O Ato II chega numa próxima versão — enquanto isso, evolua sua carreira e converse com a Vila.'
+      : 'Este capítulo chega numa próxima versão — enquanto isso, evolua sua carreira na Vila.';
+    return { missionId: m.id, title: m.title, objective: text, target: null, area: null, future: true };
   }
   const stage = st?.stage ? m.stages[st.stage] : undefined;
   if (!stage) return null;

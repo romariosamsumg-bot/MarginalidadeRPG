@@ -123,7 +123,8 @@ describe('Capítulo piloto — fluxo completo', () => {
       expect(m02Lines.some(l => l.includes('tu mandou ele embora'))).toBe(!accepted);
       // Pergunta da caixa só aparece para quem aceitou.
       expect(m02Lines.includes('Uma última coisa. Ele deixou alguma coisa contigo?')).toBe(accepted);
-      expect(currentObjective(end.story)?.future).toBe(true);
+      // A cobrança abre o próximo capítulo: voltar para casa (A1-M03).
+      expect(currentObjective(end.story)).toMatchObject({ missionId: 'A1-M03', target: 'casa', future: false });
 
       // Consequência tardia: a fala do Nando muda conforme a resposta a Miro — e persiste após recarregar.
       reload(store, saved());
@@ -204,9 +205,181 @@ describe('Capítulo piloto — fluxo completo', () => {
     expect(resolveInteraction(store.get()!, 'mural')).toEqual({ kind: 'panel', tab: 'missoes' });
     expect(resolveInteraction(store.get()!, 'ponto')).toEqual({ kind: 'panel', tab: 'cidade' });
     expect(resolveInteraction(store.get()!, 'mercearia')).toEqual({ kind: 'panel', tab: 'economia' });
-    expect(resolveInteraction(store.get()!, 'casa')).toEqual({ kind: 'panel', tab: 'temporada' });
+    expect(resolveInteraction(store.get()!, 'casa')).toEqual({ kind: 'door', to: 'casa', spawn: 'porta' });
+    expect(resolveInteraction(store.get()!, 'sofa')).toEqual({ kind: 'panel', tab: 'temporada' });
+    expect(resolveInteraction(store.get()!, 'saida_casa')).toEqual({ kind: 'door', to: 'vila', spawn: 'casa_porta' });
     expect(store.dispatch({ type: 'rpg/train', id: 'labia' }).ok).toBe(true);
     expect(store.get()!.rpg.stats.labia).toBe(6);
+  });
+});
+
+describe('Ato I — Portas Fechadas, O Primeiro Serviço, Sangue e Dívida', () => {
+  /** Joga o prólogo até o fim da cobrança. */
+  function toM03(m01 = ['aceitar'], casa = ['verdade'], m02 = ['enfrentar', 'admitir'], seed = 1) {
+    let saved: string | null = null;
+    const store = new Store(s => { saved = JSON.stringify(s); return true; }, seededRng(seed));
+    store.dispatch({ type: 'game/new', name: 'Dandara', city: 'Rio de Janeiro', appearance: 1, career: null });
+    store.dispatch({ type: 'story/start', sceneId: 'A1-intro' }); play(store, []);
+    interact(store, 'magrao'); play(store, [...m01]);
+    interact(store, 'casa'); play(store, [...casa]);
+    store.dispatch({ type: 'story/start', sceneId: 'A1-M02-cobranca' }); play(store, [...m02]);
+    return { store, saved: () => saved };
+  }
+
+  function playAct(o: { lia: string[]; solange: string[]; m04: string[]; helena: string[]; m05: string[]; seed?: number; m01?: string[] }) {
+    const t = toM03(o.m01 ?? ['aceitar'], o.m01?.[0] === 'recusar' ? [] : ['verdade'], ['enfrentar', 'admitir'], o.seed ?? 1);
+    const { store } = t;
+    expect(interact(store, 'casa')).toEqual({ kind: 'scene', sceneId: 'A1-M03-domingo' });
+    play(store, []);
+    let s = store.get()!;
+    expect(s.story.clock).toMatchObject({ label: 'Domingo, 17h40', timeOfDay: 'entardecer' });
+    expect(s.story.npcs.lia).toMatchObject({ present: true, spot: 'casa_mesa' });
+    expect(currentObjective(s.story)).toMatchObject({ target: 'lia', area: 'casa' });
+    // Depois da cena, a casa volta a ser só uma porta.
+    expect(resolveInteraction(s, 'casa')).toEqual({ kind: 'door', to: 'casa', spawn: 'porta' });
+
+    interact(store, 'lia');
+    const liaLines = play(store, [...o.lia]);
+    s = store.get()!;
+    expect(currentObjective(s.story)).toMatchObject({ target: 'solange', area: 'vila' });
+
+    interact(store, 'solange');
+    const solLines = play(store, [...o.solange]);
+    s = store.get()!;
+    expect(s.story.missions['A1-M03']!.status).toBe('completed');
+    expect(s.story.flags.knows_silver_car).toBe(true);
+    expect(s.story.npcs.miro).toMatchObject({ present: true, spot: 'passarela' });
+    expect(currentObjective(s.story)).toMatchObject({ missionId: 'A1-M04', target: 'miro' });
+
+    interact(store, 'miro');
+    const m04Lines = play(store, [...o.m04]);
+    s = store.get()!;
+    return { store, saved: t.saved, s, liaLines, solLines, m04Lines };
+  }
+
+  function finish(store: Store, helena: string[], m05: string[]) {
+    let s = store.get()!;
+    expect(s.story.missions['A1-M05']).toEqual({ status: 'active', stage: 'go_bar' });
+    expect(s.story.npcs.nando.present).toBe(false);
+    expect(barAutoScene(s)).toBe('A1-M05-crise');
+    store.dispatch({ type: 'story/start', sceneId: 'A1-M05-crise' });
+    const criseLines = play(store, [...helena]);
+    s = store.get()!;
+    expect(currentObjective(s.story)).toMatchObject({ missionId: 'A1-M05', target: 'miro' });
+    expect(barAutoScene(s)).toBe(null);
+    interact(store, 'miro');
+    const ofertaLines = play(store, [...m05]);
+    return { criseLines, ofertaLines, end: store.get()! };
+  }
+
+  it('rota completa: conta tudo + aliada + negocia + colabora + protege', () => {
+    const { store, s, m04Lines, solLines } = playAct({ lia: ['tudo'], solange: ['magrao', 'avisar'], m04: ['ouvir', 'fazer'], helena: ['verdade'], m05: ['proteger'] });
+    void solLines;
+    expect(s.story.flags.lia_informed).toBe(true);
+    // Lábia 4 inicial: pedir ajuda à Solange fica bloqueado, cai no agradecimento.
+    expect(s.story.flags.solange_ally).toBeUndefined();
+    expect(['sucesso', 'falha']).toContain(s.story.flags.m04_result);
+    expect(typeof s.story.flags.m04_result_chance).toBe('number');
+    expect(m04Lines.some(l => l.includes('Exatamente como a caixa do Magrão'))).toBe(true);
+    expect(s.rpg.energy).toBeLessThan(100);
+    const respectBefore = s.rpg.respect;
+    const { end, ofertaLines, criseLines } = finish(store, ['verdade'], ['proteger']);
+    expect(criseLines.some(l => l.includes('Helena Paiva, Polícia Civil'))).toBe(true);
+    expect(end.story.flags.helena_stance).toBe('colaborou');
+    expect(end.story.flags.m05_attitude).toBe('proteger');
+    expect(end.story.flags.act1_done).toBe(true);
+    expect(end.story.missions['A1-M05']!.status).toBe('completed');
+    expect(end.rpg.respect).toBe(respectBefore + 5);
+    expect(ofertaLines).toContain('Bem-vindo à União da Linha.');
+    expect(end.story.npcs.nando.present).toBe(true);
+    const obj = currentObjective(end.story)!;
+    expect(obj.future).toBe(true);
+    expect(obj.objective).toContain('Fim do Ato I');
+    // Barks lembram do desfecho.
+    interact(store, 'lia');
+    expect(play(store, []).join(' ')).toContain('pra me proteger');
+    interact(store, 'nando');
+    expect(play(store, ['nada']).join(' ')).toContain('Eu não dei teu nome');
+  });
+
+  it('esconder de Lia: ela sai de casa, Solange comenta e o carro prata vira opção com a investigadora', () => {
+    const { store, s, solLines } = playAct({ lia: ['esconder'], solange: ['miro', 'agradecer'], m04: ['ouvir', 'recusar'], helena: ['carro'], m05: ['ambicao'] });
+    expect(s.story.flags.lia_kept_out).toBe(true);
+    expect(s.story.flags.knows_miro_answers).toBe(true);
+    expect(solLines.some(l => l.includes('de mala na mão'))).toBe(true);
+    expect(s.story.flags.m04_result).toBe('recusou');
+    expect(s.story.relationships.miro.state).toBe('conflito');
+    const heat = s.rpg.heat;
+    const { end, ofertaLines } = finish(store, ['carro'], ['ambicao']);
+    expect(end.story.flags.helena_car).toBe(true);
+    expect(end.rpg.heat).toBe(heat); // perguntar sobre o carro não muda a pressão
+    expect(ofertaLines.some(l => l.includes('Tu recusou o serviço'))).toBe(true);
+    expect(end.story.npcs.lia.present).toBe(true); // Lia volta no fim do ato
+    interact(store, 'lia');
+    expect(play(store, []).join(' ')).toContain('Por que eu sempre sei das coisas pelos outros?');
+  });
+
+  it('sem saber do carro prata a opção não aparece (memória entre missões)', () => {
+    const { store } = playAct({ lia: ['parte'], solange: ['magrao', 'agradecer'], m04: ['ouvir', 'recusar'], helena: [], m05: [] });
+    // Simula um save sem a pista (ex.: conteúdo futuro alternativo): a escolha some.
+    const st = store.get()!;
+    const copy = JSON.parse(JSON.stringify(st)) as GameState;
+    delete copy.story.flags.knows_silver_car;
+    const node = getNode('A1-M05-crise', 'c7')!;
+    expect(visibleChoices(copy, node).map(c => c.choice.id)).toEqual(['verdade', 'silencio']);
+    expect(visibleChoices(st, node).map(c => c.choice.id)).toEqual(['verdade', 'silencio', 'carro']);
+  });
+
+  it('"agora não" com Miro encerra sem concluir e a missão pode ser retomada', () => {
+    const { store, s } = playAct({ lia: ['tudo'], solange: ['magrao', 'agradecer'], m04: ['depois'], helena: [], m05: [] });
+    expect(s.story.activeDialogue).toBeNull();
+    expect(s.story.completedScenes).not.toContain('A1-M04-servico');
+    expect(s.story.missions['A1-M04']).toEqual({ status: 'active', stage: 'meet' });
+    expect(resolveInteraction(s, 'miro')).toEqual({ kind: 'scene', sceneId: 'A1-M04-servico' });
+    interact(store, 'miro'); play(store, ['ouvir', 'recusar']);
+    expect(store.get()!.story.missions['A1-M04']!.status).toBe('completed');
+  });
+
+  it('serviço exige energia: sem energia, só negociar/recusar ficam bloqueados ou disponíveis corretamente', () => {
+    const { store } = playAct({ lia: ['tudo'], solange: ['magrao', 'agradecer'], m04: ['depois'], helena: [], m05: [] });
+    const low = JSON.parse(JSON.stringify(store.get()!)) as GameState;
+    low.rpg.energy = 10;
+    const node = getNode('A1-M04-servico', 'v6')!;
+    const ch = visibleChoices(low, node);
+    expect(ch.find(c => c.choice.id === 'fazer')!.enabled).toBe(false);
+    expect(ch.find(c => c.choice.id === 'recusar')!.enabled).toBe(true);
+  });
+
+  it('teste de risco é determinístico por semente e o pagamento não duplica com recarga', () => {
+    const results = new Set<string>();
+    for (let seed = 1; seed <= 12; seed++) {
+      const { s } = playAct({ lia: ['tudo'], solange: ['magrao', 'agradecer'], m04: ['ouvir', 'fazer', 'aceitar'], helena: [], m05: [], seed });
+      results.add(String(s.story.flags.m04_result));
+      const chance = s.story.flags.m04_result_chance as number;
+      expect(chance).toBeGreaterThanOrEqual(15);
+      expect(chance).toBeLessThanOrEqual(90);
+    }
+    // Com 12 sementes os dois desfechos aparecem (nenhum caminho único escondido).
+    expect(results).toEqual(new Set(['sucesso', 'falha']));
+    // Mesma semente → mesmo resultado.
+    const a = playAct({ lia: ['tudo'], solange: ['magrao', 'agradecer'], m04: ['ouvir', 'fazer', 'aceitar'], helena: [], m05: [], seed: 3 });
+    const b = playAct({ lia: ['tudo'], solange: ['magrao', 'agradecer'], m04: ['ouvir', 'fazer', 'aceitar'], helena: [], m05: [], seed: 3 });
+    expect(a.s.story.flags.m04_result).toBe(b.s.story.flags.m04_result);
+    expect(a.s.rpg.cash).toBe(b.s.rpg.cash);
+    const cash = a.s.rpg.cash;
+    for (let i = 0; i < 3; i++) reload(a.store, a.saved());
+    expect(a.store.get()!.rpg.cash).toBe(cash);
+    expect(a.store.dispatch({ type: 'story/start', sceneId: 'A1-M04-servico' }).ok).toBe(false);
+  });
+
+  it('progresso do Ato I sobrevive a recarregar no meio da crise', () => {
+    const { store, saved } = playAct({ lia: ['tudo'], solange: ['magrao', 'agradecer'], m04: ['ouvir', 'recusar'], helena: [], m05: [] });
+    store.dispatch({ type: 'story/start', sceneId: 'A1-M05-crise' });
+    for (let i = 0; i < 4; i++) { const a = store.get()!.story.activeDialogue!; store.dispatch({ type: 'story/advance', nodeId: a.nodeId }); }
+    const mid = store.get()!.story.activeDialogue!.nodeId;
+    reload(store, saved());
+    expect(store.get()!.story.activeDialogue?.nodeId).toBe(mid);
+    expect(store.get()!.story.clock.label).toBe('Terça-feira, 22h10');
   });
 });
 
