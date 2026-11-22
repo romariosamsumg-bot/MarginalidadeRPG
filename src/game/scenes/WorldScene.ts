@@ -730,7 +730,11 @@ export class WorldScene extends Phaser.Scene {
       this.marker.setVisible(false);
       const cx = v.x + v.w / 2, cy = v.y + v.h / 2;
       const ang = Math.atan2(t.y - 80 - cy, t.x - cx);
-      const ax = Phaser.Math.Clamp(t.x, v.x + inset, v.x + v.w - inset), ay = Phaser.Math.Clamp(t.y - 80, v.y + inset + 60, v.y + v.h - inset - 80);
+      // Limites em px de tela convertidos para o mundo: fora do HUD de cima (~150 px) e dos botões de baixo (~190 px),
+      // para que tocar na seta sempre chegue ao jogo.
+      const toWorld = this.scale.displayScale.y / this.cameras.main.zoom;
+      const top = v.y + 160 * toWorld, bottom = v.y + v.h - 200 * toWorld;
+      const ax = Phaser.Math.Clamp(t.x, v.x + inset, v.x + v.w - inset), ay = Phaser.Math.Clamp(t.y - 80, Math.min(top, bottom), Math.max(top, bottom));
       this.arrow.setVisible(true).setPosition(ax, ay).setRotation(ang).setScale(1 / Math.max(0.6, this.cameras.main.zoom) * 0.9);
       this.arrowTarget = id;
     }

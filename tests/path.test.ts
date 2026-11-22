@@ -35,3 +35,24 @@ describe('Busca de caminho (tocar para ir)', () => {
     expect(obstacles(BAR).some(b => last.x > b.x && last.x < b.x + b.w && last.y > b.y && last.y < b.y + b.h)).toBe(false);
   });
 });
+
+describe('rota respeita a pegada real dos pés', () => {
+  it('passando por baixo da moto, nenhum ponto da rota deixa os pés (26×14 acima da base) encostarem nela', async () => {
+    const { VILA } = await import('../src/world/layout');
+    const moto = VILA.props.find(p => p.key === 'moto')!.collider!;
+    for (const fromY of [628, 643, 657, 672]) {
+      const way = findPath(VILA, { x: 430, y: fromY }, { x: 1738, y: 628 })!;
+      expect(way, `de y=${fromY}`).not.toBeNull();
+      const pts = [{ x: 430, y: fromY }, ...way];
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1]!, b = pts[i]!;
+        const n = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 4);
+        for (let k = 0; k <= n; k++) {
+          const x = a.x + ((b.x - a.x) * k) / n, y = a.y + ((b.y - a.y) * k) / n;
+          const hit = x + 13 > moto.x && x - 13 < moto.x + moto.w && y > moto.y && y - 14 < moto.y + moto.h;
+          expect(hit, `pés tocam a moto em (${x.toFixed(0)}, ${y.toFixed(0)}) saindo de y=${fromY}`).toBe(false);
+        }
+      }
+    }
+  });
+});

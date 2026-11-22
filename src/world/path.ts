@@ -7,11 +7,14 @@ import type { AreaLayout, Box } from './layout';
 
 export interface Pt { x: number; y: number }
 const CELL = 16;
-const PAD_X = 16, PAD_Y = 9; // meia pegada + folga
+// Pegada dos pés: 26×14 px, com a posição do personagem na BASE (os pés sobem 14 px a partir dela).
+// Por isso a folga é assimétrica: um obstáculo bloqueia do seu topo (−3) até a base + 14 px dos pés + 5 de folga.
+// (Antes era ±4,5 px: a rota passava rente por baixo da moto e o corpo físico esbarrava nela.)
+const PAD_X = 16, PAD_TOP = 3, PAD_BOTTOM = 19;
 
 export function obstacles(layout: AreaLayout, extra: Box[] = [], includePatrol = false): Box[] {
   const boxes = [...layout.colliders, ...layout.props.filter(p => p.collider && (includePatrol || p.when !== 'patrol')).map(p => p.collider!), ...extra];
-  return boxes.map(b => ({ x: b.x - PAD_X, y: b.y - PAD_Y / 2, w: b.w + PAD_X * 2, h: b.h + PAD_Y + 2 }));
+  return boxes.map(b => ({ x: b.x - PAD_X, y: b.y - PAD_TOP, w: b.w + PAD_X * 2, h: b.h + PAD_TOP + PAD_BOTTOM }));
 }
 
 const inside = (boxes: Box[], x: number, y: number) => boxes.some(b => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
