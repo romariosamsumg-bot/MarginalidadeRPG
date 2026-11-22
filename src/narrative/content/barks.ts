@@ -12,6 +12,10 @@ const ACT1_DONE: Condition = { flag: 'act1_done' };
 const M03_DONE: Condition = { mission: 'A1-M03', status: 'completed' };
 const M04_DONE: Condition = { mission: 'A1-M04', status: 'completed' };
 const attitude = (v: string): Condition => ({ flag: 'm05_attitude', eq: v });
+const A2M01_DONE: Condition = { mission: 'A2-M01', status: 'completed' };
+const A2M02_DONE: Condition = { mission: 'A2-M02', status: 'completed' };
+const nomeResp = (v: string): Condition => ({ flag: 'nome_resposta', eq: v });
+const alliance = (v: string): Condition => ({ flag: 'vania_alliance', eq: v });
 const m04 = (v: string): Condition => ({ flag: 'm04_result', eq: v });
 
 export const BARK_LIA: Scene = {
@@ -20,6 +24,9 @@ export const BARK_LIA: Scene = {
     {
       id: 'l0', speaker: 'narrator', text: '',
       branch: [
+        { if: { all: [A2M01_DONE, nomeResp('assumiu')] }, next: 'l_n_a' },
+        { if: { all: [A2M01_DONE, nomeResp('recusou')] }, next: 'l_n_r' },
+        { if: { all: [A2M01_DONE, nomeResp('miro')] }, next: 'l_n_m' },
         { if: ACT1_DONE, next: 'l_a1' },
         { if: M03_DONE, next: 'l_m3' },
         { if: { all: [M02_DONE, resp('enfrentar')] }, next: 'l_e' },
@@ -29,6 +36,9 @@ export const BARK_LIA: Scene = {
       ],
       next: 'l_gen'
     },
+    { id: 'l_n_a', speaker: 'lia', text: 'Tu tá mesmo lendo aqueles bilhetes do mural? Cuidado, {nome}: quem resolve um problema vira dono dele.', end: true },
+    { id: 'l_n_r', speaker: 'lia', text: 'Escreveram teu nome de novo no mural. Pequenininho, num canto. Parece que a Vila decidiu por tu.', end: true },
+    { id: 'l_n_m', speaker: 'lia', text: 'O Jorge da banca parou de me cumprimentar. Tu sabe por quê, né?', end: true },
     {
       id: 'l_a1', speaker: 'lia', text: 'Tu entrou pro lado do Miro. Eu sei. A Vila inteira sabe.',
       variants: [{ if: { flag: 'lia_kept_out' }, text: 'Voltei da casa da tia e a primeira coisa que eu ouvi foi teu nome junto com o do Miro. Por que eu sempre sei das coisas pelos outros?' }],
@@ -74,6 +84,8 @@ export const BARK_SOLANGE: Scene = {
     {
       id: 's0', speaker: 'narrator', text: '',
       branch: [
+        { if: { all: [A2M01_DONE, nomeResp('miro')] }, next: 's_n_m' },
+        { if: A2M01_DONE, next: 's_nome' },
         { if: ACT1_DONE, next: 's_a1' },
         { if: { all: [M03_DONE, { flag: 'solange_ally' }] }, next: 's_ally' },
         { if: M03_DONE, next: 's_m3' },
@@ -84,6 +96,8 @@ export const BARK_SOLANGE: Scene = {
       ],
       next: 's_pre'
     },
+    { id: 's_n_m', speaker: 'solange', text: 'O Jorge me contou do bilhete que foi parar no bolso do Miro. Eu não esperava isso de tu, {nome}.', next: 's_end' },
+    { id: 's_nome', speaker: 'solange', text: 'Tem gente perguntando se tu vai mesmo resolver os pedidos do mural. Eu digo que não sei. E não sei mesmo.', next: 's_end' },
     { id: 's_a1', speaker: 'solange', text: 'Tão dizendo que agora tu é da União da Linha. Eu não vou te tratar diferente. Mas a Vila vai.', next: 's_end' },
     { id: 's_ally', speaker: 'solange', text: 'Nada do carro prata ainda. Se aparecer, tu fica sabendo antes de todo mundo.', next: 's_end' },
     { id: 's_m3', speaker: 'solange', text: 'O que eu te contei fica entre nós, ouviu? Na Vila, quem fala demais some igual o Magrão.', next: 's_end' },
@@ -109,6 +123,8 @@ export const BARK_NANDO: Scene = {
     {
       id: 'n0', speaker: 'narrator', text: '',
       branch: [
+        { if: { flag: 'tregua_cais', eq: 'firme' }, next: 'n_tf' },
+        { if: { flag: 'tregua_cais', eq: 'fracasso' }, next: 'n_tx' },
         { if: ACT1_DONE, next: 'n_a1' },
         { if: { all: [M02_DONE, resp('negociar')] }, next: 'n_n' },
         { if: { all: [M02_DONE, resp('enfrentar')] }, next: 'n_e' },
@@ -117,6 +133,8 @@ export const BARK_NANDO: Scene = {
       ],
       next: 'n_pre'
     },
+    { id: 'n_tf', speaker: 'nando', text: 'Disseram que o pessoal do Cais não aparece mais por aqui. E que foi tu que sentou com eles. Eu… obrigado. Só isso.', next: 'n_menu' },
+    { id: 'n_tx', speaker: 'nando', text: 'Tô fechando mais cedo. O pessoal do Cais passou de carro duas vezes ontem. Devagar.', next: 'n_menu' },
     { id: 'n_a1', speaker: 'nando', text: 'Tô inteiro. Quase. Dois pontos na testa e um susto que não sai.', next: 'n_a1b' },
     { id: 'n_a1b', speaker: 'nando', text: 'Eu não dei teu nome pra ninguém, {nome}. Juro. Alguém quis que parecesse que eu dei.', next: 'n_menu' },
     { id: 'n_pre', speaker: 'nando', text: 'Fala, {nome}. Hoje tá parado. Quer uma água, um refri?', next: 'n_menu' },
@@ -149,6 +167,9 @@ export const BARK_MIRO: Scene = {
     {
       id: 'm0', speaker: 'narrator', text: '',
       branch: [
+        { if: alliance('apoio'), next: 'm_v_a' },
+        { if: alliance('miro'), next: 'm_v_m' },
+        { if: alliance('autonomia'), next: 'm_v_x' },
         { if: ACT1_DONE, next: 'm_a1' },
         { if: { all: [M04_DONE, m04('recusou')] }, next: 'm_r' },
         { if: { all: [M04_DONE, m04('falha')] }, next: 'm_f' },
@@ -159,6 +180,9 @@ export const BARK_MIRO: Scene = {
       ],
       next: 'm_gen'
     },
+    { id: 'm_v_a', speaker: 'miro', text: 'A Vânia fala bonito, né? Eu te avisei que ela falava bonito.', end: true },
+    { id: 'm_v_m', speaker: 'miro', text: 'Fez bem em me contar da mesa. A Vânia joga do lado dela. Sempre jogou.', end: true },
+    { id: 'm_v_x', speaker: 'miro', text: 'Nem comigo, nem com ela. Tu acha mesmo que dá pra ficar no meio da rua?', end: true },
     {
       id: 'm_a1', speaker: 'miro', text: 'Agora tu é da casa. Fica por perto — quando a Vânia chamar, tu vai.',
       variants: [{ if: attitude('ressentimento'), text: 'Ainda com essa cara? Vai passar. Ou não. Tanto faz, desde que tu chegue na hora.' }],
@@ -196,6 +220,33 @@ export const BARK_ZE: Scene = {
   ]
 };
 
+export const BARK_VANIA: Scene = {
+  id: 'bark-vania', mission: null, once: false, start: 'v0',
+  nodes: [
+    {
+      id: 'v0', speaker: 'narrator', text: '',
+      branch: [
+        { if: { all: [A2M02_DONE, alliance('apoio')] }, next: 'v_a' },
+        { if: { all: [A2M02_DONE, alliance('autonomia')] }, next: 'v_x' },
+        { if: { all: [A2M02_DONE, alliance('miro')] }, next: 'v_m' }
+      ],
+      next: 'v_pre'
+    },
+    { id: 'v_pre', speaker: 'vania', text: 'Senta quando for a hora. Ainda não é.', end: true },
+    { id: 'v_a', speaker: 'vania', text: 'Tô de olho no Gaspar. E no Miro. Tu cuida do teu nome — o resto eu vejo.', next: 'v_t' },
+    { id: 'v_x', speaker: 'vania', text: 'Quem anda sem dono precisa enxergar dobrado. Tá enxergando?', next: 'v_t' },
+    { id: 'v_m', speaker: 'vania', text: 'Tu fez tua escolha. Eu faço as minhas. Sem rancor — rancor é caro.', next: 'v_t' },
+    {
+      id: 'v_t', speaker: 'vania', text: 'A trégua com o Cais tá de pé. Por enquanto.',
+      variants: [
+        { if: { flag: 'tregua_cais', eq: 'fragil' }, text: 'Faltam poucos dias pro prazo do Gaspar. Ninguém da Vila perto do galpão, ouviu?' },
+        { if: { flag: 'tregua_cais', eq: 'fracasso' }, text: 'O Gaspar não atende mais. Vou achar outro caminho. Sempre tem.' }
+      ],
+      end: true
+    }
+  ]
+};
+
 export const BARK_MAGRAO: Scene = {
   id: 'bark-magrao', mission: null, once: false, start: 'g1',
   nodes: [{ id: 'g1', speaker: 'magrao', text: 'Agora não dá, tô fechando. Passa depois.', end: true }]
@@ -216,4 +267,4 @@ export const POI_TV: Scene = {
   nodes: [{ id: 't1', speaker: 'narrator', text: 'Na TV, um programa repete as mesmas imagens de sempre. Ninguém está assistindo de verdade.', end: true }]
 };
 
-export const BARKS: Scene[] = [BARK_LIA, BARK_SOLANGE, BARK_NANDO, BARK_MIRO, BARK_ZE, BARK_MAGRAO, POI_OFICINA, POI_TV];
+export const BARKS: Scene[] = [BARK_LIA, BARK_SOLANGE, BARK_NANDO, BARK_MIRO, BARK_ZE, BARK_VANIA, BARK_MAGRAO, POI_OFICINA, POI_TV];

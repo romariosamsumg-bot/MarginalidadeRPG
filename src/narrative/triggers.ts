@@ -13,7 +13,7 @@ export type InteractionOutcome =
   | { kind: 'none'; msg: string };
 
 export type TargetId =
-  | 'magrao' | 'lia' | 'solange' | 'miro' | 'nando' | 'ze'
+  | 'magrao' | 'lia' | 'solange' | 'miro' | 'nando' | 'ze' | 'vania'
   | 'casa' | 'oficina' | 'mural' | 'bar_porta' | 'loja' | 'mercearia' | 'ponto'
   | 'bar_saida' | 'tv' | 'sofa' | 'saida_casa';
 
@@ -41,9 +41,13 @@ export function resolveInteraction(s: GameState, target: TargetId): InteractionO
       return { kind: 'scene', sceneId: 'bark-lia' };
     case 'solange':
       if (stageIs(s, 'A1-M03', 'talk_solange')) return { kind: 'scene', sceneId: 'A1-M03-solange' };
+      if (stageIs(s, 'A2-M01', 'talk_solange')) return { kind: 'scene', sceneId: 'A2-M01-solange' };
       return { kind: 'scene', sceneId: 'bark-solange' };
     case 'nando': return { kind: 'scene', sceneId: 'bark-nando' };
     case 'ze': return { kind: 'scene', sceneId: 'bark-ze' };
+    case 'vania':
+      if (stageIs(s, 'A2-M02', 'meet_vania')) return { kind: 'scene', sceneId: 'A2-M02-vania' };
+      return { kind: 'scene', sceneId: 'bark-vania' };
     case 'miro':
       if (stageIs(s, 'A1-M02', 'go_bar') || stageIs(s, 'A1-M02', 'confront')) return { kind: 'scene', sceneId: 'A1-M02-cobranca' };
       if (stageIs(s, 'A1-M04', 'meet')) return { kind: 'scene', sceneId: 'A1-M04-servico' };
@@ -51,7 +55,9 @@ export function resolveInteraction(s: GameState, target: TargetId): InteractionO
       return { kind: 'scene', sceneId: 'bark-miro' };
     case 'oficina': return { kind: 'scene', sceneId: 'poi-oficina' };
     case 'tv': return { kind: 'scene', sceneId: 'poi-tv' };
-    case 'mural': return { kind: 'panel', tab: 'missoes' };
+    case 'mural':
+      if (stageIs(s, 'A2-M01', 'mural')) return { kind: 'scene', sceneId: 'A2-M01-mural' };
+      return { kind: 'panel', tab: 'missoes' };
     case 'mercearia': return { kind: 'panel', tab: 'economia' };
     case 'loja': return { kind: 'panel', tab: 'economia' };
     case 'ponto': return { kind: 'panel', tab: 'cidade' };
@@ -82,6 +88,7 @@ export function interactionLabel(s: GameState, target: TargetId, name: string): 
     return map[o.tab] || 'Abrir';
   }
   if (target === 'oficina' || target === 'tv') return 'Observar';
+  if (target === 'mural') return 'Ler os bilhetes do mural';
   if (target === 'casa') return 'Entrar em casa';
   return `Falar com ${name}`;
 }

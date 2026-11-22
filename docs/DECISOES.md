@@ -26,7 +26,7 @@ Decisões não críticas tomadas sem bloquear o início, conforme o prompt mestr
 - Missão única concede **+3 de respeito uma vez** (via `grantRespect`, mecanismo oficial do núcleo). Nenhuma recompensa em dinheiro por diálogo; nenhuma dívida monetária é debitada (Bíblia).
 - Opção com requisito (**Lábia 6**) aparece desabilitada com explicação; sempre há alternativa sem requisito (validador garante).
 - Relógio da história ("Sexta-feira, 18h10" → "Sábado, 23h40") é separado da temporada de 30 dias. Encerrar a temporada **não** reinicia a campanha.
-- Missões A2-M01 a A5-M05 aparecem na aba História como **"Em produção"**.
+- Missões A2-M03 a A5-M05 aparecem na aba História como **"Em produção"**.
 
 ## Ato I completo (A1-M03 a A1-M05)
 - **A1-M03 "Portas Fechadas"**: domingo à tarde, a casa vira um interior explorável (cozinha, sofá, porta). Lia pergunta o que está acontecendo — contar tudo (`lia_informed=true`), só uma parte (`'parcial'`) ou esconder (`lia_kept_out`, ela vai passar uns dias na tia e some do mapa até o fim do ato). Dona Solange conta do **carro prata** (`knows_silver_car`) e, com Lábia 6, promete avisar (`solange_ally`). A fala de Lia reconhece a resposta dada na noite da caixa e se o protagonista recusou a encomenda.
@@ -60,3 +60,13 @@ Três desafios curtos (30–90 s), feitos para toque em 360 px e com teclado (1�
 
 - O resultado é sempre gravado pelo store (`story/minigame` ou `bico/balcao`), com pontos inteiros limitados à faixa; um nó de desafio aceita um único resultado e não avança com toque. Recarregar a página durante um desafio reabre a tela de abertura dele.
 - Itens do balcão são genéricos (água, café, suco, refri, pastel, pão na chapa): sem marcas e sem bebida alcoólica no bico.
+
+## Ato II — primeiras missões (A2-M01 e A2-M02)
+- **Ponte**: o Mural do Carro Prata (agora "Interlúdio") termina com o cartão "Ato II — A Ascensão / A Lei da Rua" e libera A2-M01. Saves que já tinham feito o mural na versão anterior (Ato II "em produção") são migrados ao carregar: A2-M01 fica ativa, sem mexer em mais nada.
+- **A2-M01 "Nome na Rua"** (reputação narrativa): Dona Solange conta o boato — o **gesto antigo** vem de A1-M04 (`gesto`: disse não ao Miro / voltou inteiro do Cais / encarou dois homens) e o **rótulo** vem da atitude do fim do Ato I (quem protege a Vila / o novo braço do Miro / quem não abaixa a cabeça). Quem colaborou com Helena ouve que "conversou com a polícia" (`rumor_policia`). No Mural da Passarela, seu nome está escrito com bilhetes de moradores embaixo (emprego, uma "taxa" cobrada da banca, briga de vizinhos): arrancar o nome, guardar os bilhetes (+2 de respeito, uma vez) ou levar o bilhete da taxa ao Miro (Miro gosta; Solange e Jorge, não).
+- **A2-M02 "A Voz de Vânia"**: Vânia Cinza na mesa do fundo do bar. **Teste de aceitação da Bíblia**: a primeira fala dela muda com `miro_first_response`, usando exatamente as falas da seção 8 (negociar / enfrentar / adiar) — coberto por teste unitário para as três respostas e por e2e. Ela propõe resolver com o Cais do Norte numa mesa em vez da retaliação de Miro, ensina três sinais e leva o protagonista à negociação.
+- **Mini game "A Mesa"** (leitura + tempo): 4 rodadas sorteadas de 6, sempre com os três sinais (relógio → esperar; número repetido → pressionar; voz baixa → oferecer saída). 9 s por rodada; 2 pontos certo e rápido, 1 certo e lento. ≥6: trégua firme (+3 de respeito uma vez, pressão −5, Vânia em confiança); 3–5: trégua frágil com prazo; ≤2: fracasso (pressão +5). Negociação abstrata: sem valores, rotas ou procedimentos.
+- **Decisão da Bíblia "Apoiar Vânia ou insistir em autonomia"**: apoiar / seguir o próprio caminho / contar tudo ao Miro (`vania_alliance`). Miro, Vânia, Nando, Lia e Solange reagem nas conversas do dia a dia.
+- **Vânia e Helena são desenhadas por código** (sprite e retrato), no mesmo sistema procedural dos pedestres: os créditos de geração de arte acabaram. Helena ganhou retrato nas falas. Ambas estão em `RECURSOS_A_SUBSTITUIR.md`.
+- **Toque em pessoa tem prioridade sobre objeto** sob o mesmo dedo: tocar na Vânia abria a TV atrás dela (achado ao jogar no navegador).
+- Fictícios: Gaspar, Jorge da banca, o galpão do Cais do Norte e a União da Linha.

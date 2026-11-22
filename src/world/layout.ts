@@ -108,6 +108,7 @@ export const BAR: AreaLayout = {
     { id: 'nando', x: 0, y: 0, radius: 175, name: 'Nando', markerY: 0, npc: 'nando' },
     { id: 'ze', x: 0, y: 0, radius: 76, name: 'Seu Zé', markerY: 0, npc: 'ze' },
     { id: 'miro', x: 0, y: 0, radius: 90, name: 'Miro', markerY: 0, npc: 'miro' },
+    { id: 'vania', x: 0, y: 0, radius: 140, name: 'Vânia', markerY: 0, npc: 'vania' },
     { id: 'tv', x: 1000, y: 470, radius: 70, name: 'Televisão', markerY: 300 },
     { id: 'bar_saida', x: 1130, y: 470, radius: 80, name: 'Saída', markerY: 300 }
   ],

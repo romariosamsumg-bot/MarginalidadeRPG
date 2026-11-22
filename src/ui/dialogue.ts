@@ -3,7 +3,7 @@
  * Recarregar a página durante um diálogo reabre exatamente o mesmo nó.
  */
 import type { Store, Result } from '../core/store';
-import { getNode, getScene, nodeText, visibleChoices } from '../narrative/engine';
+import { getNode, getScene, interpolate, nodeText, visibleChoices } from '../narrative/engine';
 import type { DialogueNode, MinigameNode, Speaker } from '../narrative/types';
 import { esc } from './dom';
 import { CARD_ART } from '../art/assets';
@@ -136,7 +136,8 @@ export class DialogueView {
       if (!m) return;
       const b = document.createElement('div');
       b.className = `bubble ${m.from}`;
-      b.textContent = m.text;
+      const st = this.d.store.get();
+      b.textContent = st ? interpolate(st, m.text) : m.text;
       if (m.time) { const t = document.createElement('time'); t.textContent = m.who ? `${m.who} · ${m.time}` : m.time; b.appendChild(t); }
       box.appendChild(b);
       this.phoneShown++;
@@ -166,7 +167,7 @@ export class DialogueView {
       const all = node.phone!;
       const box = this.root.querySelector('.msgs');
       while (this.phoneShown < all.length && box) {
-        const m = all[this.phoneShown]!; const b = document.createElement('div'); b.className = `bubble ${m.from}`; b.textContent = m.text;
+        const m = all[this.phoneShown]!; const b = document.createElement('div'); b.className = `bubble ${m.from}`; b.textContent = interpolate(s, m.text);
         if (m.time) { const tt = document.createElement('time'); tt.textContent = m.who ? `${m.who} · ${m.time}` : m.time; b.appendChild(tt); }
         box.appendChild(b); this.phoneShown++;
       }

@@ -14,3 +14,9 @@ texturas com as mesmas chaves em `src/game/scenes/BootScene.ts`.
 | Retratos de diálogo | `paintPortrait` | **Já substituídos** por retratos pintados (Higgsfield) — ver `docs/ARTE_GERADA.md` |
 | Luzes (`glow*`, `cone`, `pool`), fumaça, chuva | `art/props.ts` | Podem continuar procedurais |
 | Ambiente, passos, efeitos, tema e rádio do bar | `audio/audio.ts` | Gravações/composições originais (OGG/M4A) |
+
+## Ato II
+| Recurso | Hoje | Substituir por |
+|---|---|---|
+| Vânia Cinza (sprite 17 quadros + retrato) | Pintada por código (`NPC_LOOKS.vania` em `src/art/characters.ts`) | Folha de sprites e retrato no mesmo estilo dos outros nomeados (`src/assets/sprites/char_vania.webp` é carregado automaticamente se existir; retrato em `PORTRAIT_ART`) |
+| Helena Paiva (retrato) | Pintado por código (`NPC_LOOKS.helena`) | Retrato no estilo dos demais |

@@ -37,6 +37,9 @@ export const NPC_LOOKS: Record<string, CharSpec> = {
   miro: { id: 'miro', skin: '#a8735a', hair: '#1a1410', hairStyle: 'short', top: '#161a1d', topStyle: 'jacket', inner: '#7c1f26', bottom: '#14181b', shoes: '#0d0d0d', chain: true, stubble: true, height: 1.06, build: 1.08, portraitBg: '#2b0f12' },
   nando: { id: 'nando', skin: '#b07c5c', hair: '#2a211b', hairStyle: 'bald', top: '#e9e4d6', topStyle: 'tshirt', apron: '#1b4b56', bottom: '#2c3338', shoes: '#141414', towel: true, mustache: true, build: 1.15, portraitBg: '#3b3020' },
   ze: { id: 'ze', skin: '#5d3a27', hair: '#d8d2c6', hairStyle: 'short', top: '#7d6a45', topStyle: 'shirt', bottom: '#3a3a36', shoes: '#2a1f18', glasses: false, mustache: true, height: 0.94, portraitBg: '#2e2a1c' },
+  // Ato II — pintadas por código (sem arte gerada; créditos esgotados). Ver docs/RECURSOS_A_SUBSTITUIR.md.
+  vania: { id: 'vania', skin: '#9a6648', hair: '#1c1714', hairStyle: 'bun', top: '#5c6166', topStyle: 'jacket', inner: '#d9d2c2', bottom: '#2a2d31', shoes: '#141414', earring: true, height: 1.0, build: 0.92, portraitBg: '#2c3236' },
+  helena: { id: 'helena', skin: '#c08a68', hair: '#3a2a20', hairStyle: 'ponytail', top: '#1f2a33', topStyle: 'jacket', inner: '#7d8a91', bottom: '#22272b', shoes: '#111', glasses: true, height: 0.98, build: 0.95, portraitBg: '#1b2a36' },
   ped0: { id: 'ped0', skin: '#8a5a3c', hair: '#0e0b08', hairStyle: 'curly', top: '#1b4b56', topStyle: 'tshirt', bottom: '#3b3b3b', shoes: '#ddd', bag: '#1a1a1a', portraitBg: '#123640' },
   ped1: { id: 'ped1', skin: '#c49a78', hair: '#2a1a10', hairStyle: 'long', top: '#a8634a', topStyle: 'tank', bottom: '#1d2a36', shoes: '#111', portraitBg: '#123640' },
   ped2: { id: 'ped2', skin: '#3f281c', hair: '#0b0b0b', hairStyle: 'buzz', top: '#3a3f44', topStyle: 'shirt', bottom: '#5a4a38', shoes: '#151515', cap: '#1b4b56', portraitBg: '#123640' }

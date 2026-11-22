@@ -8,6 +8,7 @@ import { cryptoRng } from '../core/legacy/util';
 import { MINIGAME_INFO, type MinigameId } from '../minigames/types';
 import { depoimentoQuestions, answerPoints, SECONDS_PER_QUESTION, DEPOIMENTO_MAX } from '../minigames/depoimento';
 import { TIMELINE, STATEMENTS, muralScore, MURAL_MAX } from '../minigames/mural';
+import { MOVES, pickRounds, movePoints, MESA_MAX, MESA_SECONDS, type MesaMove } from '../minigames/mesa';
 import { MENU, ROUND_SIZES, SECONDS_PER_ITEM, PEDIDOS_MAX, makeOrder, orderLine, bicoPay, type Order } from '../minigames/pedidos';
 import { esc } from './dom';
 
@@ -129,6 +130,7 @@ export class MinigameView {
     this.reset();
     if (id === 'depoimento') this.depoimento(o);
     else if (id === 'mural') this.mural(o);
+    else if (id === 'mesa') this.mesa(o);
     else this.pedidos(o);
   }
 
@@ -232,6 +234,58 @@ export class MinigameView {
       this.keyHandler = k => { const n = Number(k); if (n >= 1 && n <= sts.length) { pick(n - 1); return true; } return k === 'esc' || k === 'ok'; };
     };
     step1();
+  }
+
+  /* -------------------------------- A Mesa -------------------------------- */
+
+  private mesa(o: OpenOptions) {
+    const rounds = pickRounds(cryptoRng);
+    let i = 0, score = 0;
+    const marks: string[] = [];
+    const FEEDBACK: Record<MesaMove, string> = {
+      esperar: 'Você fica em silêncio. O silêncio pesa do lado dele.',
+      pressionar: 'Você não recua um centímetro.',
+      saida: 'Você deixa uma porta aberta para ele sair sem perder a cara.'
+    };
+    const ask = () => {
+      this.reset();
+      const r = rounds[i]!;
+      this.root.innerHTML = `<div class="mg"><div class="mg-play">
+        <div class="mg-head"><span>Rodada ${i + 1}/${rounds.length}</span><span class="mg-marks" aria-label="Rodadas anteriores">${marks.join(' ')}</span></div>
+        <div class="mg-time" aria-hidden="true"><i></i></div>
+        <p class="mg-who">Gaspar, pelo Cais do Norte</p><p class="mg-q">${esc(r.line)}</p>
+        <p class="mg-cue">${esc(r.cue)}</p>
+        <div class="mg-opts">${MOVES.map((m, k) => `<button type="button" class="choice" data-mg="m${k}"><span class="n">${k + 1}</span><span>${esc(m.label)}</span></button>`).join('')}</div>
+        <p class="mg-fb" aria-live="polite"></p></div></div>`;
+      let answered = false;
+      const stop = this.timer(this.root.querySelector('.mg-time i'), MESA_SECONDS, () => answer(-1));
+      const answer = (k: number) => {
+        if (answered) return;
+        answered = true;
+        const secs = k < 0 ? MESA_SECONDS + 1 : stop();
+        const move = k >= 0 ? MOVES[k]!.id : null;
+        const pts = movePoints(move, r, secs);
+        score += pts;
+        marks.push(pts === 2 ? '●' : pts === 1 ? '◐' : '○');
+        this.root.querySelectorAll<HTMLButtonElement>('[data-mg]').forEach(b => { b.disabled = true; });
+        if (k >= 0) this.root.querySelector(`[data-mg="m${k}"]`)?.classList.add(move === r.right ? 'mg-right' : 'mg-wrong');
+        const right = MOVES.find(m => m.id === r.right)!.label.toLowerCase();
+        (this.root.querySelector('.mg-fb') as HTMLElement).textContent =
+          k < 0 ? `Você demorou demais. Vânia responde no seu lugar: era hora de ${right}.`
+          : pts === 2 ? `${FEEDBACK[move!]} Vânia quase sorri.`
+          : pts === 1 ? `${FEEDBACK[move!]} Certo, mas ele percebeu a demora.`
+          : `Leitura errada. Vânia corrige com o olhar: era hora de ${right}.`;
+        this.d.sfx(pts ? 'confirm' : 'error');
+        this.later(1600, () => { i++; if (i < rounds.length) ask(); else end(); });
+      };
+      this.bind(Object.fromEntries(MOVES.map((_, k) => [`m${k}`, () => answer(k)])));
+      this.keyHandler = k => { const n = Number(k); if (n >= 1 && n <= 3) { answer(n - 1); return true; } return k === 'esc' || k === 'ok'; };
+    };
+    const end = () => {
+      const verdict = score >= 6 ? 'Gaspar aceita a conversa como você conduziu.' : score >= 3 ? 'Ele aceita, mas com pé atrás.' : 'Você perdeu a mesa.';
+      this.finish('A Mesa', `<p class="mg-big">${score}/${MESA_MAX}</p><p>${esc(verdict)}</p><p class="mg-legend">● leitura certa · ◐ certa, mas demorou · ○ errou</p>`, score, o);
+    };
+    ask();
   }
 
   /* --------------------------- Pedidos no Balcão --------------------------- */

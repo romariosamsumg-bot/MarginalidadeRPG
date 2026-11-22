@@ -363,7 +363,7 @@ export class App {
   /* ------------------------------ Mini games ------------------------------ */
 
   /** Desafio dentro de uma cena: o resultado avança a cena (story/minigame). */
-  private openStoryMinigame(nodeId: string, id: 'depoimento' | 'mural') {
+  private openStoryMinigame(nodeId: string, id: 'depoimento' | 'mural' | 'mesa') {
     if (this.minigame.active === id) return;
     this.minigame.show(id, {
       onDone: score => {

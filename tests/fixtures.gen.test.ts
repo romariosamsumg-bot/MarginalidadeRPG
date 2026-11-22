@@ -52,4 +52,10 @@ it.skipIf(!process.env.GEN_FIXTURES)('gera saves do Ato I', () => {
   dump(store, 'a1-x1-mural');
   store.dispatch({ type: 'world/move', area: 'bar', x: 470, y: 520, facing: -1 });
   dump(store, 'bar-nando-bico');
+  talk(store, 'lia', ['bora', 'mg:5']);
+  store.dispatch({ type: 'world/move', area: 'vila', x: 2250, y: 650, facing: 1 });
+  dump(store, 'a2-m01-inicio');
+  talk(store, 'solange'); talk(store, 'mural', ['guardar']);
+  store.dispatch({ type: 'world/move', area: 'bar', x: 1080, y: 600, facing: -1 });
+  dump(store, 'a2-m02-vania');
 });

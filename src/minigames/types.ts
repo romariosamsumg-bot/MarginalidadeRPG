@@ -1,6 +1,6 @@
 /** Mini games integrados à história. Lógica pura aqui; interface em src/ui/minigame.ts. */
-export type MinigameId = 'depoimento' | 'mural' | 'pedidos';
-export const MINIGAME_IDS: MinigameId[] = ['depoimento', 'mural', 'pedidos'];
+export type MinigameId = 'depoimento' | 'mural' | 'pedidos' | 'mesa';
+export const MINIGAME_IDS: MinigameId[] = ['depoimento', 'mural', 'pedidos', 'mesa'];
 
 export interface MinigameInfo { title: string; how: string; skipLabel: string }
 
@@ -14,6 +14,11 @@ export const MINIGAME_INFO: Record<MinigameId, MinigameInfo> = {
     title: 'O Mural do Carro Prata',
     how: 'Monte a linha do tempo da sexta-feira tocando nas pistas na ordem em que aconteceram. Depois, aponte a fala que não fecha.',
     skipLabel: 'Deixar a Lia organizar (resultado médio)'
+  },
+  mesa: {
+    title: 'A Mesa',
+    how: 'A lição da Vânia: quem olha o relógio tem pressa — espere. Quem repete o mesmo número está blefando — pressione. Quem fala baixo está com medo — ofereça uma saída. Leia cada sinal do Gaspar e responda rápido.',
+    skipLabel: 'Deixar a Vânia conduzir (resultado médio)'
   },
   pedidos: {
     title: 'Pedidos no Balcão',

@@ -413,8 +413,15 @@ export const A1_X1_MURAL: Scene = {
       id: 'm8', speaker: 'narrator', text: 'Lia guarda o caderno na gaveta da cozinha. Pela primeira vez desde sexta, a casa parece estar do lado de vocês.',
       effects: [
         { type: 'mission', id: 'A1-X1', status: 'completed' },
-        { type: 'log', msg: 'O Mural do Carro Prata: a linha do tempo da sexta foi montada com Lia.' },
-        { type: 'mission', id: 'A2-M01', status: 'future' }
+        { type: 'log', msg: 'O Mural do Carro Prata: a linha do tempo da sexta foi montada com Lia.' }
+      ],
+      next: 'm9'
+    },
+    {
+      id: 'm9', speaker: 'narrator', style: 'card', text: 'Ato II — A Ascensão\nA Lei da Rua\n\nUma semana depois.',
+      effects: [
+        { type: 'clock', label: 'Sábado, 16h20', timeOfDay: 'entardecer' },
+        { type: 'mission', id: 'A2-M01', status: 'active', stage: 'talk_solange' }
       ],
       end: true
     }

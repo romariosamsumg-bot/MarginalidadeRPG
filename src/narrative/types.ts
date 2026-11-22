@@ -3,8 +3,8 @@
  * pertencem a listas fechadas e são interpretados pelo motor (src/narrative/engine.ts).
  */
 
-export type NpcId = 'magrao' | 'lia' | 'solange' | 'miro' | 'nando' | 'ze';
-export type Speaker = NpcId | 'player' | 'narrator' | 'helena' | 'vania';
+export type NpcId = 'magrao' | 'lia' | 'solange' | 'miro' | 'nando' | 'ze' | 'vania';
+export type Speaker = NpcId | 'player' | 'narrator' | 'helena';
 export type TraitId = 'lealdade' | 'ambicao' | 'humanidade';
 export type RelationState = 'neutro' | 'confianca' | 'distancia' | 'conflito' | 'rompimento';
 export type StatId = 'astucia' | 'forca' | 'labia' | 'influencia';
@@ -109,7 +109,7 @@ export interface DialogueNode {
 }
 
 export interface MinigameNode {
-  id: 'depoimento' | 'mural';
+  id: 'depoimento' | 'mural' | 'mesa';
   key: string;
   max: number;
   /** Pontos usados quando o jogador pula (acessibilidade): sempre um resultado intermediário. */

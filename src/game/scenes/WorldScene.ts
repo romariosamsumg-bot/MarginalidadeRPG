@@ -757,7 +757,8 @@ export class WorldScene extends Phaser.Scene {
     if (this.arrow.visible && this.arrowTarget && Math.hypot(wx - this.arrow.x, wy - this.arrow.y) < reach) hit = this.findTarget(this.arrowTarget);
     if (!hit) for (const it of this.interactables()) {
       const inBox = it.npc ? (Math.abs(wx - it.x) < 34 && wy < it.y + 8 && wy > it.y - 140) : Math.hypot(wx - it.x, wy - (it.y - 50)) < 80;
-      if (inBox) { const d = Math.hypot(wx - it.x, wy - it.y); if (d < bd) { bd = d; hit = it; } }
+      // Pessoas têm prioridade sobre objetos sob o mesmo toque (são desenhadas na frente: ex. Vânia diante da TV).
+      if (inBox) { const d = Math.hypot(wx - it.x, wy - it.y) - (it.npc ? 1000 : 0); if (d < bd) { bd = d; hit = it; } }
     }
     const L = this.layout.walk;
     if (hit) {

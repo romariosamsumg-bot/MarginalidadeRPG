@@ -313,9 +313,9 @@ describe('Ato I — Portas Fechadas, O Primeiro Serviço, Sangue e Dívida', () 
     const afterMural = store.get()!;
     expect(afterMural.story.flags.miro_lie_hint).toBe(true);
     expect(afterMural.story.missions['A1-X1']!.status).toBe('completed');
-    const obj = currentObjective(afterMural.story)!;
-    expect(obj.future).toBe(true);
-    expect(obj.objective).toContain('Fim do Ato I');
+    // O mural abre o Ato II.
+    expect(afterMural.story.act).toBe(2);
+    expect(currentObjective(afterMural.story)).toMatchObject({ missionId: 'A2-M01', target: 'solange', future: false });
     // Barks lembram do desfecho.
     interact(store, 'lia');
     expect(play(store, []).join(' ')).toContain('pra me proteger');
@@ -512,6 +512,162 @@ describe('Mini games', () => {
     expect(ch.enabled).toBe(true);
     s.rpg.energy = 10;
     expect(visibleChoices(s, node).find(c => c.choice.id === 'balcao')!.enabled).toBe(false);
+  });
+});
+
+describe('Ato II — Nome na Rua e A Voz de Vânia', () => {
+  /** Joga do começo até o início do Ato II com a resposta a Miro e o resultado de A1-M04 escolhidos. */
+  function toAct2(o: { m02: string; m04: string[]; helena: string; m05: string; seed?: number }) {
+    let saved: string | null = null;
+    const store = new Store(s => { saved = JSON.stringify(s); return true; }, seededRng(o.seed ?? 1));
+    store.dispatch({ type: 'game/new', name: 'Dandara', city: 'Rio de Janeiro', appearance: 1, career: null });
+    store.dispatch({ type: 'story/start', sceneId: 'A1-intro' }); play(store, []);
+    interact(store, 'magrao'); play(store, ['aceitar']);
+    interact(store, 'casa'); play(store, ['verdade']);
+    store.dispatch({ type: 'story/start', sceneId: 'A1-M02-cobranca' }); play(store, [o.m02, 'admitir']);
+    interact(store, 'casa'); play(store, []);
+    interact(store, 'lia'); play(store, ['tudo']);
+    interact(store, 'solange'); play(store, ['magrao', 'agradecer']);
+    interact(store, 'miro'); play(store, [...o.m04]);
+    store.dispatch({ type: 'story/start', sceneId: 'A1-M05-crise' }); play(store, [o.helena]);
+    interact(store, 'miro'); play(store, [o.m05]);
+    interact(store, 'lia'); play(store, ['bora']);
+    return { store, saved: () => saved };
+  }
+
+  it('a primeira resposta a Miro muda a primeira fala de Vânia (teste de aceitação da Bíblia)', () => {
+    const expected: Record<string, string> = {
+      negociar: 'Miro disse que tu pediu tempo. Gente que pensa antes de falar às vezes vive mais.',
+      enfrentar: 'Miro não esqueceu da resposta atravessada. Aqui, memória é uma coisa perigosa.',
+      adiar: 'Tu deixou ele acreditar que mandava em tudo. Isso também pode ser uma escolha.'
+    };
+    for (const [m02, line] of Object.entries(expected)) {
+      const { store } = toAct2({ m02, m04: ['ouvir', 'recusar'], helena: 'silencio', m05: 'proteger' });
+      interact(store, 'solange'); play(store, []);
+      interact(store, 'mural'); play(store, ['guardar']);
+      expect(resolveInteraction(store.get()!, 'vania')).toEqual({ kind: 'scene', sceneId: 'A2-M02-vania' });
+      interact(store, 'vania');
+      const lines = play(store, ['porque', 'mg:8', 'apoiar']);
+      expect(lines, m02).toContain(line);
+      for (const other of Object.values(expected)) if (other !== line) expect(lines).not.toContain(other);
+    }
+  });
+
+  it('rota: recusou o serviço + colaborou + arranca o nome + mesa firme + apoia Vânia', () => {
+    const { store, saved } = toAct2({ m02: 'negociar', m04: ['ouvir', 'recusar'], helena: 'verdade', m05: 'proteger' });
+    let s = store.get()!;
+    expect(s.story.act).toBe(2);
+    expect(s.story.clock.label).toBe('Sábado, 16h20');
+    expect(currentObjective(s.story)).toMatchObject({ missionId: 'A2-M01', target: 'solange' });
+    interact(store, 'solange');
+    const solLines = play(store, []);
+    expect(solLines.some(l => l.includes('Ninguém diz não pro Miro'))).toBe(true); // o gesto antigo
+    expect(solLines.some(l => l.includes('quem protege a Vila'))).toBe(true);        // atitude do fim do Ato I
+    expect(solLines.some(l => l.includes('conversou com a polícia'))).toBe(true);   // colaborou com Helena
+    s = store.get()!;
+    expect(s.story.flags.gesto).toBe('nao_pro_miro');
+    expect(currentObjective(s.story)).toMatchObject({ target: 'mural' });
+    expect(resolveInteraction(s, 'mural')).toEqual({ kind: 'scene', sceneId: 'A2-M01-mural' });
+    interact(store, 'mural');
+    play(store, ['arrancar']);
+    s = store.get()!;
+    expect(s.story.flags.nome_resposta).toBe('recusou');
+    expect(s.story.npcs.vania).toEqual({ present: true, spot: 'bar_mesa' });
+    expect(currentObjective(s.story)).toMatchObject({ missionId: 'A2-M02', target: 'vania', area: 'bar' });
+    // Depois do bilhete, o mural volta a ser o painel de serviços.
+    expect(resolveInteraction(s, 'mural')).toEqual({ kind: 'panel', tab: 'missoes' });
+    const respect = s.rpg.respect, heat = s.rpg.heat;
+    interact(store, 'vania');
+    const vLines = play(store, ['porque', 'mg:7', 'apoiar']);
+    expect(vLines.some(l => l.includes('arrancou teu nome do mural'))).toBe(true);
+    s = store.get()!;
+    expect(s.story.flags.mesa_nivel).toBe('firme');
+    expect(s.story.flags.tregua_cais).toBe('firme');
+    expect(s.rpg.respect).toBe(respect + 3);
+    expect(s.rpg.heat).toBe(Math.max(0, heat - 5));
+    expect(s.story.flags.vania_alliance).toBe('apoio');
+    expect(s.story.relationships.vania.state).toBe('confianca');
+    expect(s.story.missions['A2-M02']!.status).toBe('completed');
+    const obj = currentObjective(s.story)!;
+    expect(obj).toMatchObject({ missionId: 'A2-M03', future: true });
+    expect(obj.objective).toContain('O Ato II continua');
+    // Reações persistem após recarregar.
+    reload(store, saved());
+    interact(store, 'nando'); expect(play(store, ['nada']).join(' ')).toContain('foi tu que sentou com eles');
+    interact(store, 'miro'); expect(play(store, []).join(' ')).toContain('A Vânia fala bonito');
+    interact(store, 'vania'); expect(play(store, []).join(' ')).toContain('A trégua com o Cais tá de pé');
+    interact(store, 'lia'); expect(play(store, []).join(' ')).toContain('Parece que a Vila decidiu por tu');
+    // Recompensa única não duplica.
+    expect(store.dispatch({ type: 'story/start', sceneId: 'A2-M02-vania' }).ok).toBe(false);
+    expect(store.get()!.rpg.respect).toBe(respect + 3);
+  });
+
+  it('rota: serviço feito + leva o bilhete ao Miro + mesa fracassa + conta ao Miro', () => {
+    // Semente com serviço bem-sucedido.
+    let found: ReturnType<typeof toAct2> | null = null;
+    for (let seed = 1; seed <= 20 && !found; seed++) {
+      const t = toAct2({ m02: 'adiar', m04: ['ouvir', 'fazer', 'aceitar'], helena: 'silencio', m05: 'ambicao', seed });
+      if (t.store.get()!.story.flags.m04_result === 'sucesso') found = t;
+    }
+    const { store } = found!;
+    interact(store, 'solange');
+    const solLines = play(store, []);
+    expect(solLines.some(l => l.includes('voltou inteiro'))).toBe(true);
+    expect(solLines.some(l => l.includes('o novo braço do Miro'))).toBe(true);
+    expect(solLines.some(l => l.includes('conversou com a polícia'))).toBe(false);
+    interact(store, 'mural'); play(store, ['miro']);
+    const heat = store.get()!.rpg.heat;
+    interact(store, 'vania');
+    const lines = play(store, ['miro_sabe', 'mg:1', 'contar']);
+    expect(lines.some(l => l.includes('levou o bilhete da banca pro Miro'))).toBe(true);
+    const s = store.get()!;
+    expect(s.story.flags.tregua_cais).toBe('fracasso');
+    expect(s.rpg.heat).toBe(Math.min(100, heat + 5));
+    expect(s.story.relationships.vania.state).toBe('conflito');
+    interact(store, 'solange'); expect(play(store, ['tchau']).join(' ')).toContain('Eu não esperava isso de tu');
+    interact(store, 'nando'); expect(play(store, ['nada']).join(' ')).toContain('passou de carro duas vezes');
+  });
+
+  it('pular A Mesa dá trégua frágil; a migração libera o Ato II para saves antigos', async () => {
+    const { store } = toAct2({ m02: 'enfrentar', m04: ['ouvir', 'recusar'], helena: 'silencio', m05: 'ressentimento' });
+    interact(store, 'solange'); play(store, []);
+    interact(store, 'mural'); play(store, ['guardar']);
+    interact(store, 'vania'); play(store, ['porque', /* pula */ 'autonomia']);
+    const s = store.get()!;
+    expect(s.story.flags.mesa).toBe(4);
+    expect(s.story.flags.tregua_cais).toBe('fragil');
+    expect(s.story.flags.vania_alliance).toBe('autonomia');
+
+    // Save da versão anterior: mural feito e A2-M01 "em produção".
+    const old = JSON.parse(JSON.stringify(s)) as GameState;
+    old.story.missions['A2-M01'] = { status: 'future', stage: null };
+    delete old.story.missions['A2-M02']; delete old.story.missions['A2-M03'];
+    old.story.currentMissionId = 'A2-M01'; old.story.act = 1;
+    delete (old.story.npcs as Record<string, unknown>).vania;
+    delete (old.story.relationships as Record<string, unknown>).vania;
+    const parsed = parseGameState(JSON.parse(JSON.stringify(old)));
+    expect(parsed.state).not.toBeNull();
+    const m = parsed.state!.story;
+    expect(m.missions['A2-M01']).toEqual({ status: 'active', stage: 'talk_solange' });
+    expect(m.currentMissionId).toBe('A2-M01');
+    expect(m.act).toBe(2);
+    expect(m.npcs.vania).toEqual({ present: false, spot: 'bar_mesa' });
+    expect(m.relationships.vania).toEqual({ trust: 0, state: 'neutro' });
+  });
+
+  it('A Mesa: rodadas cobrem os três sinais e pontuam leitura + rapidez', async () => {
+    const { pickRounds, movePoints, ROUNDS } = await import('../src/minigames/mesa');
+    for (let seed = 1; seed <= 30; seed++) {
+      const r = pickRounds(seededRng(seed));
+      expect(r).toHaveLength(4);
+      expect(new Set(r.map(x => x.id)).size).toBe(4);
+      expect(new Set(r.map(x => x.right)).size).toBe(3);
+    }
+    const rel = ROUNDS.find(r => r.id === 'relogio1')!;
+    expect(movePoints('esperar', rel, 3)).toBe(2);
+    expect(movePoints('esperar', rel, 7)).toBe(1);
+    expect(movePoints('pressionar', rel, 1)).toBe(0);
+    expect(movePoints(null, rel, 10)).toBe(0);
   });
 });
 

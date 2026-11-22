@@ -51,7 +51,7 @@ export const CAMPAIGN: ActDef[] = [
         }
       },
       {
-        id: 'A1-X1', act: 1, title: 'Extra — O Mural do Carro Prata', implemented: true,
+        id: 'A1-X1', act: 1, title: 'Interlúdio — O Mural do Carro Prata', implemented: true,
         summary: 'Com Lia, você monta a linha do tempo da noite em que Magrão sumiu — e descobre uma fala que não fecha.',
         stages: {
           talk_lia: { objective: 'Lia quer colocar no papel tudo o que vocês sabem da sexta. Converse com ela em casa.', target: 'lia', area: 'casa' }
@@ -62,8 +62,21 @@ export const CAMPAIGN: ActDef[] = [
   {
     act: 2, title: 'A Ascensão: A Lei da Rua', theme: 'Pertencimento, autoridade, primeiros abusos de poder.',
     missions: [
-      { id: 'A2-M01', act: 2, title: 'Nome na Rua', implemented: false, summary: 'Um gesto antigo vira reputação pública.', stages: {} },
-      { id: 'A2-M02', act: 2, title: 'A Voz de Vânia', implemented: false, summary: 'Vânia propõe uma solução diferente da de Miro — e lembra da sua primeira resposta a ele.', stages: {} },
+      {
+        id: 'A2-M01', act: 2, title: 'Nome na Rua', implemented: true,
+        summary: 'Um gesto antigo vira reputação pública. Seu nome aparece no mural da passarela — com pedidos embaixo.',
+        stages: {
+          talk_solange: { objective: 'Dona Solange quer falar com você. Passe na mercearia.', target: 'solange', area: 'vila' },
+          mural: { objective: 'Vá ao Mural da Passarela.', target: 'mural', area: 'vila' }
+        }
+      },
+      {
+        id: 'A2-M02', act: 2, title: 'A Voz de Vânia', implemented: true,
+        summary: 'Vânia propõe uma solução diferente da de Miro — e lembra da sua primeira resposta a ele.',
+        stages: {
+          meet_vania: { objective: 'Vânia espera na mesa do fundo do Bar do Nando, às 21h.', target: 'vania', area: 'bar' }
+        }
+      },
       { id: 'A2-M03', act: 2, title: 'A Pessoa Errada', implemented: false, summary: 'Uma ordem de Miro atinge alguém que ajudou você.', stages: {} },
       { id: 'A2-M04', act: 2, title: 'Conselho Fechado', implemented: false, summary: 'Divergências entre lideranças vêm à tona.', stages: {} },
       { id: 'A2-M05', act: 2, title: 'A Queda de Miro', implemented: false, summary: 'Crise de liderança e disputa de legitimidade.', stages: {} }
@@ -111,7 +124,7 @@ export function currentObjective(story: { currentMissionId: string | null; missi
   const st = story.missions[m.id];
   if (!m.implemented || st?.status === 'future') {
     const text = m.act >= 2
-      ? 'Fim do Ato I. O Ato II chega numa próxima versão — enquanto isso, evolua sua carreira e converse com a Vila.'
+      ? 'O Ato II continua numa próxima versão — enquanto isso, evolua sua carreira e converse com a Vila.'
       : 'Este capítulo chega numa próxima versão — enquanto isso, evolua sua carreira na Vila.';
     return { missionId: m.id, title: m.title, objective: text, target: null, area: null, future: true };
   }

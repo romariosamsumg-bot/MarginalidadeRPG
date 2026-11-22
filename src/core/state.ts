@@ -51,7 +51,7 @@ export interface GameState {
   story: StoryState;
 }
 
-export const NPC_IDS: NpcId[] = ['magrao', 'lia', 'solange', 'miro', 'nando', 'ze'];
+export const NPC_IDS: NpcId[] = ['magrao', 'lia', 'solange', 'miro', 'nando', 'ze', 'vania'];
 export const TRAITS: TraitId[] = ['lealdade', 'ambicao', 'humanidade'];
 const RELATION_STATES: RelationState[] = ['neutro', 'confianca', 'distancia', 'conflito', 'rompimento'];
 
@@ -74,7 +74,8 @@ export function defaultStory(): StoryState {
       solange: { trust: 5, state: 'neutro' },
       miro: { trust: -10, state: 'distancia' },
       nando: { trust: 5, state: 'neutro' },
-      ze: { trust: 0, state: 'neutro' }
+      ze: { trust: 0, state: 'neutro' },
+      vania: { trust: 0, state: 'neutro' }
     },
     traits: { lealdade: 0, ambicao: 0, humanidade: 0 },
     choices: [],
@@ -89,7 +90,8 @@ export function defaultStory(): StoryState {
       solange: { present: true, spot: 'mercearia' },
       miro: { present: false, spot: 'bar_mesa' },
       nando: { present: true, spot: 'balcao' },
-      ze: { present: true, spot: 'bar_canto' }
+      ze: { present: true, spot: 'bar_canto' },
+      vania: { present: false, spot: 'bar_mesa' }
     },
     introSeen: false
   };
@@ -190,6 +192,13 @@ export function normalizeGameState(raw: GameState): GameState {
     npcs,
     introSeen: s.introSeen === true
   };
+  // Saves da versão anterior que já fizeram o Mural do Carro Prata deixaram o Ato II como "em produção":
+  // agora que A2-M01 existe, ele é liberado (uma vez; não altera nada se o jogador já avançou).
+  if (story.completedScenes.includes('A1-X1-mural') && story.missions['A2-M01']?.status === 'future' && !story.activeDialogue) {
+    story.missions['A2-M01'] = { status: 'active', stage: 'talk_solange' };
+    story.currentMissionId = 'A2-M01';
+    story.act = 2;
+  }
   const w = raw.world;
   return {
     game: GAME_ID,

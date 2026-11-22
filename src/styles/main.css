@@ -319,3 +319,4 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
 @keyframes mgshake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 .mg-opts .choice:disabled { opacity: .5; }
 .mg-opts .choice.mg-right:disabled, .mg-opts .choice.mg-wrong:disabled { opacity: 1; }
+.mg-cue { margin: -4px 0 12px; padding: 8px 10px; border-left: 3px solid var(--amber); background: #0b1215; color: #e8dcc0; font-style: italic; font-size: .95em; }

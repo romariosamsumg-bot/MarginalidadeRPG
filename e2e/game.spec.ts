@@ -343,3 +343,51 @@ test('mini games: depoimento com a investigadora e bico no balcão do Nando', as
   expect(after.story.flags.pedidos_recorde).toBe(14);
   await expect(page.locator('#toast')).toContainText('14/14');
 });
+
+test('Ato II: nome no mural, encontro com Vânia e A Mesa', async ({ page }, info) => {
+  test.setTimeout(600_000);
+  const touch = info.project.name.startsWith('mobile');
+  await boot(page);
+  await importFixture(page, 'a2-m01-inicio');
+  await expect(page.locator('body')).toContainText('A2-M01');
+  await walkToAndTalk(page, 'solange', 'A2-M01-solange', touch);
+  await playThrough(page, []);
+  await walkToAndTalk(page, 'mural', 'A2-M01-mural', touch);
+  await playThrough(page, [/Guardar os bilhetes/]);
+  const s1 = await st(page);
+  expect(s1.story.flags.nome_resposta).toBe('assumiu');
+  expect(s1.story.missions['A2-M02'].stage).toBe('meet_vania');
+  await walkToDoor(page, 'bar_porta', 'bar', touch);
+  await walkToAndTalk(page, 'vania', 'A2-M02-vania', touch);
+  // Teste de aceitação da Bíblia: o save respondeu "enfrentar" a Miro em A1-M02.
+  await expect.poll(async () => (await page.locator('.dlg .text').innerText().catch(() => '')), { timeout: 20_000 }).toBeTruthy();
+  const seen: string[] = [];
+  for (let i = 0; i < 40; i++) {
+    if (await page.locator('.dlg .choice:not([disabled])').count()) break;
+    const t = await page.locator('.dlg .text').innerText().catch(() => '');
+    seen.push(t);
+    await page.locator('[data-advance]').first().click({ position: { x: 20, y: 20 } }).catch(() => {});
+    await page.waitForTimeout(150);
+  }
+  expect(seen.join(' ')).toContain('Miro não esqueceu da resposta atravessada');
+  await choose(page, /Por que eu/);
+  expect(await advance(page)).toBe('minigame');
+  if (touch) await page.locator('[data-mg="start"]').tap(); else await page.keyboard.press('Digit1');
+  const RIGHT: Array<[string, number]> = [['relógio', 1], ['repete', 2], ['bate', 2], ['baixo', 3], ['some', 3]];
+  for (let k = 0; k < 4; k++) {
+    await page.waitForSelector('.mg-opts .choice:not([disabled])');
+    const cue = await page.locator('.mg-cue').innerText();
+    const n = RIGHT.find(([w]) => cue.includes(w))![1];
+    if (touch) await page.locator('.mg-opts .choice').nth(n - 1).tap(); else await page.keyboard.press(`Digit${n}`);
+    await page.waitForTimeout(1900);
+  }
+  await expect(page.locator('.mg-big')).toHaveText(/\/8/);
+  await page.locator('[data-mg="done"]').click();
+  await playThrough(page, [/Seguir o próprio caminho/]);
+  const s2 = await st(page);
+  expect(s2.story.flags.mesa).toBeGreaterThanOrEqual(4);
+  expect(['firme', 'fragil']).toContain(s2.story.flags.tregua_cais);
+  expect(s2.story.flags.vania_alliance).toBe('autonomia');
+  expect(s2.story.missions['A2-M02'].status).toBe('completed');
+  await expect(page.locator('body')).toContainText('O Ato II continua');
+});
