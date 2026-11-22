@@ -48,3 +48,15 @@ Decisões não críticas tomadas sem bloquear o início, conforme o prompt mestr
 - O "tocar numa pessoa/lugar" usa **A\* em grade de 16 px** sobre a área caminhável, com colisores inflados pela pegada do personagem e suavização por linha de visada (`src/world/path.ts`, testado em `tests/path.test.ts`). As primeiras versões (linha reta, depois desvios heurísticos) travavam em mesas e na moto — achado dos testes e2e.
 - Toque curto (< 260 ms, < 12 px) na zona do joystick vale como toque no mapa; arrastar continua sendo joystick. Sem isso, pessoas e lugares no canto inferior esquerdo da tela ficavam inacessíveis por toque.
 - O Nando atende do outro lado do balcão (raio de interação maior).
+
+## Mini games integrados à história
+Três desafios curtos (30–90 s), feitos para toque em 360 px e com teclado (1–6, Enter/Espaço). Todos podem ser **pulados** na abertura (acessibilidade): pular dá sempre o resultado intermediário, nunca o melhor nem o pior. Errar nunca trava a história — muda a consequência.
+
+| Desafio | Onde | Habilidade | Consequência |
+|---|---|---|---|
+| **O Depoimento** | A1-M05, se o protagonista colaborou com Helena ou falou do carro prata | memória + tempo (9 s por pergunta; até 5 s conta como "firme") | 4 perguntas sobre fatos que o jogador viveu (18h10, "visto por último 18:32", sábado no bar…; ou o carro prata às 19h e a escadaria). 2 pontos firme, 1 hesitou, 0 errou. ≥6: pressão −6 e `helena_trust=alta`; 3–5: `media`; ≤2: pressão +8 e `baixa`. |
+| **O Mural do Carro Prata** | Extra depois do Ato I (`A1-X1`), com Lia na cozinha | lógica / dedução | Ordenar 6 pistas da sexta com horários relativos ("dez minutos depois de…") e apontar a fala que não fecha. Achar a contradição (Miro disse que Magrão passou a tarde trancado na oficina) grava `miro_lie_hint` — pista para o Ato II. "Agora não" adia sem concluir. Saves que já terminaram o Ato I também recebem o extra ao falar com Lia. |
+| **Pedidos no Balcão** | Bico no Bar do Nando (depois de A1-M02), repetível | memória + agilidade | 4 rodadas (2, 3, 4 e 5 itens). Mesmas regras do `legalGig` da v0.4 (energia 28, pressão −4, bloqueado se detido); só o pagamento vem do desempenho: R$ 90 + 100 × acertos/14 (meio da faixa = R$ 140, a média do bico sorteado legado de R$ 110–170). Nenhuma fórmula legada foi alterada. |
+
+- O resultado é sempre gravado pelo store (`story/minigame` ou `bico/balcao`), com pontos inteiros limitados à faixa; um nó de desafio aceita um único resultado e não avança com toque. Recarregar a página durante um desafio reabre a tela de abertura dele.
+- Itens do balcão são genéricos (água, café, suco, refri, pastel, pão na chapa): sem marcas e sem bebida alcoólica no bico.

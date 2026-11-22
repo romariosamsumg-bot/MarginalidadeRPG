@@ -1,7 +1,7 @@
 # Marginalidade RPG — O Preço do Poder (v0.1)
 
 RPG urbano brasileiro **fictício** para navegador. Você explora a **Vila do Dique** (Rio de Janeiro) em 2.5D,
-conversa com moradores, joga o **Ato I completo** (5 missões, ~25–40 min), toma decisões que o jogo lembra e evolui uma carreira com os sistemas herdados do
+conversa com moradores, joga o **Ato I completo** (5 missões, ~25–40 min) com **mini games** de memória, lógica e agilidade, toma decisões que o jogo lembra e evolui uma carreira com os sistemas herdados do
 Submundo Brasil v0.4 (missões, treino, banco, negócios, gangue, facções, temporadas).
 
 > Jogo novo e independente. **Não** modifica, publica por cima nem lê o save do Submundo Brasil
