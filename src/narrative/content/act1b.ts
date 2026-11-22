@@ -270,10 +270,35 @@ export const A1_M05_CRISE: Scene = {
         }
       ]
     },
-    { id: 'c8v', speaker: 'helena', text: 'Ótimo. Gente que fala a verdade facilita o meu trabalho. E às vezes a própria vida.', next: 'c9' },
+    { id: 'c8v', speaker: 'helena', text: 'Ótimo. Gente que fala a verdade facilita o meu trabalho. E às vezes a própria vida.', next: 'c8d' },
     { id: 'c8s', speaker: 'helena', text: 'Direito seu. Mas silêncio também é uma resposta.', next: 'c9' },
     { id: 'c8c', speaker: 'helena', text: 'Onde você ouviu falar desse carro?', next: 'c8c2' },
-    { id: 'c8c2', speaker: 'helena', text: 'Não responde. Eu sei como a Vila funciona. Só te digo uma coisa: eu também estou procurando esse carro.', next: 'c9' },
+    { id: 'c8c2', speaker: 'helena', text: 'Não responde. Eu sei como a Vila funciona. Só te digo uma coisa: eu também estou procurando esse carro.', next: 'c8d' },
+    { id: 'c8d', speaker: 'helena', text: 'Então me ajuda com umas datas. Rápido, do jeito que vier na cabeça.', next: 'c8m' },
+    {
+      id: 'c8m', speaker: 'narrator', text: 'Helena abre o caderno e destampa a caneta.',
+      minigame: { id: 'depoimento', key: 'depoimento', max: 8, skip: 4, levels: [{ min: 6, value: 'firme' }, { min: 3, value: 'hesitante' }, { min: 0, value: 'contraditorio' }] },
+      next: 'c8r'
+    },
+    {
+      id: 'c8r', speaker: 'narrator', text: '',
+      branch: [{ if: { flag: 'depoimento_nivel', eq: 'firme' }, next: 'c8f' }, { if: { flag: 'depoimento_nivel', eq: 'contraditorio' }, next: 'c8x' }],
+      next: 'c8h'
+    },
+    {
+      id: 'c8f', speaker: 'helena', text: 'Bate com o que eu ouvi dos vizinhos. Minuto por minuto. Pela primeira vez hoje, alguém me ajudou.',
+      effects: [{ type: 'heat', delta: -6 }, { type: 'setFlag', key: 'helena_trust', value: 'alta' }, { type: 'log', msg: 'O Depoimento: suas respostas bateram com as dos vizinhos. A pressão diminuiu.' }],
+      next: 'c9'
+    },
+    {
+      id: 'c8h', speaker: 'helena', text: 'Você hesitou em algumas. Normal, numa noite dessas. Mas eu reparo.',
+      effects: [{ type: 'setFlag', key: 'helena_trust', value: 'media' }], next: 'c9'
+    },
+    {
+      id: 'c8x', speaker: 'helena', text: 'Metade disso não bate com o que os vizinhos me contaram. Isso é nervosismo ou tem alguma coisa que você não está me contando?',
+      effects: [{ type: 'heat', delta: 8 }, { type: 'setFlag', key: 'helena_trust', value: 'baixa' }, { type: 'log', msg: 'O Depoimento: suas respostas não bateram com as dos vizinhos. A pressão aumentou.' }],
+      next: 'c9'
+    },
     { id: 'c9', speaker: 'helena', text: 'Fica na Vila. Não some. Eu vou voltar a te procurar.', next: 'c10' },
     {
       id: 'c10', speaker: 'narrator', text: 'Ela sai. A viatura vai embora devagar. Do outro lado da rua, encostado no muro, alguém está esperando você.',
@@ -335,6 +360,60 @@ export const A1_M05_OFERTA: Scene = {
         { type: 'log', msg: 'Fim do Ato I: você entrou para a União da Linha.' },
         { type: 'npc', id: 'nando', present: true, spot: 'balcao' },
         { type: 'npc', id: 'lia', present: true, spot: 'casa_mesa' },
+        { type: 'mission', id: 'A2-M01', status: 'future' },
+        { type: 'mission', id: 'A1-X1', status: 'active', stage: 'talk_lia' }
+      ],
+      end: true
+    }
+  ]
+};
+
+/* --------------------- Extra: O Mural do Carro Prata --------------------- */
+
+export const A1_X1_MURAL: Scene = {
+  id: 'A1-X1-mural', mission: 'A1-X1', once: true, music: 'theme', title: 'O Mural do Carro Prata', location: 'Cozinha de casa', start: 'm1',
+  nodes: [
+    { id: 'm1', speaker: 'narrator', text: 'Lia afasta as apostilas e abre um caderno em branco no meio da mesa.', next: 'm2' },
+    {
+      id: 'm2', speaker: 'lia', text: 'Eu tô cansada de saber das coisas pelos outros. Bora colocar no papel tudo o que a gente sabe da sexta?',
+      variants: [
+        { if: { flag: 'lia_kept_out' }, text: 'Tu me deixou de fora uma vez. Agora não. Bora colocar no papel tudo o que a gente sabe da sexta?' },
+        { if: { flag: 'm05_attitude', eq: 'proteger' }, text: 'Tu entrou nessa pra proteger a gente. Então me deixa proteger também, do meu jeito. Bora colocar no papel tudo o que a gente sabe da sexta?' },
+        { if: { flag: 'm05_attitude', eq: 'ambicao' }, text: 'Tu tá com um brilho no olho que me dá medo. Antes que ele cresça, bora colocar no papel o que a gente sabe da sexta?' },
+        { if: { flag: 'm05_attitude', eq: 'ressentimento' }, text: 'Tu tá com raiva. Eu também. Então bora usar essa raiva direito: colocar no papel tudo o que a gente sabe da sexta.' }
+      ],
+      choices: [
+        { id: 'bora', label: 'Montar a linha do tempo com Lia', say: 'Bora. Pega uma caneta.', next: 'm3' },
+        { id: 'depois', label: 'Agora não', say: 'Hoje não, Lia. Amanhã a gente faz.', defer: true, next: 'END' }
+      ]
+    },
+    { id: 'm3', speaker: 'lia', text: 'Eu fui ver o Nando no hospital. Ele me contou uma coisa daquela sexta. Junta com o que tu sabe.', next: 'm4' },
+    {
+      id: 'm4', speaker: 'narrator', text: 'Pistas espalhadas na mesa da cozinha.',
+      minigame: { id: 'mural', key: 'mural', max: 5, skip: 3, levels: [{ min: 4, value: 'completo' }, { min: 3, value: 'achou' }, { min: 0, value: 'confuso' }] },
+      next: 'm5'
+    },
+    {
+      id: 'm5', speaker: 'narrator', text: '',
+      branch: [{ if: { flag: 'mural_nivel', eq: 'confuso' }, next: 'm6c' }, { if: { flag: 'mural_nivel', eq: 'completo' }, next: 'm6p' }],
+      next: 'm6'
+    },
+    { id: 'm6p', speaker: 'lia', text: 'Olha isso. Cada minuto no lugar. Tu tem cabeça pra isso, sabia?', next: 'm6' },
+    { id: 'm6', speaker: 'lia', text: 'Espera. Se ele passou aqui de tarde e depois foi no bar… como é que ficou a tarde inteira trancado na oficina?', next: 'm7' },
+    {
+      id: 'm7', speaker: 'lia', text: 'O Miro tá mentindo. Ou alguém mentiu pra ele. Tanto faz: tem gente querendo que a sexta-feira seja outra história.',
+      effects: [{ type: 'setFlag', key: 'miro_lie_hint', value: true }, { type: 'relation', npc: 'lia', delta: 5, state: 'confianca' }],
+      next: 'm8'
+    },
+    {
+      id: 'm6c', speaker: 'lia', text: 'Tá tudo embolado. Mas uma coisa eu sei: tem alguém contando essa sexta-feira do jeito que convém.',
+      effects: [{ type: 'relation', npc: 'lia', delta: 2 }], next: 'm8'
+    },
+    {
+      id: 'm8', speaker: 'narrator', text: 'Lia guarda o caderno na gaveta da cozinha. Pela primeira vez desde sexta, a casa parece estar do lado de vocês.',
+      effects: [
+        { type: 'mission', id: 'A1-X1', status: 'completed' },
+        { type: 'log', msg: 'O Mural do Carro Prata: a linha do tempo da sexta foi montada com Lia.' },
         { type: 'mission', id: 'A2-M01', status: 'future' }
       ],
       end: true
@@ -342,4 +421,4 @@ export const A1_M05_OFERTA: Scene = {
   ]
 };
 
-export const ACT1B_SCENES: Scene[] = [A1_M03_DOMINGO, A1_M03_LIA, A1_M03_SOLANGE, A1_M04_SERVICO, A1_M05_CRISE, A1_M05_OFERTA];
+export const ACT1B_SCENES: Scene[] = [A1_X1_MURAL, A1_M03_DOMINGO, A1_M03_LIA, A1_M03_SOLANGE, A1_M04_SERVICO, A1_M05_CRISE, A1_M05_OFERTA];

@@ -126,7 +126,7 @@ export function applyEffects(s: GameState, scene: Scene, effects: Effect[] | und
   return applied;
 }
 
-export interface StoryResult { ok: boolean; msg?: string; ended?: boolean; openPanel?: PanelId }
+export interface StoryResult { ok: boolean; msg?: string; ended?: boolean; openPanel?: PanelId; openMinigame?: 'pedidos' }
 
 function enterNode(s: GameState, scene: Scene, nodeId: string, rng: Rng): StoryResult {
   let id = nodeId;
@@ -170,6 +170,7 @@ export function advance(s: GameState, expectedNodeId: string, rng: Rng = cryptoR
   const node = getNode(a.sceneId, a.nodeId);
   if (!node) return { ok: false, msg: 'Nó inexistente.' };
   if (node.choices?.length && visibleChoices(s, node).length) return { ok: false, msg: 'Escolha uma opção.' };
+  if (node.minigame) return { ok: false, msg: 'Termine (ou pule) o desafio para continuar.' };
   if (node.end || !node.next) return finishScene(s, scene);
   return enterNode(s, scene, node.next, rng);
 }
@@ -191,10 +192,30 @@ export function choose(s: GameState, expectedNodeId: string, choiceId: string, r
   }
   if (c.next === 'END') {
     const r = finishScene(s, scene, !c.defer);
-    return { ...r, openPanel: c.openPanel };
+    return { ...r, openPanel: c.openPanel, openMinigame: c.openMinigame };
   }
   const r = enterNode(s, scene, c.next, rng);
   return { ...r, openPanel: c.openPanel };
+}
+
+/**
+ * Resultado de um mini game da cena. `score` null = jogador pulou (usa o resultado intermediário do conteúdo).
+ * Pontos são inteiros limitados a 0–max; o nó só aceita um resultado (depois a cena já avançou).
+ */
+export function minigameResult(s: GameState, expectedNodeId: string, score: number | null, rng: Rng = cryptoRng): StoryResult {
+  const a = s.story.activeDialogue;
+  if (!a || a.nodeId !== expectedNodeId) return { ok: false, msg: 'Diálogo desatualizado.' };
+  const scene = getScene(a.sceneId)!;
+  const node = getNode(a.sceneId, a.nodeId);
+  const mg = node?.minigame;
+  if (!node || !mg) return { ok: false, msg: 'Não há desafio aqui.' };
+  if (score !== null && !Number.isFinite(score)) return { ok: false, msg: 'Resultado inválido.' };
+  const pts = score === null ? mg.skip : clamp(Math.round(score), 0, mg.max);
+  s.story.flags[mg.key] = pts;
+  s.story.flags[`${mg.key}_nivel`] = mg.levels.find(l => pts >= l.min)?.value ?? mg.levels[mg.levels.length - 1]!.value;
+  if (score === null) s.story.flags[`${mg.key}_pulou`] = true;
+  if (node.end || !node.next) return finishScene(s, scene);
+  return enterNode(s, scene, node.next, rng);
 }
 
 /** Saída segura de conversas repetíveis (Esc). Cenas únicas não podem ser abandonadas. */

@@ -15,7 +15,8 @@ function play(store: Store, picks: string[]) {
     const s = store.get()!; const a = s.story.activeDialogue; if (!a) return;
     const node = getNode(a.sceneId, a.nodeId)!;
     const ch = visibleChoices(s, node);
-    if (ch.length) { const w = picks.shift(); const p = ch.find(c => c.choice.id === w && c.enabled) ?? ch.find(c => c.enabled)!; store.dispatch({ type: 'story/choose', nodeId: node.id, choiceId: p.choice.id }); }
+    if (node.minigame) { const sc = picks[0]?.startsWith('mg:') ? Number(picks.shift()!.slice(3)) : null; store.dispatch({ type: 'story/minigame', nodeId: node.id, score: sc }); }
+    else if (ch.length) { const w = picks.shift(); const p = ch.find(c => c.choice.id === w && c.enabled) ?? ch.find(c => c.enabled)!; store.dispatch({ type: 'story/choose', nodeId: node.id, choiceId: p.choice.id }); }
     else store.dispatch({ type: 'story/advance', nodeId: node.id });
   }
 }
@@ -47,4 +48,8 @@ it.skipIf(!process.env.GEN_FIXTURES)('gera saves do Ato I', () => {
   talk(store, 'miro', ['proteger']);
   store.dispatch({ type: 'world/move', area: 'vila', x: 2000, y: 662, facing: 1 });
   dump(store, 'a1-fim');
+  store.dispatch({ type: 'world/move', area: 'casa', x: 470, y: 600, facing: -1 });
+  dump(store, 'a1-x1-mural');
+  store.dispatch({ type: 'world/move', area: 'bar', x: 470, y: 520, facing: -1 });
+  dump(store, 'bar-nando-bico');
 });

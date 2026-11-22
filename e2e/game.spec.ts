@@ -281,5 +281,65 @@ test('Ato I: crise no bar, investigadora e o fim do ato com Miro', async ({ page
   await playThrough(page, []);
   const s = await st(page);
   expect(s.story.flags.act1_done).toBe(true);
-  await expect(page.locator('body')).toContainText('Fim do Ato I. O Ato II chega');
+  // Depois do ato, o extra com Lia (O Mural do Carro Prata) vira o objetivo.
+  await expect(page.locator('body')).toContainText('Lia quer colocar no papel tudo o que vocês sabem da sexta');
+});
+
+test('mini games: depoimento com a investigadora e bico no balcão do Nando', async ({ page }, info) => {
+  test.setTimeout(480_000);
+  const touch = info.project.name.startsWith('mobile');
+  // O Depoimento (respostas pelo teclado no desktop, por toque no celular)
+  await boot(page);
+  await importFixture(page, 'a1-m05-crise');
+  await walkToDoor(page, 'bar_porta', 'bar', touch);
+  await waitDialogue(page, 'A1-M05-crise', 20_000);
+  await advance(page);
+  await choose(page, /Falar a verdade/);
+  expect(await advance(page)).toBe('minigame');
+  await expect(page.locator('.mg-root h2')).toHaveText('O Depoimento');
+  // Durante o desafio, Esc não fecha nada nem abre menu, e o mapa não anda.
+  await page.keyboard.press('Escape');
+  expect(await page.evaluate(() => (window as any).__MRPG__.menu())).toBeFalsy();
+  if (touch) await page.locator('[data-mg="start"]').tap(); else await page.keyboard.press('Digit1');
+  const RIGHT = ['Pouco depois das seis', 'Até umas seis e meia', 'No Bar do Nando', 'O Nando', 'Umas sete da noite', 'Pela escadaria'];
+  for (let q = 0; q < 4; q++) {
+    await page.waitForSelector('.mg-opts .choice:not([disabled])');
+    const texts = await page.locator('.mg-opts .choice').allInnerTexts();
+    const k = texts.findIndex(t => RIGHT.some(r => t.includes(r)));
+    expect(k, texts.join(' | ')).toBeGreaterThanOrEqual(0);
+    if (touch) await page.locator('.mg-opts .choice').nth(k).tap(); else await page.keyboard.press(`Digit${k + 1}`);
+    await page.waitForTimeout(1400);
+  }
+  await expect(page.locator('.mg-big')).toHaveText(/\/8/);
+  await page.locator('[data-mg="done"]').click();
+  const s1 = await st(page);
+  expect(s1.story.flags.depoimento).toBeGreaterThanOrEqual(4); // headless lento: algumas podem contar como hesitação
+  expect(['firme', 'hesitante']).toContain(s1.story.flags.depoimento_nivel);
+  await playThrough(page, []);
+  expect((await st(page)).story.missions['A1-M05'].stage).toBe('meet_miro');
+
+  // Pedidos no Balcão: abre pelo menu do Nando, joga e recebe pelo desempenho
+  await boot(page);
+  await importFixture(page, 'bar-nando-bico');
+  await walkToAndTalk(page, 'nando', 'bark-nando', touch);
+  await advance(page);
+  const before = await st(page);
+  await choose(page, /balcão/);
+  await expect(page.locator('.mg-root h2')).toHaveText('Pedidos no Balcão');
+  await page.locator('[data-mg="start"]').click();
+  for (let r = 0; r < 4; r++) {
+    await page.waitForSelector('[data-mg="go"]');
+    const items = (await page.locator('.mg-tray .mg-slot').allInnerTexts()).map(t => t.split('\n').pop()!.trim());
+    await page.locator('[data-mg="go"]').click();
+    await page.waitForSelector('.mg-menu');
+    for (const label of items) await page.locator('.mg-item', { hasText: label }).first().click();
+    await page.waitForTimeout(1300);
+  }
+  await expect(page.locator('.mg-big')).toHaveText('14/14');
+  await page.locator('[data-mg="done"]').click();
+  const after = await st(page);
+  expect(after.rpg.cash - before.rpg.cash).toBe(190);
+  expect(before.rpg.energy - after.rpg.energy).toBe(28);
+  expect(after.story.flags.pedidos_recorde).toBe(14);
+  await expect(page.locator('#toast')).toContainText('14/14');
 });

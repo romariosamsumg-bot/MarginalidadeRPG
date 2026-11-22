@@ -23,7 +23,8 @@ export async function advance(page: Page, max = 40) {
   for (let i = 0; i < max; i++) {
     const s = await st(page);
     if (!s.story.activeDialogue) return 'end';
-    if (await page.locator('.choice:not([disabled])').count()) return 'choice';
+    if (await page.locator('.mg-root:not(.hidden)').count()) return 'minigame';
+    if (await page.locator('.dlg .choice:not([disabled])').count()) return 'choice';
     const adv = page.locator('[data-advance]').first();
     if (await adv.count()) await adv.click({ position: { x: 20, y: 20 } }).catch(() => {});
     await page.waitForTimeout(120);
@@ -40,6 +41,8 @@ export async function playThrough(page: Page, picks: Array<RegExp | string>) {
   for (;;) {
     const r = await advance(page);
     if (r === 'end') return;
+    // Desafio no meio da cena: os testes de história pulam (resultado médio); os de mini game jogam.
+    if (r === 'minigame') { await page.locator('[data-mg="skip"]').click(); await page.waitForTimeout(200); continue; }
     const p = picks.shift();
     if (!p) throw new Error('escolha inesperada');
     await choose(page, p);

@@ -74,6 +74,8 @@ export interface Choice {
   defer?: boolean;
   /** Abre um painel de RPG ao concluir (ponte NPC → sistemas). */
   openPanel?: PanelId;
+  /** Abre um mini game avulso ao encerrar a conversa (ex.: bico no balcão). Só com next 'END'. */
+  openMinigame?: 'pedidos';
   /** ID do próximo nó, ou 'END' para encerrar a cena. */
   next: string;
 }
@@ -99,6 +101,21 @@ export interface DialogueNode {
   end?: boolean;
   /** Dica de áudio/ambiente para a UI. */
   mood?: 'tense' | 'calm' | 'sad';
+  /**
+   * Mini game dentro da cena. O nó não avança com toque: o resultado (ou "pular") é enviado
+   * por story/minigame e gravado em flags[key] (pontos) e flags[key + '_nivel'] (primeiro nível com min ≤ pontos).
+   */
+  minigame?: MinigameNode;
+}
+
+export interface MinigameNode {
+  id: 'depoimento' | 'mural';
+  key: string;
+  max: number;
+  /** Pontos usados quando o jogador pula (acessibilidade): sempre um resultado intermediário. */
+  skip: number;
+  /** Em ordem decrescente de min; o último deve ter min 0. */
+  levels: Array<{ min: number; value: string }>;
 }
 
 export interface Scene {

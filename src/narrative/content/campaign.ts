@@ -49,6 +49,13 @@ export const CAMPAIGN: ActDef[] = [
           go_bar: { objective: 'Corra para o Bar do Nando. Aconteceu alguma coisa.', target: 'bar_porta', area: 'vila' },
           meet_miro: { objective: 'Miro está esperando na esquina do bar.', target: 'miro', area: 'vila' }
         }
+      },
+      {
+        id: 'A1-X1', act: 1, title: 'Extra — O Mural do Carro Prata', implemented: true,
+        summary: 'Com Lia, você monta a linha do tempo da noite em que Magrão sumiu — e descobre uma fala que não fecha.',
+        stages: {
+          talk_lia: { objective: 'Lia quer colocar no papel tudo o que vocês sabem da sexta. Converse com ela em casa.', target: 'lia', area: 'casa' }
+        }
       }
     ]
   },

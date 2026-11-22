@@ -126,7 +126,16 @@ export const BARK_NANDO: Scene = {
     { id: 'n_a', speaker: 'nando', text: 'Fez bem em não esticar. Mas ele vai cobrar esse "amanhã", pode ter certeza.', next: 'n_menu' },
     {
       id: 'n_menu', speaker: 'nando', text: 'Aqui é onde a Vila conversa. Quer saber como andam os grupos da cidade?',
+      variants: [
+        { if: ACT1_DONE, text: 'Com essa mão enfaixada eu não dou conta do balcão. Me dá uma força? Pago o dia. Ou quer saber dos grupos da cidade?' },
+        { if: M02_DONE, text: 'Depois daquela noite o movimento aumentou — todo mundo quer ver a cara de quem respondeu o Miro. Me ajuda no balcão? Ou quer saber dos grupos da cidade?' }
+      ],
       choices: [
+        {
+          id: 'balcao', label: 'Dar uma força no balcão (bico)', showIf: M02_DONE,
+          requires: { energy: 28 }, requiresLabel: 'Requer 28 de energia — descanse no sofá de casa',
+          openMinigame: 'pedidos', next: 'END'
+        },
         { id: 'grupos', label: 'Perguntar sobre os grupos da cidade', openPanel: 'gangue', next: 'END' },
         { id: 'nada', label: 'Agora não', next: 'END' }
       ]

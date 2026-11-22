@@ -4,7 +4,7 @@
  */
 import type { Store, Result } from '../core/store';
 import { getNode, getScene, nodeText, visibleChoices } from '../narrative/engine';
-import type { DialogueNode, Speaker } from '../narrative/types';
+import type { DialogueNode, MinigameNode, Speaker } from '../narrative/types';
 import { esc } from './dom';
 import { CARD_ART } from '../art/assets';
 
@@ -19,6 +19,8 @@ export interface DialogueDeps {
   reducedMotion: () => boolean;
   sfx: (name: string) => void;
   onResult: (r: Result) => void;
+  /** Nó com desafio: abre o mini game (a cena só avança com o resultado). */
+  onMinigame: (nodeId: string, mg: MinigameNode) => void;
 }
 
 export class DialogueView {
@@ -58,6 +60,11 @@ export class DialogueView {
     if (this.pendingSay) { this.renderLine('player', this.pendingSay, [], true); return; }
     if (node.style === 'card') return this.renderCard(nodeText(s, node), node.art);
     if (node.style === 'phone') return this.renderPhone(node);
+    if (node.minigame) {
+      this.renderLine(node.speaker, nodeText(s, node), [], false, node);
+      this.d.onMinigame(a.nodeId, node.minigame);
+      return;
+    }
     const choices = visibleChoices(s, node);
     this.renderLine(node.speaker, nodeText(s, node), choices, false, node);
   }
@@ -166,6 +173,7 @@ export class DialogueView {
       return;
     }
     if (this.pendingSay) { this.pendingSay = null; this.render(true); return; }
+    if (node?.minigame) { this.d.onMinigame(a.nodeId, node.minigame); return; }
     if (node && visibleChoices(s, node).length) return; // precisa escolher
     this.d.sfx('ui');
     const r = this.d.store.dispatch({ type: 'story/advance', nodeId: a.nodeId });

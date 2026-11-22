@@ -36,6 +36,8 @@ export function resolveInteraction(s: GameState, target: TargetId): InteractionO
       return door('casa');
     case 'lia':
       if (stageIs(s, 'A1-M03', 'talk_lia')) return { kind: 'scene', sceneId: 'A1-M03-lia' };
+      // Extra depois do Ato I (também para saves que terminaram o ato antes desta versão).
+      if (s.story.flags['act1_done'] === true && !s.story.completedScenes.includes('A1-X1-mural')) return { kind: 'scene', sceneId: 'A1-X1-mural' };
       return { kind: 'scene', sceneId: 'bark-lia' };
     case 'solange':
       if (stageIs(s, 'A1-M03', 'talk_solange')) return { kind: 'scene', sceneId: 'A1-M03-solange' };

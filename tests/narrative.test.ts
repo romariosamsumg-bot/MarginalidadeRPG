@@ -24,7 +24,12 @@ function play(store: Store, picks: string[]): string[] {
     const node = getNode(a.sceneId, a.nodeId)!;
     seen.push(nodeText(s, node));
     const choices = visibleChoices(s, node);
-    if (choices.length) {
+    if (node.minigame) {
+      // 'mg:N' na fila de escolhas = pontos do desafio; sem isso, o jogador "pula".
+      const score = picks[0]?.startsWith('mg:') ? Number(picks.shift()!.slice(3)) : null;
+      const r = store.dispatch({ type: 'story/minigame', nodeId: node.id, score });
+      expect(r.ok, r.msg).toBe(true);
+    } else if (choices.length) {
       const want = picks.shift();
       const pick = choices.find(c => c.choice.id === want && c.enabled) ?? choices.find(c => c.enabled)!;
       const r = store.dispatch({ type: 'story/choose', nodeId: node.id, choiceId: pick.choice.id });
@@ -283,7 +288,13 @@ describe('Ato I — Portas Fechadas, O Primeiro Serviço, Sangue e Dívida', () 
     expect(m04Lines.some(l => l.includes('Exatamente como a caixa do Magrão'))).toBe(true);
     expect(s.rpg.energy).toBeLessThan(100);
     const respectBefore = s.rpg.respect;
-    const { end, ofertaLines, criseLines } = finish(store, ['verdade'], ['proteger']);
+    const heatBefore = s.rpg.heat;
+    const { end, ofertaLines, criseLines } = finish(store, ['verdade', 'mg:8'], ['proteger']);
+    // O Depoimento: respostas firmes baixam a pressão.
+    expect(end.story.flags.depoimento).toBe(8);
+    expect(end.story.flags.depoimento_nivel).toBe('firme');
+    expect(end.story.flags.helena_trust).toBe('alta');
+    expect(end.rpg.heat).toBe(Math.max(0, heatBefore - 10 - 6));
     expect(criseLines.some(l => l.includes('Helena Paiva, Polícia Civil'))).toBe(true);
     expect(end.story.flags.helena_stance).toBe('colaborou');
     expect(end.story.flags.m05_attitude).toBe('proteger');
@@ -292,7 +303,17 @@ describe('Ato I — Portas Fechadas, O Primeiro Serviço, Sangue e Dívida', () 
     expect(end.rpg.respect).toBe(respectBefore + 5);
     expect(ofertaLines).toContain('Bem-vindo à União da Linha.');
     expect(end.story.npcs.nando.present).toBe(true);
-    const obj = currentObjective(end.story)!;
+    // Extra: o Mural do Carro Prata com Lia.
+    expect(currentObjective(end.story)).toMatchObject({ missionId: 'A1-X1', target: 'lia', area: 'casa' });
+    expect(resolveInteraction(end, 'lia')).toEqual({ kind: 'scene', sceneId: 'A1-X1-mural' });
+    interact(store, 'lia');
+    const muralLines = play(store, ['bora', 'mg:5']);
+    expect(muralLines.some(l => l.includes('Tu entrou nessa pra proteger a gente'))).toBe(true);
+    expect(muralLines.some(l => l.includes('Cada minuto no lugar'))).toBe(true);
+    const afterMural = store.get()!;
+    expect(afterMural.story.flags.miro_lie_hint).toBe(true);
+    expect(afterMural.story.missions['A1-X1']!.status).toBe('completed');
+    const obj = currentObjective(afterMural.story)!;
     expect(obj.future).toBe(true);
     expect(obj.objective).toContain('Fim do Ato I');
     // Barks lembram do desfecho.
@@ -310,11 +331,22 @@ describe('Ato I — Portas Fechadas, O Primeiro Serviço, Sangue e Dívida', () 
     expect(s.story.flags.m04_result).toBe('recusou');
     expect(s.story.relationships.miro.state).toBe('conflito');
     const heat = s.rpg.heat;
-    const { end, ofertaLines } = finish(store, ['carro'], ['ambicao']);
+    const { end, ofertaLines } = finish(store, ['carro', 'mg:1'], ['ambicao']);
     expect(end.story.flags.helena_car).toBe(true);
-    expect(end.rpg.heat).toBe(heat); // perguntar sobre o carro não muda a pressão
+    // Perguntar do carro não muda a pressão; contradizer-se no depoimento aumenta (+8).
+    expect(end.story.flags.depoimento_nivel).toBe('contraditorio');
+    expect(end.rpg.heat).toBe(Math.min(100, heat + 8));
     expect(ofertaLines.some(l => l.includes('Tu recusou o serviço'))).toBe(true);
     expect(end.story.npcs.lia.present).toBe(true); // Lia volta no fim do ato
+    interact(store, 'lia');
+    // "Agora não" adia o mural sem concluí-lo.
+    const lines = play(store, ['depois']);
+    expect(lines.join(' ')).toContain('Tu me deixou de fora uma vez');
+    expect(store.get()!.story.completedScenes).not.toContain('A1-X1-mural');
+    interact(store, 'lia');
+    play(store, ['bora', 'mg:2']); // monta a linha do tempo mas não acha a contradição
+    expect(store.get()!.story.flags.mural_nivel).toBe('confuso');
+    expect(store.get()!.story.flags.miro_lie_hint).toBeUndefined();
     interact(store, 'lia');
     expect(play(store, []).join(' ')).toContain('Por que eu sempre sei das coisas pelos outros?');
   });
@@ -380,6 +412,106 @@ describe('Ato I — Portas Fechadas, O Primeiro Serviço, Sangue e Dívida', () 
     reload(store, saved());
     expect(store.get()!.story.activeDialogue?.nodeId).toBe(mid);
     expect(store.get()!.story.clock.label).toBe('Terça-feira, 22h10');
+  });
+});
+
+describe('Mini games', () => {
+  it('desafio não avança por toque, aceita um resultado só, limita pontos e "pular" dá o resultado médio', async () => {
+    const { store } = newCareer();
+    const fx = JSON.parse(await import('node:fs').then(f => f.readFileSync(new URL('../e2e/fixtures/a1-m05-crise.json', import.meta.url), 'utf8')));
+    store.hydrate(parseGameState(fx.save).state);
+    store.dispatch({ type: 'story/start', sceneId: 'A1-M05-crise' });
+    play(store, ['verdade']); // sem 'mg:' → pula
+    const s = store.get()!;
+    expect(s.story.flags.depoimento).toBe(4);
+    expect(s.story.flags.depoimento_nivel).toBe('hesitante');
+    expect(s.story.flags.depoimento_pulou).toBe(true);
+    expect(s.story.flags.helena_trust).toBe('media');
+
+    // Outra carreira: tentativa de avançar sem jogar, pontos fora da faixa e resultado duplicado.
+    const t2 = newCareer();
+    t2.store.hydrate(parseGameState(fx.save).state);
+    t2.store.dispatch({ type: 'story/start', sceneId: 'A1-M05-crise' });
+    for (let g = 0; g < 40; g++) {
+      const a = t2.store.get()!.story.activeDialogue!;
+      if (a.nodeId === 'c8m') break;
+      const n = getNode(a.sceneId, a.nodeId)!;
+      if (n.choices) t2.store.dispatch({ type: 'story/choose', nodeId: n.id, choiceId: 'verdade' });
+      else t2.store.dispatch({ type: 'story/advance', nodeId: n.id });
+    }
+    expect(t2.store.get()!.story.activeDialogue!.nodeId).toBe('c8m');
+    expect(t2.store.dispatch({ type: 'story/advance', nodeId: 'c8m' }).ok).toBe(false);
+    expect(t2.store.dispatch({ type: 'story/minigame', nodeId: 'c8m', score: 999 }).ok).toBe(true);
+    expect(t2.store.get()!.story.flags.depoimento).toBe(8);
+    expect(t2.store.dispatch({ type: 'story/minigame', nodeId: 'c8m', score: 0 }).ok).toBe(false);
+    expect(t2.store.get()!.story.flags.depoimento).toBe(8);
+  });
+
+  it('perguntas do depoimento usam o que o jogador viveu e pontuam firmeza', async () => {
+    const { depoimentoQuestions, answerPoints } = await import('../src/minigames/depoimento');
+    const { store } = newCareer();
+    const s = store.get()!;
+    expect(depoimentoQuestions(s).map(q => q.id)).toEqual(['oficina', 'online', 'sabado', 'balcao']);
+    s.story.flags.helena_car = true;
+    expect(depoimentoQuestions(s).map(q => q.id)).toEqual(['oficina', 'online', 'carro', 'fuga']);
+    expect(answerPoints(true, 2)).toBe(2);
+    expect(answerPoints(true, 7)).toBe(1);
+    expect(answerPoints(true, 10)).toBe(0);
+    expect(answerPoints(false, 1)).toBe(0);
+  });
+
+  it('mural: pontuação separa a linha do tempo da descoberta da mentira', async () => {
+    const { muralScore, TIMELINE, STATEMENTS } = await import('../src/minigames/mural');
+    expect(TIMELINE).toHaveLength(6);
+    expect(STATEMENTS.filter(x => x.lie).map(x => x.id)).toEqual(['miro']);
+    expect(muralScore(0, true)).toBe(5);
+    expect(muralScore(2, true)).toBe(4);
+    expect(muralScore(5, true)).toBe(3);   // achou a mentira, mesmo errando a ordem
+    expect(muralScore(0, false)).toBe(2);  // ordem perfeita, mas não achou
+  });
+
+  it('bico no balcão: mesmas regras do bico legado, pagamento pelo desempenho', async () => {
+    const { bicoPay, makeOrder, PEDIDOS_MAX, ROUND_SIZES } = await import('../src/minigames/pedidos');
+    expect(bicoPay(0)).toBe(90);
+    expect(bicoPay(PEDIDOS_MAX)).toBe(190);
+    expect(bicoPay(PEDIDOS_MAX / 2)).toBe(140); // média do bico sorteado da v0.4 (110–170)
+    const rng = seededRng(5);
+    for (let r = 0; r < ROUND_SIZES.length; r++) {
+      const o = makeOrder(rng, r);
+      expect(o.items).toHaveLength(ROUND_SIZES[r]!);
+      if (r < 2) expect(new Set(o.items).size).toBe(o.items.length);
+    }
+    const { store } = newCareer();
+    const s0 = store.get()!;
+    const r1 = store.dispatch({ type: 'bico/balcao', score: PEDIDOS_MAX });
+    expect(r1.ok).toBe(true);
+    const s1 = store.get()!;
+    expect(s1.rpg.cash).toBe(s0.rpg.cash + 190);
+    expect(s1.rpg.energy).toBe(s0.rpg.energy - 28);
+    expect(s1.story.flags.pedidos_recorde).toBe(PEDIDOS_MAX);
+    // Pontos absurdos são limitados; "pular" paga a média.
+    store.dispatch({ type: 'bico/balcao', score: 10_000 });
+    expect(store.get()!.rpg.cash).toBe(s1.rpg.cash + 190);
+    const c2 = store.get()!.rpg.cash;
+    store.dispatch({ type: 'bico/balcao', score: null });
+    expect(store.get()!.rpg.cash).toBe(c2 + 140);
+    // Sem energia, recusa sem alterar nada.
+    const before = JSON.stringify(store.get()!.rpg);
+    expect(store.get()!.rpg.energy).toBeLessThan(28);
+    expect(store.dispatch({ type: 'bico/balcao', score: 5 }).ok).toBe(false);
+    expect(JSON.stringify(store.get()!.rpg)).toBe(before);
+  });
+
+  it('Nando oferece o bico só depois da cobrança e exige energia', () => {
+    const { store } = newCareer();
+    const node = getNode('bark-nando', 'n_menu')!;
+    expect(visibleChoices(store.get()!, node).map(c => c.choice.id)).not.toContain('balcao');
+    const s = JSON.parse(JSON.stringify(store.get()!)) as GameState;
+    s.story.missions['A1-M02'] = { status: 'completed', stage: null };
+    const ch = visibleChoices(s, node).find(c => c.choice.id === 'balcao')!;
+    expect(ch.enabled).toBe(true);
+    s.rpg.energy = 10;
+    expect(visibleChoices(s, node).find(c => c.choice.id === 'balcao')!.enabled).toBe(false);
   });
 });
 

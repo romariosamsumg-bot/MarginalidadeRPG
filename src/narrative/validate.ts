@@ -65,6 +65,17 @@ export function validateScenes(scenes: Scene[]): string[] {
         if (!n.choices.some(c => !c.requires)) errors.push(`${where}: todas as opções têm requisito (possível bloqueio)`);
       }
       checkEffects(n.effects, where);
+      for (const c of n.choices || []) if (c.openMinigame && c.next !== 'END') errors.push(`${where}/${c.id}: mini game avulso exige next END`);
+      if (n.minigame) {
+        const m = n.minigame;
+        if (n.choices?.length || n.branch) errors.push(`${where}: nó de mini game não pode ter opções nem ramificação`);
+        if (!n.next) errors.push(`${where}: nó de mini game precisa de next`);
+        if (!scene.once) errors.push(`${where}: mini game de história só em cena única`);
+        if (!/^[a-z0-9_]+$/.test(m.key)) errors.push(`${where}: chave de mini game inválida`);
+        if (!(Number.isInteger(m.max) && m.max > 0 && Number.isInteger(m.skip) && m.skip > 0 && m.skip < m.max)) errors.push(`${where}: pular deve dar resultado intermediário`);
+        const mins = m.levels.map(l => l.min);
+        if (!m.levels.length || mins[mins.length - 1] !== 0 || mins.some((v, i) => i > 0 && v >= mins[i - 1]!)) errors.push(`${where}: níveis do mini game fora de ordem`);
+      }
     }
     // Alcançabilidade e término: todo nó alcançável precisa conseguir chegar a um fim.
     const reach = new Set<string>();

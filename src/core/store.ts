@@ -9,6 +9,7 @@ import type { Rng } from './legacy/util';
 import { cryptoRng } from './legacy/util';
 import { AREA_IDS, newGame, type Appearance, type AreaId, type GameState } from './state';
 import * as N from '../narrative/engine';
+import { bicoBalcao } from './bico';
 import type { PanelId } from '../narrative/types';
 
 export type Action =
@@ -40,9 +41,11 @@ export type Action =
   | { type: 'story/advance'; nodeId: string }
   | { type: 'story/choose'; nodeId: string; choiceId: string }
   | { type: 'story/dismiss' }
+  | { type: 'story/minigame'; nodeId: string; score: number | null }
+  | { type: 'bico/balcao'; score: number | null }
   | { type: 'world/move'; area: AreaId; x: number; y: number; facing: 1 | -1 };
 
-export interface Result { ok: boolean; msg: string; error?: boolean; data?: Record<string, unknown>; openPanel?: PanelId; ended?: boolean; silent?: boolean }
+export interface Result { ok: boolean; msg: string; error?: boolean; data?: Record<string, unknown>; openPanel?: PanelId; openMinigame?: 'pedidos'; ended?: boolean; silent?: boolean }
 
 type Listener = (s: GameState | null, a: Action | null, r: Result | null) => void;
 
@@ -143,6 +146,8 @@ export class Store {
       case 'story/advance': return this.story(N.advance(s, a.nodeId, rng));
       case 'story/choose': return this.story(N.choose(s, a.nodeId, a.choiceId, rng));
       case 'story/dismiss': return this.story(N.dismiss(s));
+      case 'story/minigame': return this.story(N.minigameResult(s, a.nodeId, a.score, rng));
+      case 'bico/balcao': return bicoBalcao(s, a.score);
       case 'world/move': {
         if (!Number.isFinite(a.x) || !Number.isFinite(a.y) || !AREA_IDS.includes(a.area)) return { ok: false, msg: 'Posição inválida.' };
         s.world.area = a.area; s.world.x = Math.round(a.x); s.world.y = Math.round(a.y); s.world.facing = a.facing === -1 ? -1 : 1;
@@ -153,6 +158,6 @@ export class Store {
   }
 
   private story(r: N.StoryResult): Result {
-    return { ok: r.ok, msg: r.msg || '', error: !r.ok, openPanel: r.openPanel, ended: r.ended };
+    return { ok: r.ok, msg: r.msg || '', error: !r.ok, openPanel: r.openPanel, openMinigame: r.openMinigame, ended: r.ended };
   }
 }

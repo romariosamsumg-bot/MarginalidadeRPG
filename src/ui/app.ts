@@ -23,6 +23,7 @@ import { NPC_LOOKS, PLAYER_LOOKS, paintPortrait } from '../art/characters';
 import { PORTRAIT_ART } from '../art/assets';
 import { renderPanel, TABS } from './panels';
 import { DialogueView } from './dialogue';
+import { MinigameView } from './minigame';
 import { $, btn, esc, trapFocus } from './dom';
 
 export const VERSION = '0.1.0';
@@ -48,6 +49,7 @@ export class App {
   loadResult: LoadResult = { status: 'empty', state: null };
   ui = $('#ui')!;
   dialogue!: DialogueView;
+  minigame!: MinigameView;
   private renderQueued = false;
   private lastAction = { key: '', t: 0 };
   private prevMissions = '';
@@ -66,7 +68,13 @@ export class App {
       portrait: sp => this.portraitFor(sp),
       reducedMotion: () => this.reducedMotion(),
       sfx: n => audio.sfx(n),
-      onResult: r => this.afterStory(r)
+      onResult: r => this.afterStory(r),
+      onMinigame: (nodeId, mg) => this.openStoryMinigame(nodeId, mg.id)
+    });
+    this.minigame = new MinigameView(this.ui, {
+      state: () => this.store.get(),
+      reducedMotion: () => this.reducedMotion(),
+      sfx: n => audio.sfx(n)
     });
     this.wireBridge();
     this.wireInput();
@@ -261,7 +269,7 @@ export class App {
   }
 
   private syncBlocked() {
-    input.blocked = this.screen !== 'play' || this.menuTab !== null || this.modalOpen || this.dialogue?.open === true;
+    input.blocked = this.screen !== 'play' || this.menuTab !== null || this.modalOpen || this.dialogue?.open === true || this.minigame?.open === true;
     if (input.blocked) { input.joyX = 0; input.joyY = 0; this.resetJoy(); }
   }
 
@@ -348,7 +356,37 @@ export class App {
   private afterStory(r: Result) {
     if (!r.ok && r.msg) this.toast(r.msg, true);
     if (r.openPanel) this.openMenu(r.openPanel);
+    if (r.openMinigame === 'pedidos') this.openBico();
     this.queueRender();
+  }
+
+  /* ------------------------------ Mini games ------------------------------ */
+
+  /** Desafio dentro de uma cena: o resultado avança a cena (story/minigame). */
+  private openStoryMinigame(nodeId: string, id: 'depoimento' | 'mural') {
+    if (this.minigame.active === id) return;
+    this.minigame.show(id, {
+      onDone: score => {
+        const r = this.store.dispatch({ type: 'story/minigame', nodeId, score });
+        this.syncBlocked();
+        this.afterStory(r);
+      }
+    });
+    this.syncBlocked();
+  }
+
+  /** Bico no balcão do Nando (avulso, pode desistir sem custo). */
+  private openBico() {
+    this.minigame.show('pedidos', {
+      onDone: score => {
+        const r = this.store.dispatch({ type: 'bico/balcao', score });
+        this.toast(r.msg, !r.ok);
+        if (r.ok) audio.sfx('reward');
+        this.syncBlocked(); this.queueRender();
+      },
+      onCancel: () => { this.syncBlocked(); this.queueRender(); }
+    });
+    this.syncBlocked();
   }
 
   /* --------------------------------- Menu --------------------------------- */
@@ -599,7 +637,7 @@ export class App {
   private wireInput() {
     installKeyboard({
       interact: () => {
-        if (this.modalOpen || this.menuTab) return;
+        if (this.modalOpen || this.menuTab || this.minigame.open) return;
         if (this.dialogue.open) { this.dialogue.advance(); return; }
         if (this.screen === 'play') this.bridge.emit('interact', undefined);
       },
@@ -607,7 +645,7 @@ export class App {
       menu: () => { if (this.screen === 'play' && !this.dialogue.open && !this.modalOpen) { if (this.menuTab) this.closeMenu(); else this.openMenu('resumo'); } }
     });
     window.addEventListener('keydown', e => {
-      if (!this.dialogue.open || this.modalOpen || this.menuTab) return;
+      if (!this.dialogue.open || this.modalOpen || this.menuTab || this.minigame.open) return;
       if (/^Digit[1-3]$/.test(e.code)) { this.dialogue.chooseIndex(Number(e.code.slice(5)) - 1); e.preventDefault(); }
       else if (e.code === 'Enter' && !(e.target as HTMLElement)?.closest?.('button')) { this.dialogue.advance(); e.preventDefault(); }
     });
@@ -650,7 +688,7 @@ export class App {
   }
 
   private escape() {
-    if (this.modalOpen) return;
+    if (this.modalOpen || this.minigame.open) return;
     if (this.menuTab) { this.closeMenu(); return; }
     if (this.dialogue.open) {
       const r = this.store.dispatch({ type: 'story/dismiss' });
